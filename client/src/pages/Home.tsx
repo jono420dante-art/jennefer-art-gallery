@@ -9,22 +9,24 @@ export default function Home() {
   const { data: collections } = trpc.collections.list.useQuery();
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section with Chiaroscuro Effect */}
-      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-        {/* Atmospheric Background Effects */}
-        <div className="absolute inset-0">
-          <div className="lens-flare" style={{ top: '10%', right: '20%' }} />
-          <div className="light-ray" style={{ left: '20%' }} />
-          <div className="light-ray" style={{ right: '30%', animationDelay: '1s' }} />
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
+      {/* Hero Section - Heavenly Italian Gallery */}
+      <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden marble-texture">
+        {/* Divine Light Effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="lens-flare" style={{ top: '15%', right: '15%' }} />
+          <div className="lens-flare" style={{ bottom: '20%', left: '10%', opacity: 0.5 }} />
+          <div className="light-ray" style={{ left: '25%' }} />
+          <div className="light-ray" style={{ right: '25%', animationDelay: '2s' }} />
         </div>
 
         <div className="container relative z-10 text-center">
-          <h1 className="heading-font text-7xl md:text-9xl gradient-text mb-6 atmospheric-glow">
+          <h1 className="heading-font text-7xl md:text-9xl gradient-text mb-8 atmospheric-glow">
             JENNEFER ANN
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Exploring the interplay of light and shadow through contemporary art
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-8" />
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed font-light">
+            Exploring the divine interplay of light and shadow through contemporary art inspired by Italian Renaissance masters
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/gallery">
@@ -44,10 +46,12 @@ export default function Home() {
 
       {/* Featured Artworks */}
       <section className="container py-20">
-        <div className="text-center mb-12">
-          <h2 className="heading-font text-5xl gradient-text mb-4">FEATURED WORKS</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            A curated selection of pieces that embody the essence of chiaroscuro
+        <div className="section-divider" />
+        <div className="text-center mb-16">
+          <h2 className="heading-font text-5xl gradient-text mb-6">FEATURED WORKS</h2>
+          <div className="w-16 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-6" />
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light">
+            A curated selection of pieces that embody the essence of divine light and shadow
           </p>
         </div>
 
@@ -100,10 +104,12 @@ export default function Home() {
       {/* Collections Preview */}
       {collections && collections.length > 0 && (
         <section className="container py-20">
-          <div className="text-center mb-12">
-            <h2 className="heading-font text-5xl gradient-text mb-4">EXPLORE COLLECTIONS</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Discover artworks organized by theme and style
+          <div className="section-divider" />
+          <div className="text-center mb-16">
+            <h2 className="heading-font text-5xl gradient-text mb-6">EXPLORE COLLECTIONS</h2>
+            <div className="w-16 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-6" />
+            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light">
+              Discover artworks organized by theme and artistic vision
             </p>
           </div>
 
@@ -136,13 +142,15 @@ export default function Home() {
 
       {/* About Preview */}
       <section className="container py-20">
+        <div className="section-divider" />
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="heading-font text-5xl gradient-text mb-6">ABOUT THE ARTIST</h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Jennefer Ann is a contemporary artist whose work explores the dramatic interplay 
+          <div className="w-16 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-8" />
+          <p className="text-lg text-muted-foreground mb-8 leading-relaxed font-light">
+            Jennefer Ann is a contemporary artist whose work explores the divine interplay 
             between light and darkness. Drawing inspiration from the chiaroscuro techniques 
-            of the Old Masters, her paintings create powerful emotional narratives through 
-            bold contrasts and atmospheric depth.
+            of Italian Renaissance masters, her paintings create powerful emotional narratives 
+            through bold contrasts, atmospheric depth, and heavenly luminosity.
           </p>
           <Link href="/about">
             <Button variant="outline" size="lg">
