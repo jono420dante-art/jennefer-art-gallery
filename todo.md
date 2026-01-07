@@ -61,12 +61,12 @@
 - [x] Contact information display
 
 ## Testing & Polish
-- [ ] Test all user flows
-- [ ] Test admin functionality
-- [ ] Verify responsive design on mobile/tablet
-- [ ] Check form validations
-- [ ] Test purchase and contact flows
-- [ ] Create initial checkpoint
+- [x] Test all user flows
+- [x] Test admin functionality
+- [x] Verify responsive design on mobile/tablet
+- [x] Check form validations
+- [x] Test purchase and contact flows
+- [x] Create initial checkpoint
 
 ## Interactive Showcase Webpage
 - [ ] Create standalone webpage showcasing the gallery

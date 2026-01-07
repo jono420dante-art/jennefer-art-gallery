@@ -26,24 +26,24 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/">
-            <a className="flex items-center space-x-2 group">
+            <span className="flex items-center space-x-2 group cursor-pointer">
               <span className="heading-font text-3xl gradient-text hover:opacity-80 transition-opacity">
                 JENNEFER ANN
               </span>
-            </a>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href}>
-                <a
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                <span
+                  className={`text-sm font-medium transition-colors hover:text-primary cursor-pointer ${
                     location === link.href ? "text-primary" : "text-muted-foreground"
                   }`}
                 >
                   {link.label}
-                </a>
+                </span>
               </Link>
             ))}
           </div>
@@ -63,14 +63,12 @@ export default function Navigation() {
             <div className="flex flex-col space-y-4">
               {navLinks.map((link) => (
                 <Link key={link.href} href={link.href}>
-                  <a
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      location === link.href ? "text-primary" : "text-muted-foreground"
-                    }`}
+                  <span
+                    className={`text-sm font-medium transition-colors hover:text-primary cursor-pointer ${location === link.href ? "text-primary" : "text-muted-foreground"}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {link.label}
-                  </a>
+                  </span>
                 </Link>
               ))}
             </div>
