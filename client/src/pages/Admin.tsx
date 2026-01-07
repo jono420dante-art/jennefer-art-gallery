@@ -17,6 +17,7 @@ import { Loader2, Plus, Trash2, Check, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
+import { useLocation } from "wouter";
 
 export default function Admin() {
   const { user, loading } = useAuth();

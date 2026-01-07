@@ -13,6 +13,7 @@ import ArtworkDetail from "./pages/ArtworkDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 
 function Router() {
   return (
@@ -26,6 +27,7 @@ function Router() {
           <Route path="/artwork/:slug" component={ArtworkDetail} />
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
+          <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin" component={Admin} />
           <Route path="/404" component={NotFound} />
           <Route component={NotFound} />

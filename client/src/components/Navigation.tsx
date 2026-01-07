@@ -46,6 +46,13 @@ export default function Navigation() {
                 </span>
               </Link>
             ))}
+            {!user && (
+              <Link href="/admin-login">
+                <Button size="sm" variant="outline">
+                  Admin Login
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -71,6 +78,13 @@ export default function Navigation() {
                   </span>
                 </Link>
               ))}
+              {!user && (
+                <Link href="/admin-login">
+                  <Button size="sm" variant="outline" className="w-full">
+                    Admin Login
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         )}

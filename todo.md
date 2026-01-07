@@ -94,3 +94,9 @@
 - [x] Integrate PayPal API for @jenneferann account
 - [x] Create "For Sale" collection folder
 - [x] Add purchase flow with PayPal checkout
+
+## Admin Login & Access
+- [x] Add admin login button to navigation
+- [x] Create admin account with Grant444 / RARE333
+- [x] Add admin panel link to navigation
+- [x] Ensure admin panel is accessible and functional
