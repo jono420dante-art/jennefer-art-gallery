@@ -88,3 +88,9 @@
 - [x] Refine typography for more sophisticated appearance
 - [x] Update card designs with elegant borders and shadows
 - [x] Create heavenly atmospheric effects (soft glows, divine light)
+
+## PayPal Integration & For Sale Collection
+- [x] Add PayPal payment button to artwork detail pages
+- [x] Integrate PayPal API for @jenneferann account
+- [x] Create "For Sale" collection folder
+- [x] Add purchase flow with PayPal checkout

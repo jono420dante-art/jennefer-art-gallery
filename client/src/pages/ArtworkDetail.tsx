@@ -145,15 +145,26 @@ export default function ArtworkDetail() {
 
             {artwork.isAvailable && (
               <div className="space-y-4">
-                <Link href="/contact">
-                  <Button size="lg" className="w-full group">
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" className="w-full">
+                  <input type="hidden" name="cmd" value="_xclick" />
+                  <input type="hidden" name="business" value="jenneferann@paypal.com" />
+                  <input type="hidden" name="item_name" value={artwork.title} />
+                  <input type="hidden" name="item_number" value={artwork.id.toString()} />
+                  <input type="hidden" name="amount" value={String(artwork.priceUSD || artwork.priceZAR || 0)} />
+                  <input type="hidden" name="currency_code" value={artwork.priceUSD ? "USD" : "ZAR"} />
+                  <input type="hidden" name="return" value={typeof window !== 'undefined' ? `${window.location.origin}/gallery` : ''} />
+                  <input type="hidden" name="cancel_return" value={typeof window !== 'undefined' ? window.location.href : ''} />
+                  <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center mb-3">
                     <ShoppingCart className="mr-2" size={20} />
-                    Purchase or Inquire
+                    Buy Now with PayPal
+                  </button>
+                </form>
+                <Link href="/contact">
+                  <Button size="lg" variant="outline" className="w-full group">
+                    <ShoppingCart className="mr-2" size={20} />
+                    Inquire or Commission
                   </Button>
                 </Link>
-                <p className="text-xs text-muted-foreground text-center">
-                  Contact us to complete your purchase or discuss commission options
-                </p>
               </div>
             )}
           </div>
