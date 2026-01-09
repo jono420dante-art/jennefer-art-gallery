@@ -122,3 +122,12 @@
 ## About Page Content Update
 - [x] Insert correct artist bio into database
 - [x] Verify bio displays correctly on About page
+
+## Payment Checkout Flow - For Sale Artworks
+- [x] Add "Buy Now" button to For Sale artworks only
+- [x] Create checkout page with payment options
+- [x] Integrate PayPal payment option
+- [x] Integrate MasterCard payment option
+- [x] Store payment method preferences in admin
+- [x] Display payment success confirmation
+- [x] Send order notification to admin

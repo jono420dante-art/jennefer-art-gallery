@@ -109,3 +109,42 @@ export const aboutContent = mysqlTable("aboutContent", {
 
 export type AboutContent = typeof aboutContent.$inferSelect;
 export type InsertAboutContent = typeof aboutContent.$inferInsert;
+
+/**
+ * Payment settings for artist
+ */
+export const paymentSettings = mysqlTable("paymentSettings", {
+  id: int("id").autoincrement().primaryKey(),
+  paypalEmail: varchar("paypalEmail", { length: 320 }),
+  mastercardName: varchar("mastercardName", { length: 200 }),
+  mastercardNumber: text("mastercardNumber"),  // Encrypted
+  mastercardExpiry: varchar("mastercardExpiry", { length: 10 }),  // MM/YY
+  mastercardCVC: text("mastercardCVC"),  // Encrypted
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PaymentSettings = typeof paymentSettings.$inferSelect;
+export type InsertPaymentSettings = typeof paymentSettings.$inferInsert;
+
+/**
+ * Orders/Purchases from For Sale artworks
+ */
+export const orders = mysqlTable("orders", {
+  id: int("id").autoincrement().primaryKey(),
+  artworkId: int("artworkId").notNull(),
+  buyerName: varchar("buyerName", { length: 100 }).notNull(),
+  buyerEmail: varchar("buyerEmail", { length: 320 }).notNull(),
+  buyerPhone: varchar("buyerPhone", { length: 50 }),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: varchar("currency", { length: 10 }).default("ZAR").notNull(),
+  paymentMethod: mysqlEnum("paymentMethod", ["paypal", "mastercard"]).notNull(),
+  paymentStatus: mysqlEnum("paymentStatus", ["pending", "completed", "failed", "refunded"]).default("pending").notNull(),
+  transactionId: varchar("transactionId", { length: 200 }),
+  shippingAddress: text("shippingAddress"),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = typeof orders.$inferInsert;

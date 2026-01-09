@@ -281,6 +281,70 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // ============ PAYMENT SETTINGS ROUTES ============
+  paymentSettings: router({
+    get: publicProcedure.query(async () => {
+      return await db.getPaymentSettings();
+    }),
+
+    update: adminProcedure
+      .input(z.object({
+        paypalEmail: z.string().email().optional(),
+        mastercardName: z.string().optional(),
+        mastercardNumber: z.string().optional(),
+        mastercardExpiry: z.string().optional(),
+        mastercardCVC: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updatePaymentSettings(input);
+        return { success: true };
+      }),
+  }),
+
+  // ============ ORDER ROUTES ============
+  orders: router({
+    create: publicProcedure
+      .input(z.object({
+        artworkId: z.number(),
+        buyerName: z.string().min(1),
+        buyerEmail: z.string().email(),
+        buyerPhone: z.string().optional(),
+        amount: z.string(),
+        currency: z.string().default("ZAR"),
+        paymentMethod: z.enum(["paypal", "mastercard"]),
+        shippingAddress: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.createOrder({
+          artworkId: input.artworkId,
+          buyerName: input.buyerName,
+          buyerEmail: input.buyerEmail,
+          buyerPhone: input.buyerPhone,
+          amount: input.amount,
+          currency: input.currency,
+          paymentMethod: input.paymentMethod,
+          shippingAddress: input.shippingAddress,
+          notes: input.notes,
+        });
+        return { success: true };
+      }),
+
+    list: adminProcedure.query(async () => {
+      return await db.getAllOrders();
+    }),
+
+    updateStatus: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        status: z.enum(["pending", "completed", "failed", "refunded"]),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateOrderStatus(input.id, input.status);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

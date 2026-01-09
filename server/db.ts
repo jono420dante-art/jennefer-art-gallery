@@ -12,7 +12,11 @@ import {
   InsertContactSubmission,
   InsertComment,
   aboutContent,
-  InsertAboutContent
+  InsertAboutContent,
+  paymentSettings,
+  InsertPaymentSettings,
+  orders,
+  InsertOrder
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -272,4 +276,53 @@ export async function updateAboutContent(data: { title?: string; content: string
       content: data.content,
     });
   }
+}
+
+// ============ PAYMENT SETTINGS FUNCTIONS ============
+
+export async function getPaymentSettings() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(paymentSettings).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function updatePaymentSettings(data: Partial<InsertPaymentSettings>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const existing = await getPaymentSettings();
+  if (existing) {
+    await db.update(paymentSettings).set(data).where(eq(paymentSettings.id, existing.id));
+  } else {
+    await db.insert(paymentSettings).values(data as InsertPaymentSettings);
+  }
+}
+
+// ============ ORDER FUNCTIONS ============
+
+export async function createOrder(data: InsertOrder) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(orders).values(data);
+  return result;
+}
+
+export async function getOrderById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function getAllOrders() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(orders).orderBy(desc(orders.createdAt));
+}
+
+export async function updateOrderStatus(id: number, status: "pending" | "completed" | "failed" | "refunded") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(orders).set({ paymentStatus: status }).where(eq(orders.id, id));
 }
