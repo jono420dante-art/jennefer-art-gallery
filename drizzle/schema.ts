@@ -96,3 +96,16 @@ export const comments = mysqlTable("comments", {
 
 export type Comment = typeof comments.$inferSelect;
 export type InsertComment = typeof comments.$inferInsert;
+
+/**
+ * About page content - editable by admin
+ */
+export const aboutContent = mysqlTable("aboutContent", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 200 }).notNull().default("About the Artist"),
+  content: text("content").notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AboutContent = typeof aboutContent.$inferSelect;
+export type InsertAboutContent = typeof aboutContent.$inferInsert;

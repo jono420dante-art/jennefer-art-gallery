@@ -26,7 +26,7 @@ export default function Home() {
           </h1>
           <div className="w-24 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-8" />
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed font-light">
-            Exploring the divine interplay of light and shadow through contemporary art inspired by Italian Renaissance masters
+            Realist oil paintings capturing the beauty of Africa's people, wildlife, and landscapes through faith and authentic observation
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/gallery">
@@ -51,7 +51,7 @@ export default function Home() {
           <h2 className="heading-font text-5xl gradient-text mb-6">FEATURED WORKS</h2>
           <div className="w-16 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-6" />
           <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light">
-            A curated selection of pieces that embody the essence of divine light and shadow
+            A curated selection of realist paintings celebrating Africa's beauty, wildlife, and spiritual essence
           </p>
         </div>
 

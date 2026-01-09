@@ -264,6 +264,23 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // ============ ABOUT CONTENT ROUTES ============
+  about: router({
+    get: publicProcedure.query(async () => {
+      return await db.getAboutContent();
+    }),
+
+    update: adminProcedure
+      .input(z.object({
+        title: z.string().optional(),
+        content: z.string().min(1),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateAboutContent(input);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

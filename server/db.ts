@@ -10,7 +10,9 @@ import {
   InsertCollection,
   InsertArtwork,
   InsertContactSubmission,
-  InsertComment
+  InsertComment,
+  aboutContent,
+  InsertAboutContent
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -246,4 +248,28 @@ export async function deleteComment(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(comments).where(eq(comments.id, id));
+}
+
+// ============ ABOUT CONTENT FUNCTIONS ============
+
+export async function getAboutContent() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(aboutContent).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function updateAboutContent(data: { title?: string; content: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const existing = await getAboutContent();
+  if (existing) {
+    await db.update(aboutContent).set(data).where(eq(aboutContent.id, existing.id));
+  } else {
+    await db.insert(aboutContent).values({
+      title: data.title || "About the Artist",
+      content: data.content,
+    });
+  }
 }

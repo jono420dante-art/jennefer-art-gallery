@@ -15,6 +15,13 @@
       "when": 1767777148440,
       "tag": "0001_tidy_misty_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1767951283664,
+      "tag": "0002_long_killer_shrike",
+      "breakpoints": true
     }
   ]
 }

@@ -1,137 +1,193 @@
+import { useEffect, useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { toast } from "sonner";
+import { Edit2, Save, X } from "lucide-react";
+
 export default function About() {
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+
+  const { data: aboutData, isLoading } = trpc.about.get.useQuery();
+  const updateAbout = trpc.about.update.useMutation({
+    onSuccess: () => {
+      toast.success("About page updated successfully!");
+      setIsEditing(false);
+    },
+    onError: () => {
+      toast.error("Failed to update about page");
+    },
+  });
+
+  useEffect(() => {
+    if (aboutData) {
+      setEditTitle(aboutData.title || "About the Artist");
+      setEditContent(aboutData.content);
+    }
+  }, [aboutData]);
+
+  const handleSave = () => {
+    if (!editContent.trim()) {
+      toast.error("Content cannot be empty");
+      return;
+    }
+    updateAbout.mutate({
+      title: editTitle,
+      content: editContent,
+    });
+  };
+
+  const defaultContent = `I am a South African realist oil painter inspired by God's creation and the enduring beauty of Africa's people, wildlife, and landscapes.
+
+My work is rooted in careful observation and traditional oil painting techniques. I strive to capture subjects as they truly are — honouring form, proportion, light, and texture — while preserving the emotion and presence that make each subject unique. Whether painting wildlife, portraits, seascapes, or landscapes, my focus is on accuracy, depth, and authenticity.
+
+Africa's distinct light, vast spaces, and rich natural life are constant influences on my work. Living in South Africa allows me to study these elements firsthand and translate them faithfully onto canvas.
+
+Faith quietly underpins my creative process. I see realism as a way of honouring God's creation by depicting it truthfully and with care. Through my art, my aim is to preserve moments of beauty and meaning — paintings that invite reflection, connection, and lasting appreciation.`;
+
+  const displayContent = aboutData?.content || defaultContent;
+  const displayTitle = aboutData?.title || "About the Artist";
+
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="lens-flare" style={{ top: '20%', left: '30%' }} />
-        
-        <div className="container relative z-10">
-          <h1 className="heading-font text-6xl md:text-8xl gradient-text text-center mb-6 atmospheric-glow">
-            ABOUT THE ARTIST
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
+      <div className="container py-20">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="heading-font text-6xl gradient-text mb-4">
+            {displayTitle}
           </h1>
-          <p className="text-xl text-muted-foreground text-center max-w-2xl mx-auto">
-            Exploring the boundaries between light and shadow
-          </p>
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto" />
         </div>
-      </section>
 
-      {/* Biography Section */}
-      <section className="container py-12">
-        <div className="max-w-4xl mx-auto space-y-12">
-          {/* Introduction */}
-          <div className="space-y-6">
-            <h2 className="heading-font text-4xl gradient-text">Biography</h2>
-            <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
-              <p>
-                Jennefer Ann is a contemporary artist whose work explores the dramatic interplay 
-                between light and darkness. Drawing inspiration from the chiaroscuro techniques 
-                of the Old Masters, her paintings create powerful emotional narratives through 
-                bold contrasts and atmospheric depth.
-              </p>
-              <p>
-                Born and raised in South Africa, Jennefer developed her distinctive style through 
-                years of experimentation with various mediums and techniques. Her work reflects a 
-                deep understanding of how light can transform a composition, creating mood, drama, 
-                and emotional resonance.
-              </p>
-              <p>
-                Each piece begins with careful observation of natural light and shadow patterns, 
-                which are then translated into bold, expressive compositions. Her paintings often 
-                feature strong directional lighting that emerges from deep, void-like backgrounds, 
-                creating a sense of mystery and revelation.
-              </p>
-            </div>
+        {/* Admin Edit Mode */}
+        {user?.role === "admin" && (
+          <div className="mb-8 flex justify-center gap-4">
+            {!isEditing ? (
+              <Button
+                onClick={() => setIsEditing(true)}
+                variant="outline"
+                size="sm"
+              >
+                <Edit2 size={16} className="mr-2" />
+                Edit About Page
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleSave}
+                  disabled={updateAbout.isPending}
+                  size="sm"
+                >
+                  <Save size={16} className="mr-2" />
+                  {updateAbout.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsEditing(false);
+                    setEditTitle(displayTitle);
+                    setEditContent(displayContent);
+                  }}
+                  variant="outline"
+                  size="sm"
+                >
+                  <X size={16} className="mr-2" />
+                  Cancel
+                </Button>
+              </div>
+            )}
           </div>
+        )}
 
-          {/* Artistic Philosophy */}
-          <div className="space-y-6">
-            <h2 className="heading-font text-4xl gradient-text">Artistic Philosophy</h2>
-            <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
-              <p>
-                At the heart of my practice is the belief that art should evoke emotion and 
-                create a visceral response in the viewer. I use the dramatic contrast of light 
-                and shadow—the essence of chiaroscuro—to create works that speak to the human 
-                experience of hope emerging from darkness, clarity from confusion, and beauty 
-                from struggle.
-              </p>
-              <p>
-                My process is both intuitive and deliberate. I begin with careful planning of 
-                the composition and light sources, but allow the painting to evolve organically 
-                as layers of paint build up. This balance between control and spontaneity results 
-                in works that feel both structured and alive.
-              </p>
-              <p>
-                I believe that contemporary art can draw from historical techniques while remaining 
-                relevant to modern audiences. By combining traditional chiaroscuro methods with 
-                contemporary subject matter and sensibilities, I aim to create timeless works that 
-                resonate across generations.
-              </p>
-            </div>
+        {/* Content */}
+        {isLoading ? (
+          <div className="text-center py-20">
+            <p className="text-muted-foreground">Loading...</p>
           </div>
+        ) : isEditing && user?.role === "admin" ? (
+          <Card className="p-8 max-w-4xl mx-auto border-border bg-card">
+            <div className="space-y-6">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Title
+                </label>
+                <Input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="bg-muted border-border"
+                  placeholder="About the Artist"
+                />
+              </div>
 
-          {/* Technique & Medium */}
-          <div className="space-y-6">
-            <h2 className="heading-font text-4xl gradient-text">Technique & Medium</h2>
-            <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
-              <p>
-                I work primarily with oil paints on canvas, a medium that allows for the rich, 
-                luminous quality essential to chiaroscuro painting. The slow-drying nature of 
-                oils enables me to blend and layer colors, creating the subtle gradations from 
-                deep shadow to brilliant highlight that define my work.
-              </p>
-              <p>
-                My technique involves building up multiple thin layers of paint, a process known 
-                as glazing, which creates depth and luminosity. I pay particular attention to the 
-                transition zones between light and shadow, where the drama of the composition is 
-                most powerfully expressed.
-              </p>
-              <p>
-                Each painting can take several weeks to complete, as I allow layers to dry before 
-                adding the next. This patient, methodical approach results in works with a depth 
-                and richness that cannot be achieved through faster methods.
-              </p>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-2 block">
+                  Content
+                </label>
+                <Textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="bg-muted border-border min-h-96 font-mono text-sm"
+                  placeholder="Enter about page content..."
+                />
+              </div>
+
+              <div className="text-xs text-muted-foreground">
+                <p>Tip: Use line breaks to separate paragraphs for better readability.</p>
+              </div>
             </div>
+          </Card>
+        ) : (
+          <div className="max-w-4xl mx-auto">
+            <Card className="p-12 border-border bg-card/50 backdrop-blur-sm">
+              <div className="prose prose-invert max-w-none">
+                {displayContent.split("\n\n").map((paragraph, index) => (
+                  <p
+                    key={index}
+                    className="text-lg text-foreground leading-relaxed mb-6 last:mb-0"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </Card>
           </div>
+        )}
 
-          {/* Exhibitions & Recognition */}
-          <div className="space-y-6">
-            <h2 className="heading-font text-4xl gradient-text">Exhibitions & Recognition</h2>
-            <div className="space-y-4 text-lg text-muted-foreground leading-relaxed">
-              <p>
-                My work has been exhibited in galleries throughout South Africa and has found homes 
-                in private collections around the world. Each exhibition is an opportunity to share 
-                my vision and connect with viewers who appreciate the power of light and shadow.
-              </p>
-              <p>
-                I continue to develop my practice through ongoing exploration of new subjects and 
-                techniques, while remaining true to the core principles of chiaroscuro that define 
-                my artistic identity. My goal is to create works that stand the test of time, 
-                speaking to viewers long after they leave the gallery.
-              </p>
+        {/* Artist Focus Areas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
+          <Card className="p-8 border-border bg-card/50 backdrop-blur-sm text-center">
+            <div className="heading-font text-3xl gradient-text mb-2">
+              REALISM
             </div>
-          </div>
-
-          {/* Contact CTA */}
-          <div className="pt-12 text-center">
-            <h2 className="heading-font text-4xl gradient-text mb-6">Let's Connect</h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Interested in commissioning a piece or learning more about my work? 
-              I'd love to hear from you.
+            <p className="text-muted-foreground text-sm">
+              Traditional oil painting techniques focused on accuracy and authenticity
             </p>
-            <div className="space-y-4">
-              <p className="text-foreground">
-                <strong>Email:</strong>{" "}
-                <a href="mailto:jennefer@artgallery.com" className="text-primary hover:underline">
-                  jennefer@artgallery.com
-                </a>
-              </p>
-              <p className="text-foreground">
-                <strong>Location:</strong> South Africa
-              </p>
+          </Card>
+
+          <Card className="p-8 border-border bg-card/50 backdrop-blur-sm text-center">
+            <div className="heading-font text-3xl gradient-text mb-2">
+              AFRICA
             </div>
-          </div>
+            <p className="text-muted-foreground text-sm">
+              Capturing the distinct light, vast spaces, and natural beauty of the continent
+            </p>
+          </Card>
+
+          <Card className="p-8 border-border bg-card/50 backdrop-blur-sm text-center">
+            <div className="heading-font text-3xl gradient-text mb-2">
+              FAITH
+            </div>
+            <p className="text-muted-foreground text-sm">
+              Honouring God's creation through truthful and careful artistic expression
+            </p>
+          </Card>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
