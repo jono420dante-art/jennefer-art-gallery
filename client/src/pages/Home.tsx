@@ -147,10 +147,7 @@ export default function Home() {
           <h2 className="heading-font text-5xl gradient-text mb-6">ABOUT THE ARTIST</h2>
           <div className="w-16 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-8" />
           <p className="text-lg text-muted-foreground mb-8 leading-relaxed font-light">
-            Jennefer Ann is a contemporary artist whose work explores the divine interplay 
-            between light and darkness. Drawing inspiration from the chiaroscuro techniques 
-            of Italian Renaissance masters, her paintings create powerful emotional narratives 
-            through bold contrasts, atmospheric depth, and heavenly luminosity.
+            Jennefer Ann is a South African realist oil painter inspired by God's creation and the enduring beauty of Africa's people, wildlife, and landscapes. Her work captures subjects with meticulous attention to form, proportion, light, and texture, preserving the emotion and presence that make each subject unique.
           </p>
           <Link href="/about">
             <Button variant="outline" size="lg">

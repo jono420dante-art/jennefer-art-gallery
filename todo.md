@@ -131,3 +131,8 @@
 - [x] Store payment method preferences in admin
 - [x] Display payment success confirmation
 - [x] Send order notification to admin
+
+## Remove Renaissance References
+- [x] Remove Renaissance master comments from CSS
+- [x] Remove Renaissance references from design files
+- [x] Remove any Renaissance-related text from pages
