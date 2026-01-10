@@ -136,3 +136,6 @@
 - [x] Remove Renaissance master comments from CSS
 - [x] Remove Renaissance references from design files
 - [x] Remove any Renaissance-related text from pages
+
+## Name Change - Jennefer to Jennifer
+- [x] Replace all instances of "Jennefer" with "Jennifer" in all files
