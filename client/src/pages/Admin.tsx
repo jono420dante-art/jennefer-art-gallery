@@ -141,12 +141,20 @@ export default function Admin() {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log("File selected:", file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        console.log("Image loaded, setting state");
         setImageFile(reader.result as string);
       };
+      reader.onerror = () => {
+        console.error("FileReader error:", reader.error);
+        toast.error("Failed to read image file");
+      };
       reader.readAsDataURL(file);
+    } else {
+      console.log("No file selected");
     }
   };
 
@@ -205,7 +213,12 @@ export default function Admin() {
   return (
     <div className="min-h-screen">
       <section className="container py-12">
-        <h1 className="heading-font text-6xl gradient-text mb-8">ADMIN PANEL</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="heading-font text-6xl gradient-text">ADMIN PANEL</h1>
+          <Button variant="outline" onClick={() => window.history.back()} className="transition-all hover:scale-105">
+            ← Back
+          </Button>
+        </div>
 
         <Tabs defaultValue="artworks" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
