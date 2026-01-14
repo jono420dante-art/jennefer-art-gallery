@@ -91,7 +91,7 @@
 
 ## PayPal Integration & For Sale Collection
 - [x] Add PayPal payment button to artwork detail pages
-- [x] Integrate PayPal API for @jenneferann account
+- [x] Integrate PayPal API for @jenniferann account
 - [x] Create "For Sale" collection folder
 - [x] Add purchase flow with PayPal checkout
 
