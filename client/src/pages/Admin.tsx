@@ -183,9 +183,14 @@ export default function Admin() {
       return;
     }
 
+    const priceZAR = artworkForm.priceZAR ? parseFloat(artworkForm.priceZAR) : null;
+    const priceUSD = artworkForm.priceUSD ? parseFloat(artworkForm.priceUSD) : null;
+
     createArtwork.mutate({
       ...artworkForm,
       collectionId: collectionIdNum,
+      priceZAR: priceZAR as any,
+      priceUSD: priceUSD as any,
       imageBase64: imageFile,
     });
   };

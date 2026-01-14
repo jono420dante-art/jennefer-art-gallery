@@ -149,3 +149,5 @@
 
 ## Bug Fixes
 - [x] Fix collectionId NaN error in artwork submission
+
+- [x] Fix price fields accepting empty strings instead of null/numbers
