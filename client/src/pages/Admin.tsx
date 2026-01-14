@@ -164,10 +164,28 @@ export default function Admin() {
       toast.error("Please select an image");
       return;
     }
+    if (!artworkForm.collectionId) {
+      toast.error("Please select a collection");
+      return;
+    }
+    if (!artworkForm.title) {
+      toast.error("Please enter a title");
+      return;
+    }
+    if (!artworkForm.slug) {
+      toast.error("Please enter a slug");
+      return;
+    }
+
+    const collectionIdNum = parseInt(artworkForm.collectionId);
+    if (isNaN(collectionIdNum)) {
+      toast.error("Invalid collection selected");
+      return;
+    }
 
     createArtwork.mutate({
       ...artworkForm,
-      collectionId: parseInt(artworkForm.collectionId),
+      collectionId: collectionIdNum,
       imageBase64: imageFile,
     });
   };

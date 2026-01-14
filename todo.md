@@ -146,3 +146,6 @@
 - [x] Add back button navigation
 - [x] Ensure all form inputs work smoothly without lag
 - [x] Test complete admin workflow
+
+## Bug Fixes
+- [x] Fix collectionId NaN error in artwork submission
