@@ -28,7 +28,7 @@ export default function Navigation() {
           <Link href="/">
             <span className="flex items-center space-x-2 group cursor-pointer">
               <span className="heading-font text-3xl gradient-text hover:opacity-80 transition-opacity">
-                JENNEFER ANN
+                JENNIFER ANN
               </span>
             </span>
           </Link>
