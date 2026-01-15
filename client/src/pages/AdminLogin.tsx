@@ -18,7 +18,7 @@ export default function AdminLogin() {
 
     try {
       // Simple credential check (in production, use proper authentication)
-      if (username === "Grant444" && password === "RARE333") {
+      if (username === "grant444" && password === "rare444") {
         // Store admin session
         localStorage.setItem("adminAuth", "true");
         localStorage.setItem("adminUser", username);

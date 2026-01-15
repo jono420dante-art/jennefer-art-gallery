@@ -15,6 +15,7 @@ import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import Checkout from "./pages/Checkout";
+import ExitSurvey from "./components/ExitSurvey";
 
 function Router() {
   return (
@@ -47,6 +48,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <ExitSurvey />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
