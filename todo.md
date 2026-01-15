@@ -168,3 +168,5 @@
 - [x] Implement music to play throughout entire site visit
 - [x] Add play/pause controls
 - [x] Test audio playback on all pages
+
+- [x] Fix music player - use working royalty-free classical music source

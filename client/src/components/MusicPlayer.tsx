@@ -9,8 +9,8 @@ export default function MusicPlayer() {
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(false);
 
-  // Classical ambient music URL (royalty-free)
-  const musicUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+  // Classical ambient music URL (royalty-free - Incompetech)
+  const musicUrl = "https://www.incompetech.com/music/royalty-free/mp3-preview/Ambient%20Meditation.mp3";
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -143,7 +143,7 @@ export default function MusicPlayer() {
                 <p className="font-medium text-foreground mb-1">
                   {isPlaying ? "Now Playing" : "Paused"}
                 </p>
-                <p>Classical Ambient</p>
+                <p>Ambient Meditation</p>
               </div>
             </div>
           ) : (
