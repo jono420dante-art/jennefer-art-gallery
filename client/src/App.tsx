@@ -16,6 +16,7 @@ import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import Checkout from "./pages/Checkout";
 import ExitSurvey from "./components/ExitSurvey";
+import MusicPlayer from "./components/MusicPlayer";
 
 function Router() {
   return (
@@ -49,6 +50,7 @@ function App() {
           <Toaster />
           <Router />
           <ExitSurvey />
+          <MusicPlayer />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
