@@ -22,7 +22,7 @@ export default function Home() {
 
         <div className="container relative z-10 text-center">
           <h1 className="heading-font text-7xl md:text-9xl gradient-text mb-8 atmospheric-glow">
-            Art ~ by ~ Jennifer Ann
+            Art by Jennifer Ann
           </h1>
           <div className="w-24 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-8" />
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed font-light">
