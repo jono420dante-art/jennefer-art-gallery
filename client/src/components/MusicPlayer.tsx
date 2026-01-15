@@ -8,15 +8,9 @@ export default function MusicPlayer() {
   const [volume, setVolume] = useState(0.3);
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(false);
-  const [hasError, setHasError] = useState(false);
 
-  // Multiple music sources with fallback
-  const musicSources = [
-    "https://cdn.pixabay.com/download/audio/2022/03/10/audio_d3d2b9e7e0.mp3", // Pixabay - Ambient
-    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // SoundHelix
-  ];
-
-  const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
+  // Using a reliable free audio source
+  const musicUrl = "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -24,43 +18,13 @@ export default function MusicPlayer() {
 
     audio.volume = isMuted ? 0 : volume;
 
-    const handleCanPlay = () => {
-      console.log("Audio can play");
-      setHasError(false);
-    };
-
-    const handleError = (e: Event) => {
-      console.error("Audio error:", e);
-      setHasError(true);
-      setIsPlaying(false);
-      
-      // Try next source
-      if (currentSourceIndex < musicSources.length - 1) {
-        setCurrentSourceIndex(currentSourceIndex + 1);
-      }
-    };
-
     const handleEnded = () => {
-      console.log("Audio ended");
       setIsPlaying(false);
     };
 
-    audio.addEventListener("canplay", handleCanPlay);
-    audio.addEventListener("error", handleError);
     audio.addEventListener("ended", handleEnded);
-
-    return () => {
-      audio.removeEventListener("canplay", handleCanPlay);
-      audio.removeEventListener("error", handleError);
-      audio.removeEventListener("ended", handleEnded);
-    };
-  }, [currentSourceIndex, musicSources]);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume;
-    }
-  }, [volume, isMuted]);
+    return () => audio.removeEventListener("ended", handleEnded);
+  }, [isMuted, volume]);
 
   const handlePlayPause = async () => {
     const audio = audioRef.current;
@@ -71,25 +35,14 @@ export default function MusicPlayer() {
         audio.pause();
         setIsPlaying(false);
       } else {
-        // Reset audio if it ended
         if (audio.ended) {
           audio.currentTime = 0;
         }
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              console.log("Playback started");
-              setIsPlaying(true);
-            })
-            .catch((error) => {
-              console.error("Playback failed:", error);
-              setIsPlaying(false);
-            });
-        }
+        await audio.play();
+        setIsPlaying(true);
       }
     } catch (error) {
-      console.error("Play/pause error:", error);
+      console.error("Playback error:", error);
     }
   };
 
@@ -101,9 +54,11 @@ export default function MusicPlayer() {
     <>
       <audio
         ref={audioRef}
-        src={musicSources[currentSourceIndex]}
+        src={musicUrl}
         crossOrigin="anonymous"
         preload="auto"
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
       />
 
       {/* Floating Music Player */}
@@ -128,19 +83,11 @@ export default function MusicPlayer() {
                 </button>
               </div>
 
-              {/* Error Message */}
-              {hasError && (
-                <div className="text-xs text-red-500 bg-red-500/10 p-2 rounded">
-                  Music unavailable. Please try again.
-                </div>
-              )}
-
               {/* Play/Pause and Mute Controls */}
               <div className="flex gap-2">
                 <button
                   onClick={handlePlayPause}
-                  className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg py-2 transition-colors disabled:opacity-50"
-                  disabled={hasError}
+                  className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg py-2 transition-colors"
                 >
                   {isPlaying ? (
                     <>
@@ -184,7 +131,7 @@ export default function MusicPlayer() {
                 <p className="font-medium text-foreground mb-1">
                   {isPlaying ? "Now Playing" : "Paused"}
                 </p>
-                <p>Ambient Classical</p>
+                <p>Ambient Music</p>
               </div>
             </div>
           ) : (
