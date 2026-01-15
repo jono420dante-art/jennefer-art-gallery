@@ -8,38 +8,53 @@ export default function MusicPlayer() {
   const [volume, setVolume] = useState(0.3);
   const [isMuted, setIsMuted] = useState(false);
   const [showControls, setShowControls] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
-  // Classical ambient music URL (royalty-free - Incompetech)
-  const musicUrl = "https://www.incompetech.com/music/royalty-free/mp3-preview/Ambient%20Meditation.mp3";
+  // Multiple music sources with fallback
+  const musicSources = [
+    "https://cdn.pixabay.com/download/audio/2022/03/10/audio_d3d2b9e7e0.mp3", // Pixabay - Ambient
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // SoundHelix
+  ];
+
+  const [currentSourceIndex, setCurrentSourceIndex] = useState(0);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Set initial volume
-    audio.volume = volume;
+    audio.volume = isMuted ? 0 : volume;
 
-    // Auto-play when component mounts
-    const playAudio = async () => {
-      try {
-        await audio.play();
-        setIsPlaying(true);
-      } catch (error) {
-        console.log("Autoplay prevented by browser policy");
-        setIsPlaying(false);
+    const handleCanPlay = () => {
+      console.log("Audio can play");
+      setHasError(false);
+    };
+
+    const handleError = (e: Event) => {
+      console.error("Audio error:", e);
+      setHasError(true);
+      setIsPlaying(false);
+      
+      // Try next source
+      if (currentSourceIndex < musicSources.length - 1) {
+        setCurrentSourceIndex(currentSourceIndex + 1);
       }
     };
 
-    playAudio();
-
-    // Handle audio end
-    const handleAudioEnd = () => {
+    const handleEnded = () => {
+      console.log("Audio ended");
       setIsPlaying(false);
     };
 
-    audio.addEventListener("ended", handleAudioEnd);
-    return () => audio.removeEventListener("ended", handleAudioEnd);
-  }, []);
+    audio.addEventListener("canplay", handleCanPlay);
+    audio.addEventListener("error", handleError);
+    audio.addEventListener("ended", handleEnded);
+
+    return () => {
+      audio.removeEventListener("canplay", handleCanPlay);
+      audio.removeEventListener("error", handleError);
+      audio.removeEventListener("ended", handleEnded);
+    };
+  }, [currentSourceIndex, musicSources]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -47,15 +62,34 @@ export default function MusicPlayer() {
     }
   }, [volume, isMuted]);
 
-  const handlePlayPause = () => {
-    if (audioRef.current) {
+  const handlePlayPause = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    try {
       if (isPlaying) {
-        audioRef.current.pause();
+        audio.pause();
         setIsPlaying(false);
       } else {
-        audioRef.current.play();
-        setIsPlaying(true);
+        // Reset audio if it ended
+        if (audio.ended) {
+          audio.currentTime = 0;
+        }
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log("Playback started");
+              setIsPlaying(true);
+            })
+            .catch((error) => {
+              console.error("Playback failed:", error);
+              setIsPlaying(false);
+            });
+        }
       }
+    } catch (error) {
+      console.error("Play/pause error:", error);
     }
   };
 
@@ -67,10 +101,9 @@ export default function MusicPlayer() {
     <>
       <audio
         ref={audioRef}
-        src={musicUrl}
+        src={musicSources[currentSourceIndex]}
         crossOrigin="anonymous"
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
+        preload="auto"
       />
 
       {/* Floating Music Player */}
@@ -95,11 +128,19 @@ export default function MusicPlayer() {
                 </button>
               </div>
 
+              {/* Error Message */}
+              {hasError && (
+                <div className="text-xs text-red-500 bg-red-500/10 p-2 rounded">
+                  Music unavailable. Please try again.
+                </div>
+              )}
+
               {/* Play/Pause and Mute Controls */}
               <div className="flex gap-2">
                 <button
                   onClick={handlePlayPause}
-                  className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg py-2 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg py-2 transition-colors disabled:opacity-50"
+                  disabled={hasError}
                 >
                   {isPlaying ? (
                     <>
@@ -143,7 +184,7 @@ export default function MusicPlayer() {
                 <p className="font-medium text-foreground mb-1">
                   {isPlaying ? "Now Playing" : "Paused"}
                 </p>
-                <p>Ambient Meditation</p>
+                <p>Ambient Classical</p>
               </div>
             </div>
           ) : (
