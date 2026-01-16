@@ -15,6 +15,7 @@ import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import Checkout from "./pages/Checkout";
+import Showcase from "./pages/Showcase";
 import ExitSurvey from "./components/ExitSurvey";
 import MusicPlayer from "./components/MusicPlayer";
 
@@ -28,6 +29,7 @@ function Router() {
           <Route path="/gallery" component={Gallery} />
           <Route path="/gallery/:slug" component={CollectionDetail} />
           <Route path="/artwork/:slug" component={ArtworkDetail} />
+          <Route path="/showcase" component={Showcase} />
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
           <Route path="/admin-login" component={AdminLogin} />
