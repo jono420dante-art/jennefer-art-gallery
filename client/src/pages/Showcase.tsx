@@ -125,7 +125,7 @@ export default function Showcase() {
             Gallery Showcase
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
-            Explore Jennifer Ann's complete collection of realist oil paintings
+            Explore Jennefer Ann's complete collection of realist oil paintings
             capturing the beauty of Africa's people, wildlife, and landscapes.
           </p>
         </div>
@@ -353,7 +353,7 @@ export default function Showcase() {
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             Browse the full gallery or commission a custom artwork. Contact
-            Jennifer Ann today to discuss your vision.
+            Jennefer Ann today to discuss your vision.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/gallery">

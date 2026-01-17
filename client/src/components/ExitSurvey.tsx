@@ -69,7 +69,7 @@ export default function ExitSurvey() {
             Before You Go...
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Help us improve your experience at Jennifer Ann's gallery
+            Help us improve your experience at Jennefer Ann's gallery
           </DialogDescription>
         </DialogHeader>
 
