@@ -41,6 +41,7 @@ export default function Footer() {
             <h4 className="font-semibold text-foreground mb-4">Get in Touch</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>Email: jennefer.ann.gg@gmail.com</li>
+              <li>Phone: 0846405120</li>
               <li>Location: South Africa</li>
             </ul>
           </div>
