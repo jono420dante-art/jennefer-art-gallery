@@ -18,10 +18,24 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 import { useLocation } from "wouter";
+import { useEffect } from "react";
 
 export default function Admin() {
-  const { user, loading } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Check if user is authenticated as admin
+  useEffect(() => {
+    const isAdminAuth = localStorage.getItem("adminAuth");
+    if (!isAdminAuth) {
+      setLocation("/admin-login");
+    }
+  }, [setLocation]);
   const utils = trpc.useUtils();
+  const isAdminAuth = localStorage.getItem("adminAuth");
+
+  if (!isAdminAuth) {
+    return null; // Will redirect via useEffect
+  }
 
   // State for artwork form
   const [artworkForm, setArtworkForm] = useState({
@@ -50,10 +64,10 @@ export default function Admin() {
   const { data: collections } = trpc.collections.list.useQuery();
   const { data: artworks } = trpc.artworks.list.useQuery();
   const { data: contacts } = trpc.contact.list.useQuery(undefined, {
-    enabled: user?.role === "admin",
+    enabled: Boolean(isAdminAuth),
   });
   const { data: allComments } = trpc.comments.listAll.useQuery(undefined, {
-    enabled: user?.role === "admin",
+    enabled: Boolean(isAdminAuth),
   });
 
   // Mutations
@@ -200,38 +214,7 @@ export default function Admin() {
     createCollection.mutate(collectionForm);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={48} />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 text-center">
-          <h2 className="heading-font text-3xl gradient-text mb-4">Admin Access Required</h2>
-          <p className="text-muted-foreground mb-6">Please log in to access the admin panel.</p>
-          <Button onClick={() => window.location.href = getLoginUrl()}>
-            Log In
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-
-  if (user.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8 text-center">
-          <h2 className="heading-font text-3xl gradient-text mb-4">Access Denied</h2>
-          <p className="text-muted-foreground">You do not have permission to access this page.</p>
-        </Card>
-      </div>
-    );
-  }
+  // Admin is authenticated via localStorage check above
 
   return (
     <div className="min-h-screen">
