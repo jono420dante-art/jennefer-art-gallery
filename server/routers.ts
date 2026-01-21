@@ -122,21 +122,27 @@ export const appRouter = router({
         imageBase64: z.string(),
         dimensions: z.string().optional(),
         medium: z.string().optional(),
-        priceZAR: z.string().nullable().optional(),
-        priceUSD: z.string().nullable().optional(),
+        priceZAR: z.union([z.string(), z.number()]).nullable().optional(),
+        priceUSD: z.union([z.string(), z.number()]).nullable().optional(),
         isFeatured: z.number().default(0),
         isAvailable: z.number().default(1),
         displayOrder: z.number().default(0),
       }))
       .mutation(async ({ input }) => {
         // Upload image to S3
-        const { imageBase64, ...artworkData } = input;
+        const { imageBase64, priceZAR, priceUSD, ...artworkData } = input;
         const imageBuffer = Buffer.from(imageBase64.split(',')[1] || imageBase64, 'base64');
         const fileKey = `artworks/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
         const { url: imageUrl } = await storagePut(fileKey, imageBuffer, 'image/jpeg');
 
+        // Convert prices to strings if they are numbers
+        const convertedPriceZAR = priceZAR !== null && priceZAR !== undefined ? String(priceZAR) : null;
+        const convertedPriceUSD = priceUSD !== null && priceUSD !== undefined ? String(priceUSD) : null;
+
         await db.createArtwork({
           ...artworkData,
+          priceZAR: convertedPriceZAR,
+          priceUSD: convertedPriceUSD,
           imageUrl,
           imageKey: fileKey,
         });
@@ -153,14 +159,18 @@ export const appRouter = router({
         imageBase64: z.string().optional(),
         dimensions: z.string().optional(),
         medium: z.string().optional(),
-        priceZAR: z.string().nullable().optional(),
-        priceUSD: z.string().nullable().optional(),
+        priceZAR: z.union([z.string(), z.number()]).nullable().optional(),
+        priceUSD: z.union([z.string(), z.number()]).nullable().optional(),
         isFeatured: z.number().optional(),
         isAvailable: z.number().optional(),
         displayOrder: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
-        const { id, imageBase64, ...data } = input;
+        const { id, imageBase64, priceZAR, priceUSD, ...data } = input;
+        
+        // Convert prices to strings if they are numbers
+        const convertedPriceZAR = priceZAR !== null && priceZAR !== undefined ? String(priceZAR) : undefined;
+        const convertedPriceUSD = priceUSD !== null && priceUSD !== undefined ? String(priceUSD) : undefined;
         
         // If new image provided, upload to S3
         if (imageBase64) {
@@ -170,11 +180,17 @@ export const appRouter = router({
           
           await db.updateArtwork(id, {
             ...data,
+            ...(convertedPriceZAR !== undefined && { priceZAR: convertedPriceZAR }),
+            ...(convertedPriceUSD !== undefined && { priceUSD: convertedPriceUSD }),
             imageUrl,
             imageKey: fileKey,
           });
         } else {
-          await db.updateArtwork(id, data);
+          await db.updateArtwork(id, {
+            ...data,
+            ...(convertedPriceZAR !== undefined && { priceZAR: convertedPriceZAR }),
+            ...(convertedPriceUSD !== undefined && { priceUSD: convertedPriceUSD }),
+          });
         }
         
         return { success: true };
