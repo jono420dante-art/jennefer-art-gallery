@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Mail, MapPin } from "lucide-react";
+import { Loader2, Mail, MapPin, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -244,6 +244,21 @@ export default function Contact() {
                   <div>
                     <p className="font-medium text-foreground">Location</p>
                     <p className="text-muted-foreground">South Africa</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <MessageCircle className="text-primary mt-1" size={20} />
+                  <div>
+                    <p className="font-medium text-foreground">WhatsApp</p>
+                    <a 
+                      href="https://wa.me/27846405120?text=Hi%20Jennefer%2C%20I%27m%20interested%20in%20commissioning%20an%20artwork." 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:text-primary/80 transition-colors font-semibold"
+                    >
+                      Chat on WhatsApp
+                    </a>
                   </div>
                 </div>
               </div>
