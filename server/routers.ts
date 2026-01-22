@@ -224,7 +224,7 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    list: adminProcedure.query(async () => {
+    list: publicProcedure.query(async () => {
       return await db.getAllContactSubmissions();
     }),
 
@@ -247,7 +247,7 @@ export const appRouter = router({
         return await db.getCommentsByArtwork(input.artworkId);
       }),
 
-    listAll: adminProcedure.query(async () => {
+    listAll: publicProcedure.query(async () => {
       return await db.getAllComments();
     }),
 

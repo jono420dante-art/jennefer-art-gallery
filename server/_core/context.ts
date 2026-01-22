@@ -6,12 +6,14 @@ export type TrpcContext = {
   req: CreateExpressContextOptions["req"];
   res: CreateExpressContextOptions["res"];
   user: User | null;
+  isAdminAuth?: boolean;
 };
 
 export async function createContext(
   opts: CreateExpressContextOptions
 ): Promise<TrpcContext> {
   let user: User | null = null;
+  let isAdminAuth = false;
 
   try {
     user = await sdk.authenticateRequest(opts.req);
@@ -24,5 +26,6 @@ export async function createContext(
     req: opts.req,
     res: opts.res,
     user,
+    isAdminAuth,
   };
 }
