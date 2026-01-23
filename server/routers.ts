@@ -7,10 +7,23 @@ import { z } from "zod";
 import * as db from "./db";
 import { storagePut } from "./storage";
 
-// Admin-only procedure
-const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.user.role !== 'admin') {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
+// Admin-only procedure - allows both Manus OAuth admin and localStorage admin token
+const adminProcedure = publicProcedure.use(({ ctx, next }) => {
+  const isMaunsAdmin = ctx.user?.role === 'admin';
+  const isTokenAdmin = ctx.isAdminAuth === true;
+  
+  if (!isMaunsAdmin && !isTokenAdmin) {
+    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Please login (10001)' });
+  }
+  return next({ ctx });
+});
+
+// Public procedure that can be used for public admin operations
+const publicAdminProcedure = publicProcedure.use(({ ctx, next }) => {
+  const isTokenAdmin = ctx.isAdminAuth === true;
+  
+  if (!isTokenAdmin) {
+    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Please login (10001)' });
   }
   return next({ ctx });
 });
