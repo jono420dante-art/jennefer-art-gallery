@@ -1,0 +1,35 @@
+{
+  "query": "SELECT id, title, slug FROM artworks WHERE title LIKE '% ' OR title LIKE ' %' LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, title, slug FROM artworks WHERE title LIKE '% ' OR title LIKE ' %' LIMIT 10;",
+  "rows": [
+    {
+      "id": "30040",
+      "title": "Best friends ",
+      "slug": "Best friends"
+    },
+    {
+      "id": "30041",
+      "title": "King protea ",
+      "slug": "The sugar Bird"
+    },
+    {
+      "id": "90001",
+      "title": "Winter bushveld ",
+      "slug": "Bushveld"
+    },
+    {
+      "id": "90004",
+      "title": "NGUNI ",
+      "slug": "NGUNI CALF "
+    },
+    {
+      "id": "90005",
+      "title": "Red Rose & Apple ",
+      "slug": "R.R.A"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tslug\n30040\tBest friends \tBest friends\n30041\tKing protea \tThe sugar Bird\n90001\tWinter bushveld \tBushveld\n90004\tNGUNI \tNGUNI CALF \n90005\tRed Rose & Apple \tR.R.A\n",
+  "stderr": "",
+  "execution_time_ms": 95
+}

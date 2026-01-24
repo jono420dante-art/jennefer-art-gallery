@@ -182,7 +182,11 @@ export default function Admin() {
       toast.error("Please select a collection");
       return;
     }
-    if (!artworkForm.title) {
+    // Trim all string fields to remove leading/trailing spaces
+    const trimmedTitle = artworkForm.title.trim();
+    const trimmedSlug = artworkForm.slug.trim();
+    
+    if (!trimmedTitle) {
       toast.error("Please enter a title");
       return;
     }
@@ -193,7 +197,7 @@ export default function Admin() {
     }
 
     // Auto-generate slug from title if not provided
-    const slug = artworkForm.slug || artworkForm.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const slug = trimmedSlug || trimmedTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     
     if (!slug) {
       toast.error("Please enter a title to generate a slug");
@@ -205,6 +209,7 @@ export default function Admin() {
 
     createArtwork.mutate({
       ...artworkForm,
+      title: trimmedTitle,
       slug,
       collectionId: collectionIdNum,
       priceZAR: priceZAR as any,
