@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, name, slug FROM collections ORDER BY displayOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, name, slug FROM collections ORDER BY displayOrder;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Pet potraits",
+      "slug": "Pet"
+    },
+    {
+      "id": "30002",
+      "name": "Birds",
+      "slug": "Wildlife"
+    },
+    {
+      "id": "30003",
+      "name": "People",
+      "slug": "Peoples love"
+    },
+    {
+      "id": "1",
+      "name": "Modern art",
+      "slug": "modern-art"
+    },
+    {
+      "id": "2",
+      "name": "Landscapes",
+      "slug": "landscapes"
+    },
+    {
+      "id": "5",
+      "name": "Featured",
+      "slug": "featured"
+    },
+    {
+      "id": "6",
+      "name": "For Sale",
+      "slug": "for-sale"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tslug\n30001\tPet potraits\tPet\n30002\tBirds\tWildlife\n30003\tPeople\tPeoples love\n1\tModern art\tmodern-art\n2\tLandscapes\tlandscapes\n5\tFeatured\tfeatured\n6\tFor Sale\tfor-sale\n",
+  "stderr": "",
+  "execution_time_ms": 57
+}

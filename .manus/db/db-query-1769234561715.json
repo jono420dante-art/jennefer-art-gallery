@@ -1,0 +1,52 @@
+{
+  "query": "SELECT id, name, slug, description FROM collections ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, name, slug, description FROM collections ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Modern art",
+      "slug": "modern-art",
+      "description": "Bold, expressive works exploring form, color, and emotion through non-representational compositions."
+    },
+    {
+      "id": "2",
+      "name": "Landscapes",
+      "slug": "landscapes",
+      "description": "Dramatic interpretations of natural scenes, emphasizing the interplay of light across terrain and sky."
+    },
+    {
+      "id": "5",
+      "name": "Featured",
+      "slug": "featured",
+      "description": "A curated selection of signature pieces that best represent the artist's vision and technique."
+    },
+    {
+      "id": "6",
+      "name": "For Sale",
+      "slug": "for-sale",
+      "description": "Artworks currently available for purchase"
+    },
+    {
+      "id": "30001",
+      "name": "Pet potraits",
+      "slug": "Pet",
+      "description": ""
+    },
+    {
+      "id": "30002",
+      "name": "Birds",
+      "slug": "Wildlife",
+      "description": ""
+    },
+    {
+      "id": "30003",
+      "name": "People",
+      "slug": "Peoples love",
+      "description": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tslug\tdescription\n1\tModern art\tmodern-art\tBold, expressive works exploring form, color, and emotion through non-representational compositions.\n2\tLandscapes\tlandscapes\tDramatic interpretations of natural scenes, emphasizing the interplay of light across terrain and sky.\n5\tFeatured\tfeatured\tA curated selection of signature pieces that best represent the artist's vision and technique.\n6\tFor Sale\tfor-sale\tArtworks currently available for purchase\n30001\tPet potraits\tPet\t\n30002\tBirds\tWildlife\t\n30003\tPeople\tPeoples love\t\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

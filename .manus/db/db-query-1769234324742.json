@@ -1,0 +1,31 @@
+{
+  "query": "SELECT COUNT(*) as collection_count FROM collections; SELECT COUNT(*) as artwork_count FROM artworks; SELECT COUNT(*) as comment_count FROM comments; SELECT COUNT(*) as contact_count FROM contactSubmissions;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT COUNT(*) as collection_count FROM collections; SELECT COUNT(*) as artwork_count FROM artworks; SELECT COUNT(*) as comment_count FROM comments; SELECT COUNT(*) as contact_count FROM contactSubmissions;",
+  "rows": [
+    {
+      "collection_count": "9"
+    },
+    {
+      "collection_count": "artwork_count"
+    },
+    {
+      "collection_count": "61"
+    },
+    {
+      "collection_count": "comment_count"
+    },
+    {
+      "collection_count": "0"
+    },
+    {
+      "collection_count": "contact_count"
+    },
+    {
+      "collection_count": "2"
+    }
+  ],
+  "messages": [],
+  "stdout": "collection_count\n9\nartwork_count\n61\ncomment_count\n0\ncontact_count\n2\n",
+  "stderr": "",
+  "execution_time_ms": 217
+}
