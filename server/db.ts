@@ -124,6 +124,15 @@ export async function getCollectionBySlug(slug: string) {
 export async function createCollection(data: InsertCollection) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
+  
+  // Check if slug already exists
+  if (data.slug) {
+    const existing = await db.select().from(collections).where(eq(collections.slug, data.slug));
+    if (existing.length > 0) {
+      throw new Error(`A collection with slug "${data.slug}" already exists. Please use a different slug.`);
+    }
+  }
+  
   const result = await db.insert(collections).values(data);
   return result;
 }
