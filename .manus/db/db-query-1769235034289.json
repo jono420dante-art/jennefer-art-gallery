@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, name, LENGTH(name) as name_length FROM collections WHERE name LIKE '%modern%' OR name LIKE '%Modern%' OR name LIKE '%MODERN%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, name, LENGTH(name) as name_length FROM collections WHERE name LIKE '%modern%' OR name LIKE '%Modern%' OR name LIKE '%MODERN%';",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Modern art",
+      "name_length": "10"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tname_length\n1\tModern art\t10\n",
+  "stderr": "",
+  "execution_time_ms": 86
+}

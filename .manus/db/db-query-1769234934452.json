@@ -1,0 +1,31 @@
+{
+  "query": "SELECT CONCAT(id, ': ', name) as collection_info FROM collections ORDER BY displayOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT CONCAT(id, ': ', name) as collection_info FROM collections ORDER BY displayOrder;",
+  "rows": [
+    {
+      "collection_info": "30001: Pet potraits"
+    },
+    {
+      "collection_info": "30002: Birds"
+    },
+    {
+      "collection_info": "30003: People"
+    },
+    {
+      "collection_info": "1: Modern art"
+    },
+    {
+      "collection_info": "2: Landscapes"
+    },
+    {
+      "collection_info": "5: Featured"
+    },
+    {
+      "collection_info": "6: For Sale"
+    }
+  ],
+  "messages": [],
+  "stdout": "collection_info\n30001: Pet potraits\n30002: Birds\n30003: People\n1: Modern art\n2: Landscapes\n5: Featured\n6: For Sale\n",
+  "stderr": "",
+  "execution_time_ms": 67
+}
