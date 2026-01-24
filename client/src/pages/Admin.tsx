@@ -186,14 +186,17 @@ export default function Admin() {
       toast.error("Please enter a title");
       return;
     }
-    if (!artworkForm.slug) {
-      toast.error("Please enter a slug");
-      return;
-    }
-
     const collectionIdNum = parseInt(artworkForm.collectionId);
     if (isNaN(collectionIdNum)) {
       toast.error("Invalid collection selected");
+      return;
+    }
+
+    // Auto-generate slug from title if not provided
+    const slug = artworkForm.slug || artworkForm.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    
+    if (!slug) {
+      toast.error("Please enter a title to generate a slug");
       return;
     }
 
@@ -202,6 +205,7 @@ export default function Admin() {
 
     createArtwork.mutate({
       ...artworkForm,
+      slug,
       collectionId: collectionIdNum,
       priceZAR: priceZAR as any,
       priceUSD: priceUSD as any,
