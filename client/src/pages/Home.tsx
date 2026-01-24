@@ -24,7 +24,18 @@ export default function Home() {
           <h1 className="heading-font text-7xl md:text-9xl gradient-text mb-8 atmospheric-glow">
             Art by Jennefer Ann
           </h1>
-          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-8" />
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-12" />
+          
+          {/* Artist Portrait */}
+          <div className="flex justify-center mb-12">
+            <div className="relative w-64 h-80 md:w-72 md:h-96 rounded-lg overflow-hidden shadow-2xl border-4 border-accent/30 hover:border-accent/60 transition-colors">
+              <img
+                src="/artist-portrait.jpg"
+                alt="Jennefer Ann - Artist"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed font-light">
             Realist oil paintings capturing the beauty of Africa's people, wildlife, and landscapes through faith and authentic observation
           </p>
