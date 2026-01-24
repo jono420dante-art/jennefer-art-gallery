@@ -197,12 +197,15 @@ export default function Admin() {
     }
 
     // Auto-generate slug from title if not provided
-    const slug = trimmedSlug || trimmedTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    let slug = trimmedSlug || trimmedTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     
     if (!slug) {
       toast.error("Please enter a title to generate a slug");
       return;
     }
+    
+    // Add timestamp to slug to ensure uniqueness
+    slug = `${slug}-${Date.now()}`
 
     const priceZAR = artworkForm.priceZAR ? parseFloat(artworkForm.priceZAR) : null;
     const priceUSD = artworkForm.priceUSD ? parseFloat(artworkForm.priceUSD) : null;
