@@ -1,0 +1,45 @@
+{
+  "query": "SELECT c.id, c.name, COUNT(a.id) as artwork_count FROM collections c LEFT JOIN artworks a ON c.id = a.collectionId GROUP BY c.id, c.name ORDER BY c.displayOrder;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT c.id, c.name, COUNT(a.id) as artwork_count FROM collections c LEFT JOIN artworks a ON c.id = a.collectionId GROUP BY c.id, c.name ORDER BY c.displayOrder;",
+  "rows": [
+    {
+      "id": "30003",
+      "name": "People",
+      "artwork_count": "9"
+    },
+    {
+      "id": "30002",
+      "name": "Birds",
+      "artwork_count": "6"
+    },
+    {
+      "id": "30001",
+      "name": "Pet potraits",
+      "artwork_count": "8"
+    },
+    {
+      "id": "1",
+      "name": "Domestic Animals",
+      "artwork_count": "3"
+    },
+    {
+      "id": "2",
+      "name": "Landscapes",
+      "artwork_count": "5"
+    },
+    {
+      "id": "5",
+      "name": "Featured",
+      "artwork_count": "8"
+    },
+    {
+      "id": "6",
+      "name": "For Sale",
+      "artwork_count": "10"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tartwork_count\n30003\tPeople\t9\n30002\tBirds\t6\n30001\tPet potraits\t8\n1\tDomestic Animals\t3\n2\tLandscapes\t5\n5\tFeatured\t8\n6\tFor Sale\t10\n",
+  "stderr": "",
+  "execution_time_ms": 69
+}

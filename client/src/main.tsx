@@ -44,7 +44,7 @@ const trpcClient = trpc.createClient({
       transformer: superjson,
       fetch(input, init) {
         // Add admin token header if user is logged in as admin
-        const isAdminLoggedIn = localStorage.getItem('adminAuthenticated') === 'true';
+        const isAdminLoggedIn = localStorage.getItem('adminAuth') === 'true';
         const headers = new Headers(init?.headers || {});
         
         if (isAdminLoggedIn) {
