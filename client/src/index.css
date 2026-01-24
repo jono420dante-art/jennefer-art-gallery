@@ -370,3 +370,17 @@
   background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
   margin: 4rem 0;
 }
+
+/* Slow floating animation for widget */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-20px) translateX(0px);
+  }
+}
+
+.animate-float {
+  animation: float-slow 6s ease-in-out infinite;
+}

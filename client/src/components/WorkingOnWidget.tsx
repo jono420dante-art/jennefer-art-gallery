@@ -33,10 +33,10 @@ export default function WorkingOnWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-40">
+    <div className="fixed left-6 top-1/2 transform -translate-y-1/2 z-40 animate-float">
       {/* Expanded Panel */}
       {isOpen && (
-        <div className="absolute bottom-20 right-0 w-80 bg-card border border-border rounded-lg shadow-2xl p-6 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="absolute top-1/2 left-20 transform -translate-y-1/2 w-80 bg-card border border-border rounded-lg shadow-2xl p-6 animate-in fade-in slide-in-from-left-2 duration-200">
           <div className="flex justify-between items-start mb-4">
             <h3 className="text-lg font-semibold text-foreground">
               {status.title}
@@ -92,7 +92,7 @@ export default function WorkingOnWidget() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`relative w-16 h-16 rounded-full shadow-lg transition-all duration-200 flex items-center justify-center group ${
+        className={`relative w-16 h-16 rounded-full shadow-lg transition-all duration-200 flex items-center justify-center group flex-shrink-0 ${
           isOpen
             ? 'bg-accent text-accent-foreground'
             : 'bg-primary text-primary-foreground hover:shadow-xl hover:scale-110'
