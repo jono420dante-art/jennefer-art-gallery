@@ -16,7 +16,11 @@ import {
   paymentSettings,
   InsertPaymentSettings,
   orders,
-  InsertOrder
+  InsertOrder,
+  wipImages,
+  InsertWipImage,
+  reviews,
+  InsertReview
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -334,4 +338,74 @@ export async function updateOrderStatus(id: number, status: "pending" | "complet
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(orders).set({ paymentStatus: status }).where(eq(orders.id, id));
+}
+
+// ============ WIP IMAGES FUNCTIONS ============
+
+export async function getAllWipImages() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(wipImages).orderBy(wipImages.displayOrder);
+}
+
+export async function getActiveWipImages() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(wipImages)
+    .where(eq(wipImages.isActive, 1))
+    .orderBy(wipImages.displayOrder);
+}
+
+export async function createWipImage(data: InsertWipImage) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(wipImages).values(data);
+  return result;
+}
+
+export async function updateWipImage(id: number, data: Partial<InsertWipImage>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(wipImages).set(data).where(eq(wipImages.id, id));
+}
+
+export async function deleteWipImage(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(wipImages).where(eq(wipImages.id, id));
+}
+
+// ============ REVIEWS FUNCTIONS ============
+
+export async function getAllReviews() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(reviews).orderBy(desc(reviews.createdAt));
+}
+
+export async function getApprovedReviews() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(reviews)
+    .where(eq(reviews.isApproved, 1))
+    .orderBy(desc(reviews.createdAt));
+}
+
+export async function createReview(data: InsertReview) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(reviews).values(data);
+  return result;
+}
+
+export async function approveReview(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(reviews).set({ isApproved: 1 }).where(eq(reviews.id, id));
+}
+
+export async function deleteReview(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(reviews).where(eq(reviews.id, id));
 }

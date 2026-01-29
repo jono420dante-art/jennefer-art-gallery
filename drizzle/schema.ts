@@ -148,3 +148,38 @@ export const orders = mysqlTable("orders", {
 
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = typeof orders.$inferInsert;
+
+/**
+ * Work-in-progress images for the floating widget
+ */
+export const wipImages = mysqlTable("wipImages", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description"),
+  imageUrl: text("imageUrl").notNull(),
+  imageKey: text("imageKey").notNull(),
+  progress: int("progress").default(50).notNull(), // 0-100 percentage
+  isActive: int("isActive").default(1).notNull(),
+  displayOrder: int("displayOrder").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type WipImage = typeof wipImages.$inferSelect;
+export type InsertWipImage = typeof wipImages.$inferInsert;
+
+/**
+ * Star rating reviews from visitors
+ */
+export const reviews = mysqlTable("reviews", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 100 }).notNull(),
+  email: varchar("email", { length: 320 }),
+  rating: int("rating").notNull(), // 1-5 stars
+  comment: text("comment"),
+  isApproved: int("isApproved").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Review = typeof reviews.$inferSelect;
+export type InsertReview = typeof reviews.$inferInsert;

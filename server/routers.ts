@@ -331,6 +331,111 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ WIP IMAGES ROUTES ============
+  wipImages: router({
+    list: publicProcedure.query(async () => {
+      return await db.getActiveWipImages();
+    }),
+
+    listAll: adminProcedure.query(async () => {
+      return await db.getAllWipImages();
+    }),
+
+    create: adminProcedure
+      .input(z.object({
+        title: z.string().min(1),
+        description: z.string().optional(),
+        imageBase64: z.string(),
+        progress: z.number().min(0).max(100).default(50),
+        isActive: z.number().default(1),
+        displayOrder: z.number().default(0),
+      }))
+      .mutation(async ({ input }) => {
+        const { imageBase64, ...data } = input;
+        const imageBuffer = Buffer.from(imageBase64.split(',')[1] || imageBase64, 'base64');
+        const fileKey = `wip/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+        const { url: imageUrl } = await storagePut(fileKey, imageBuffer, 'image/jpeg');
+
+        await db.createWipImage({
+          ...data,
+          imageUrl,
+          imageKey: fileKey,
+        });
+        return { success: true };
+      }),
+
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().min(1).optional(),
+        description: z.string().optional(),
+        imageBase64: z.string().optional(),
+        progress: z.number().min(0).max(100).optional(),
+        isActive: z.number().optional(),
+        displayOrder: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, imageBase64, ...data } = input;
+        
+        if (imageBase64) {
+          const imageBuffer = Buffer.from(imageBase64.split(',')[1] || imageBase64, 'base64');
+          const fileKey = `wip/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+          const { url: imageUrl } = await storagePut(fileKey, imageBuffer, 'image/jpeg');
+          await db.updateWipImage(id, { ...data, imageUrl, imageKey: fileKey });
+        } else {
+          await db.updateWipImage(id, data);
+        }
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteWipImage(input.id);
+        return { success: true };
+      }),
+  }),
+
+  // ============ REVIEWS ROUTES ============
+  reviews: router({
+    list: publicProcedure.query(async () => {
+      return await db.getApprovedReviews();
+    }),
+
+    listAll: adminProcedure.query(async () => {
+      return await db.getAllReviews();
+    }),
+
+    create: publicProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        email: z.string().email().optional(),
+        rating: z.number().min(1).max(5),
+        comment: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.createReview({
+          ...input,
+          isApproved: 0, // Requires admin approval
+        });
+        return { success: true };
+      }),
+
+    approve: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.approveReview(input.id);
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteReview(input.id);
+        return { success: true };
+      }),
+  }),
+
   // ============ ORDER ROUTES ============
   orders: router({
     create: publicProcedure

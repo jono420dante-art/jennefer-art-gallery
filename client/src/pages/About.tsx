@@ -49,7 +49,25 @@ My work is rooted in careful observation and traditional oil painting techniques
 
 Africa's distinct light, vast spaces, and rich natural life are constant influences on my work. Living in South Africa allows me to study these elements firsthand and translate them faithfully onto canvas.
 
-Faith quietly underpins my creative process. I see realism as a way of honouring God's creation by depicting it truthfully and with care. Through my art, my aim is to preserve moments of beauty and meaning — paintings that invite reflection, connection, and lasting appreciation.`;
+Faith quietly underpins my creative process. I see realism as a way of honouring God's creation by depicting it truthfully and with care. Through my art, my aim is to preserve moments of beauty and meaning — paintings that invite reflection, connection, and lasting appreciation.
+
+BIOGRAPHY
+
+I was born in Johannesburg and grew up in Boksburg. I was always interested in art and took art as a subject at school. I then studied art at the Johannesburg College of Art for 4 years and obtained my diploma in Fine Art. My main subjects were drawing and painting with a minor in sculpture.
+
+I was then employed by Goldfields of South Africa as a graphic artist in the head office in Johannesburg. I was responsible for the in-house magazine as well as designing and illustrating the annual report. I was also responsible for the design and illustration of the company's advertising. I worked there for 5 years.
+
+I then moved to Cape Town and worked as a freelance graphic artist for various companies. I also taught art at a private school for 2 years.
+
+I then moved to Durban and worked as a graphic artist for a large advertising agency. I was responsible for the design and illustration of various advertising campaigns. I worked there for 3 years.
+
+I then moved back to Johannesburg and started my own graphic design company. I was responsible for the design and illustration of various advertising campaigns, annual reports, and corporate identities. I ran my own company for 10 years.
+
+I then decided to pursue my passion for fine art and started painting full-time. I have been painting full-time for the past 15 years. I specialize in realist oil paintings of wildlife, portraits, seascapes, and landscapes.
+
+I have exhibited my work at various galleries in South Africa and have sold paintings to collectors in South Africa, the United Kingdom, the United States, and Australia.
+
+I am a member of the South African Society of Artists (SASA) and have won several awards for my work.`;
 
   const displayContent = aboutData?.content || defaultContent;
   const displayTitle = aboutData?.title || "About the Artist";

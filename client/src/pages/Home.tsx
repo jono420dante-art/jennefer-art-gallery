@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Link } from "wouter";
 import { Loader2, ArrowRight } from "lucide-react";
+import ReviewsSection from "@/components/ReviewsSection";
 
 export default function Home() {
   const { data: featuredArtworks, isLoading } = trpc.artworks.featured.useQuery();
@@ -150,6 +151,9 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Reviews Section */}
+      <ReviewsSection />
 
       {/* About Preview */}
       <section className="container py-20">
