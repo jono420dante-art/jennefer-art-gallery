@@ -43,31 +43,23 @@ export default function About() {
     });
   };
 
-  const defaultContent = `I am a South African realist oil painter inspired by God's creation and the enduring beauty of Africa's people, wildlife, and landscapes.
+  const defaultContent = `Jennefer Ann Gordon Grant is a South African-based professional artist, recognised for her realistic portrait, landscape, seascape, and wildlife paintings.
 
-My work is rooted in careful observation and traditional oil painting techniques. I strive to capture subjects as they truly are — honouring form, proportion, light, and texture — while preserving the emotion and presence that make each subject unique. Whether painting wildlife, portraits, seascapes, or landscapes, my focus is on accuracy, depth, and authenticity.
+Born in Salisbury, Rhodesia (now Harare, Zimbabwe), Jennefer developed a deep love for art at a young age, choosing it as one of her main school subjects. Art runs strongly through her family lineage; her parents, Dieuwie and Piet Holthuysen, were both highly respected landscape and wildlife artists in Zimbabwe and played a significant role in nurturing her artistic gifts. Her mother passed away five years ago, while her father, now in his nineties, remains a source of inspiration.
 
-Africa's distinct light, vast spaces, and rich natural life are constant influences on my work. Living in South Africa allows me to study these elements firsthand and translate them faithfully onto canvas.
+Jennefer's life journey has taken her across the world. She has lived in Mauritius and Dubai before settling in South Africa, where she spent 15 years in the quiet coastal town of George. It was there, in the heart of the Garden Route, that she fully embraced her calling as a professional artist. Her early career included hand-painted crafts and fine art sold at well-known local markets such as the Sedgefield Scarab and Wilderness markets.
 
-Faith quietly underpins my creative process. I see realism as a way of honouring God's creation by depicting it truthfully and with care. Through my art, my aim is to preserve moments of beauty and meaning — paintings that invite reflection, connection, and lasting appreciation.
+Today, Jennefer and her husband reside in the peaceful Belvidere Estate in Knysna, Western Cape. She works from her private studio, surrounded by her three dachshunds and one cat, creating with joy, dedication, and enthusiasm.
 
-BIOGRAPHY
+Deeply inspired by creation, Jennefer's work reflects what she describes as the "Heartbeat of Africa." Her faith and love for the Creator are central to her artistry, influencing every piece she paints. She is particularly drawn to realism, delighting in expressing the uniqueness and richness of God's colour palette.
 
-I was born in Johannesburg and grew up in Boksburg. I was always interested in art and took art as a subject at school. I then studied art at the Johannesburg College of Art for 4 years and obtained my diploma in Fine Art. My main subjects were drawing and painting with a minor in sculpture.
+Jennefer works across several mediums, including oil, watercolour, acrylic, and pastel, though oils remain her primary medium. Her subject matter is diverse, encompassing portraits, still life, landscapes, and animals. Wildlife, in particular, holds a special place in her heart, and she has donated numerous works to charitable causes—especially animal welfare organisations—believing strongly that animals need humans to be their voices.
 
-I was then employed by Goldfields of South Africa as a graphic artist in the head office in Johannesburg. I was responsible for the in-house magazine as well as designing and illustrating the annual report. I was also responsible for the design and illustration of the company's advertising. I worked there for 5 years.
+Her exhibition history spans many years and locations. Her first exhibition took place in Zimbabwe at the Standard Bank Arena, alongside her family. Since then, she has participated in numerous exhibitions, including shows at the Garden Route Mall in George with Crouse Gallery and the Grahamstown National Arts Festival. Jennefer has also received several accolades, including Best on Show awards in Bathurst and recognition in a NAVS competition in the United States.
 
-I then moved to Cape Town and worked as a freelance graphic artist for various companies. I also taught art at a private school for 2 years.
+Her work has been collected by clients both locally and internationally, with the majority of her paintings created through private commissions. She continues to generously support conservation efforts, having recently donated works to The Tortoise Conservation of South Africa—which sold in Arizona, USA, for $10,000—as well as to Panthera Sanctuary.
 
-I then moved to Durban and worked as a graphic artist for a large advertising agency. I was responsible for the design and illustration of various advertising campaigns. I worked there for 3 years.
-
-I then moved back to Johannesburg and started my own graphic design company. I was responsible for the design and illustration of various advertising campaigns, annual reports, and corporate identities. I ran my own company for 10 years.
-
-I then decided to pursue my passion for fine art and started painting full-time. I have been painting full-time for the past 15 years. I specialize in realist oil paintings of wildlife, portraits, seascapes, and landscapes.
-
-I have exhibited my work at various galleries in South Africa and have sold paintings to collectors in South Africa, the United Kingdom, the United States, and Australia.
-
-I am a member of the South African Society of Artists (SASA) and have won several awards for my work.`;
+Through her art, Jennefer seeks not only to capture beauty, but to honour creation, stir the soul, and tell stories that connect people to nature, faith, and the living world around them.`;
 
   const displayContent = aboutData?.content || defaultContent;
   const displayTitle = aboutData?.title || "About the Artist";
