@@ -13,6 +13,7 @@ import ArtworkDetail from "./pages/ArtworkDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
+import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/AdminLogin";
 import Checkout from "./pages/Checkout";
 import Showcase from "./pages/Showcase";
@@ -35,6 +36,7 @@ function Router() {
           <Route path="/contact" component={Contact} />
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin" component={Admin} />
+          <Route path="/admin-dashboard" component={AdminDashboard} />
           <Route path="/checkout/:slug" component={Checkout} />
           <Route path="/404" component={NotFound} />
           <Route component={NotFound} />
