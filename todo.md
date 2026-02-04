@@ -197,5 +197,6 @@
 - [x] Write tests for public comments functions
 - [x] Add comments section to artwork detail pages
 - [x] Test public comments display - WORKING on artwork detail pages (Jody's comment displays correctly)
+- [x] Fix home page comments display - Added getAllPublicComments endpoint and updated component
+- [x] Verified Jody's comment now displays on home page VISITOR COMMENTS section
 - [ ] Fix "Pet potraits" typo to "Pet Portraits"
-- [ ] Note: Home page shows "No comments yet" - only artwork-specific comments display on detail pages

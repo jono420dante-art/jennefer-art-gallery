@@ -275,6 +275,14 @@ export async function getPublicCommentsByArtwork(artworkId: number) {
     .orderBy(desc(comments.createdAt));
 }
 
+export async function getAllPublicComments() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(comments)
+    .where(eq(comments.isApproved, 1))
+    .orderBy(desc(comments.createdAt));
+}
+
 export async function getPublicReviews() {
   const db = await getDb();
   if (!db) return [];

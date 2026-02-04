@@ -299,6 +299,10 @@ export const appRouter = router({
         return await db.getPublicCommentsByArtwork(input.artworkId);
       }),
 
+    getAllPublicComments: publicProcedure.query(async () => {
+      return await db.getAllPublicComments();
+    }),
+
     getPublicReviews: publicProcedure.query(async () => {
       return await db.getPublicReviews();
     }),

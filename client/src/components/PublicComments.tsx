@@ -22,6 +22,12 @@ export function PublicComments({ artworkId, isReviewSection = false }: { artwork
     { enabled: !!artworkId && !isReviewSection }
   );
 
+  // Fetch all public comments (for home page)
+  const { data: allComments, isLoading: allCommentsLoading } = trpc.comments.getAllPublicComments.useQuery(
+    undefined,
+    { enabled: !artworkId && !isReviewSection }
+  );
+
   // Fetch public reviews
   const { data: publicReviews, isLoading: reviewsLoading } = trpc.comments.getPublicReviews.useQuery(
     undefined,
@@ -42,10 +48,13 @@ export function PublicComments({ artworkId, isReviewSection = false }: { artwork
       if (artworkComments) {
         setComments(artworkComments);
       }
+    } else if (!artworkId && allComments) {
+      setLoading(allCommentsLoading);
+      setComments(allComments);
     } else {
-      setLoading(false);
+      setLoading(allCommentsLoading);
     }
-  }, [artworkComments, publicReviews, commentsLoading, reviewsLoading, artworkId, isReviewSection]);
+  }, [artworkComments, allComments, publicReviews, commentsLoading, allCommentsLoading, reviewsLoading, artworkId, isReviewSection]);
 
   if (loading) {
     return <div className="text-center py-8 text-muted-foreground">Loading comments...</div>;
