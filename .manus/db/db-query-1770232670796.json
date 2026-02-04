@@ -1,0 +1,26 @@
+{
+  "query": "SELECT id, name, comment, isApproved, artworkId, createdAt FROM comments LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, name, comment, isApproved, artworkId, createdAt FROM comments LIMIT 10;",
+  "rows": [
+    {
+      "id": "30001",
+      "name": "Andre Vosloo",
+      "comment": "Your work is beyond awesome. I have been blessed by two of your paintings of my cat kids. ",
+      "isApproved": "0",
+      "artworkId": "60004",
+      "createdAt": "2026-02-04 01:02:05"
+    }
+  ],
+  "messages": [
+    "1\tJody \tJenny you are one amazing person wow. Your artwork is in a high class of artist. My amazing Rallo and Baby are forever framed.  So beautiful.  Now your painting Butters my husband's cat. No words. ",
+    "Jody Becker your forever friend in the United States.  Missouri \t1\t30007\t2026-02-01 12:58:11",
+    "60001\tJody Becker Wieberg \tAs an art lover of oil paintings when Jennifer had just a few strokes on this portrait of my Rallo it gave me chills. ",
+    "She is one of the top artists in the world and deserves recognition in the world of art. ",
+    "Don't second guess your choice to have her paint for you.",
+    "Africa 🌍 bound. My bucket list is to meet the artist in person.  ",
+    "Jody \t0\t30007\t2026-02-04 13:56:38"
+  ],
+  "stdout": "id\tname\tcomment\tisApproved\tartworkId\tcreatedAt\n1\tJody \tJenny you are one amazing person wow. Your artwork is in a high class of artist. My amazing Rallo and Baby are forever framed.  So beautiful.  Now your painting Butters my husband's cat. No words. \nJody Becker your forever friend in the United States.  Missouri \t1\t30007\t2026-02-01 12:58:11\n30001\tAndre Vosloo\tYour work is beyond awesome. I have been blessed by two of your paintings of my cat kids. \t0\t60004\t2026-02-04 01:02:05\n60001\tJody Becker Wieberg \tAs an art lover of oil paintings when Jennifer had just a few strokes on this portrait of my Rallo it gave me chills. \nShe is one of the top artists in the world and deserves recognition in the world of art. \nDon't second guess your choice to have her paint for you.\nAfrica 🌍 bound. My bucket list is to meet the artist in person.  \nJody \t0\t30007\t2026-02-04 13:56:38\n",
+  "stderr": "",
+  "execution_time_ms": 106
+}

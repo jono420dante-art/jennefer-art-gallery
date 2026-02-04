@@ -196,5 +196,6 @@
 - [x] Add visitor comments section to home page
 - [x] Write tests for public comments functions
 - [x] Add comments section to artwork detail pages
+- [x] Test public comments display - WORKING on artwork detail pages (Jody's comment displays correctly)
 - [ ] Fix "Pet potraits" typo to "Pet Portraits"
-- [ ] Test public comments display on home page
+- [ ] Note: Home page shows "No comments yet" - only artwork-specific comments display on detail pages
