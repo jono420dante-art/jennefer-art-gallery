@@ -292,6 +292,16 @@ export const appRouter = router({
         await db.deleteComment(input.id);
         return { success: true };
       }),
+
+    getPublicComments: publicProcedure
+      .input(z.object({ artworkId: z.number() }))
+      .query(async ({ input }) => {
+        return await db.getPublicCommentsByArtwork(input.artworkId);
+      }),
+
+    getPublicReviews: publicProcedure.query(async () => {
+      return await db.getPublicReviews();
+    }),
   }),
 
   // ============ ABOUT CONTENT ROUTES ============

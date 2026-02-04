@@ -189,3 +189,12 @@
 - [x] Implement recent activity feed
 - [x] Add quick management links and shortcuts
 - [x] Test dashboard accessibility and functionality
+
+## Public Comments & Reviews System
+- [x] Add public comments endpoints to API (getPublicComments, getPublicReviews)
+- [x] Create PublicComments component for displaying approved comments
+- [x] Add visitor comments section to home page
+- [x] Write tests for public comments functions
+- [x] Add comments section to artwork detail pages
+- [ ] Fix "Pet potraits" typo to "Pet Portraits"
+- [ ] Test public comments display on home page

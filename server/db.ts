@@ -267,6 +267,22 @@ export async function deleteComment(id: number) {
   await db.delete(comments).where(eq(comments.id, id));
 }
 
+export async function getPublicCommentsByArtwork(artworkId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(comments)
+    .where(and(eq(comments.artworkId, artworkId), eq(comments.isApproved, 1)))
+    .orderBy(desc(comments.createdAt));
+}
+
+export async function getPublicReviews() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(reviews)
+    .where(eq(reviews.isApproved, 1))
+    .orderBy(desc(reviews.createdAt));
+}
+
 // ============ ABOUT CONTENT FUNCTIONS ============
 
 export async function getAboutContent() {

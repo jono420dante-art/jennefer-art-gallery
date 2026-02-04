@@ -7,6 +7,7 @@ import { Link, useRoute } from "wouter";
 import { Loader2, ArrowLeft, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PublicComments } from "@/components/PublicComments";
 
 export default function ArtworkDetail() {
   const [, params] = useRoute("/artwork/:slug");
@@ -17,6 +18,7 @@ export default function ArtworkDetail() {
     { enabled: !!slug }
   );
 
+  // Note: We keep this query for admin purposes, but public display uses PublicComments component
   const { data: comments } = trpc.comments.listByArtwork.useQuery(
     { artworkId: artwork?.id || 0 },
     { enabled: !!artwork?.id }
@@ -218,26 +220,9 @@ export default function ArtworkDetail() {
             </form>
           </Card>
 
-          {/* Comments List */}
-          {comments && comments.length > 0 ? (
-            <div className="space-y-6">
-              {comments.map((comment) => (
-                <Card key={comment.id} className="p-6 bg-card border-border">
-                  <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-semibold text-foreground">{comment.name}</h4>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(comment.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <p className="text-muted-foreground">{comment.comment}</p>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-center py-8">
-              No comments yet. Be the first to share your thoughts!
-            </p>
-          )}
+          {/* Public Comments List */}
+          <h3 className="text-2xl font-semibold text-foreground mb-6">Approved Comments</h3>
+          <PublicComments artworkId={artwork.id} />
         </div>
       </section>
     </div>

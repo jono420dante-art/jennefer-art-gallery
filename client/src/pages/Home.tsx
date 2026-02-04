@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Link } from "wouter";
 import { Loader2, ArrowRight } from "lucide-react";
 import ReviewsSection from "@/components/ReviewsSection";
+import { PublicComments } from "@/components/PublicComments";
 
 export default function Home() {
   const { data: featuredArtworks, isLoading } = trpc.artworks.featured.useQuery();
@@ -154,6 +155,21 @@ export default function Home() {
 
       {/* Reviews Section */}
       <ReviewsSection />
+
+      {/* Visitor Comments Section */}
+      <section className="container py-20">
+        <div className="section-divider" />
+        <div className="text-center mb-16">
+          <h2 className="heading-font text-5xl gradient-text mb-6">VISITOR COMMENTS</h2>
+          <div className="w-16 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-6" />
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed font-light">
+            What visitors are saying about Jennefer's artwork
+          </p>
+        </div>
+        <div className="max-w-3xl mx-auto">
+          <PublicComments isReviewSection={false} />
+        </div>
+      </section>
 
       {/* About Preview */}
       <section className="container py-20">
