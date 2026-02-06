@@ -1,0 +1,50 @@
+{
+  "query": "SELECT id, name, rating, comment, isApproved, createdAt FROM reviews LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, name, rating, comment, isApproved, createdAt FROM reviews LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Letitia Cooper",
+      "rating": "5",
+      "comment": "She painted a dog portrait for my sister in law's birthday of her two Yorkies who had passed away.  The painting was so life like you could clearly see who was who in this portrait.  Jennefers work is beyond excellent and she puts everything into each one.",
+      "isApproved": "0",
+      "createdAt": "2026-02-03 07:43:45"
+    },
+    {
+      "id": "30001",
+      "name": "Susan Morgan",
+      "rating": "5",
+      "comment": "Jennefer did an amazing job painting my donkey as a birthday present for my daughter, who named her because she was born on my daughter’s birthday 🎂 The painting looked just like her and so real!!!",
+      "isApproved": "0",
+      "createdAt": "2026-02-03 13:48:07"
+    },
+    {
+      "id": "60001",
+      "name": "Janice Jordan",
+      "rating": "5",
+      "comment": "I love the painting of my dog Max …Would highly recommend Jennifer if you want a beautiful painting done ….⭐️⭐️⭐️⭐️⭐️",
+      "isApproved": "0",
+      "createdAt": "2026-02-03 16:34:13"
+    },
+    {
+      "id": "90001",
+      "name": "Norma JC",
+      "rating": "5",
+      "comment": "The most excellent vision, capturing essence and character of commissioned artwork. So talented.",
+      "isApproved": "0",
+      "createdAt": "2026-02-03 18:14:08"
+    },
+    {
+      "id": "120001",
+      "name": "Jonathan coetzee",
+      "rating": "4",
+      "comment": "its something",
+      "isApproved": "0",
+      "createdAt": "2026-02-06 15:08:20"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\trating\tcomment\tisApproved\tcreatedAt\n1\tLetitia Cooper\t5\tShe painted a dog portrait for my sister in law's birthday of her two Yorkies who had passed away.  The painting was so life like you could clearly see who was who in this portrait.  Jennefers work is beyond excellent and she puts everything into each one.\t0\t2026-02-03 07:43:45\n30001\tSusan Morgan\t5\tJennefer did an amazing job painting my donkey as a birthday present for my daughter, who named her because she was born on my daughter’s birthday 🎂 The painting looked just like her and so real!!!\t0\t2026-02-03 13:48:07\n60001\tJanice Jordan\t5\tI love the painting of my dog Max …Would highly recommend Jennifer if you want a beautiful painting done ….⭐️⭐️⭐️⭐️⭐️\t0\t2026-02-03 16:34:13\n90001\tNorma JC\t5\tThe most excellent vision, capturing essence and character of commissioned artwork. So talented.\t0\t2026-02-03 18:14:08\n120001\tJonathan coetzee\t4\tits something\t0\t2026-02-06 15:08:20\n",
+  "stderr": "",
+  "execution_time_ms": 375
+}
