@@ -38,7 +38,7 @@ export default function Admin() {
   }
 
   // State for artwork form
-  const [artworkForm, setArtworkForm] = useState({
+  const [artworkForm, setArtworkForm] = useState<any>({
     collectionId: "",
     title: "",
     slug: "",
@@ -53,7 +53,7 @@ export default function Admin() {
   const [imageFile, setImageFile] = useState<string>("");
 
   // State for collection form
-  const [collectionForm, setCollectionForm] = useState({
+  const [collectionForm, setCollectionForm] = useState<any>({
     name: "",
     slug: "",
     description: "",
@@ -67,6 +67,9 @@ export default function Admin() {
     enabled: Boolean(isAdminAuth),
   });
   const { data: allComments } = trpc.comments.listAll.useQuery(undefined, {
+    enabled: Boolean(isAdminAuth),
+  });
+  const { data: allReviews } = trpc.reviews.listAll.useQuery(undefined, {
     enabled: Boolean(isAdminAuth),
   });
 
@@ -125,6 +128,20 @@ export default function Admin() {
     onSuccess: () => {
       toast.success("Comment deleted!");
       utils.comments.listAll.invalidate();
+    },
+  });
+
+  const approveReview = trpc.reviews.approve.useMutation({
+    onSuccess: () => {
+      toast.success("Review approved!");
+      utils.reviews.listAll.invalidate();
+    },
+  });
+
+  const deleteReview = trpc.reviews.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Review deleted!");
+      utils.reviews.listAll.invalidate();
     },
   });
 
@@ -215,10 +232,10 @@ export default function Admin() {
       title: trimmedTitle,
       slug,
       collectionId: collectionIdNum,
-      priceZar: priceZar as any,
-      priceUsd: priceUsd as any,
+      priceZar,
+      priceUsd,
       imageBase64: imageFile,
-    });
+    } as any);
   };
 
   const handleCollectionSubmit = (e: React.FormEvent) => {
@@ -239,13 +256,13 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="artworks" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="artworks">Artworks</TabsTrigger>
             <TabsTrigger value="collections">Collections</TabsTrigger>
-            <TabsTrigger value="contacts">Contacts</TabsTrigger>
+            <TabsTrigger value="contacts">Contact Forms</TabsTrigger>
             <TabsTrigger value="comments">Comments</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews</TabsTrigger>
           </TabsList>
-
           {/* Artworks Tab */}
           <TabsContent value="artworks" className="space-y-6">
             <Card className="p-6 bg-card border-border">
@@ -558,6 +575,49 @@ export default function Admin() {
                     <p className="text-sm text-foreground">{comment.comment}</p>
                     <p className="text-xs text-muted-foreground mt-2">
                       Status: {comment.isApproved ? "Approved" : "Pending"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Reviews Tab */}
+          <TabsContent value="reviews">
+            <Card className="p-6 bg-card border-border">
+              <h2 className="text-2xl font-semibold text-foreground mb-4">Manage Reviews</h2>
+              <div className="space-y-4">
+                {allReviews?.map((review) => (
+                  <div key={review.id} className="p-4 bg-background rounded">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold text-foreground">{review.name}</h3>
+                        <p className="text-sm text-muted-foreground">{review.email}</p>
+                        <p className="text-sm text-accent">Rating: {review.rating}⭐</p>
+                      </div>
+                      <div className="flex gap-2">
+                        {!review.isApproved && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => approveReview.mutate({ id: review.id })}
+                          >
+                            <Check size={16} className="mr-1" />
+                            Approve
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => deleteReview.mutate({ id: review.id })}
+                        >
+                          <X size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-foreground">{review.comment}</p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Status: {review.isApproved ? "Approved" : "Pending"}
                     </p>
                   </div>
                 ))}
