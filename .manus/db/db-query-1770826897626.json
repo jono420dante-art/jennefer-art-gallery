@@ -1,0 +1,18 @@
+{
+  "query": "SELECT \n  (SELECT COUNT(*) FROM artworks) as total_artworks,\n  (SELECT COUNT(*) FROM collections) as total_collections,\n  (SELECT COUNT(*) FROM comments) as total_comments,\n  (SELECT COUNT(*) FROM reviews) as total_reviews,\n  (SELECT COUNT(*) FROM reviews WHERE isApproved = 1) as approved_reviews,\n  (SELECT COUNT(*) FROM users) as total_users;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT \n  (SELECT COUNT(*) FROM artworks) as total_artworks,\n  (SELECT COUNT(*) FROM collections) as total_collections,\n  (SELECT COUNT(*) FROM comments) as total_comments,\n  (SELECT COUNT(*) FROM reviews) as total_reviews,\n  (SELECT COUNT(*) FROM reviews WHERE isApproved = 1) as approved_reviews,\n  (SELECT COUNT(*) FROM users) as total_users;",
+  "rows": [
+    {
+      "total_artworks": "91",
+      "total_collections": "11",
+      "total_comments": "3",
+      "total_reviews": "8",
+      "approved_reviews": "5",
+      "total_users": "3"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_artworks\ttotal_collections\ttotal_comments\ttotal_reviews\tapproved_reviews\ttotal_users\n91\t11\t3\t8\t5\t3\n",
+  "stderr": "",
+  "execution_time_ms": 360
+}

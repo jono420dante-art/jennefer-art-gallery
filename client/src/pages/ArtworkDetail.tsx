@@ -121,16 +121,16 @@ export default function ArtworkDetail() {
                 </div>
               )}
 
-              {artwork.priceZAR && (
+              {artwork.priceZar && (
                 <div className="flex items-center">
                   <span className="text-sm font-semibold text-foreground w-32">Price:</span>
                   <div className="space-y-1">
                     <span className="text-xl font-bold text-primary block">
-                      R {artwork.priceZAR} ZAR
+                      R {artwork.priceZar} ZAR
                     </span>
-                    {artwork.priceUSD && (
+                    {artwork.priceUsd && (
                       <span className="text-sm text-muted-foreground">
-                        ${artwork.priceUSD} USD
+                        ${artwork.priceUsd} USD
                       </span>
                     )}
                   </div>

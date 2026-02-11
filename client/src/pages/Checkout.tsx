@@ -35,7 +35,7 @@ export default function Checkout() {
       setTimeout(() => {
         if (paymentMethod === "paypal" && paymentSettings?.paypalEmail) {
           // Redirect to PayPal
-          window.location.href = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${paymentSettings.paypalEmail}&item_name=${artwork?.title}&amount=${artwork?.priceUSD || artwork?.priceZAR}&currency_code=${artwork?.priceUSD ? "USD" : "ZAR"}`;
+          window.location.href = `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=${paymentSettings.paypalEmail}&item_name=${artwork?.title}&amount=${artwork?.priceUsd || artwork?.priceZar}&currency_code=${artwork?.priceUsd ? "USD" : "ZAR"}`;
         } else {
           toast.success("Payment information has been sent. Please check your email for payment instructions.");
           navigate("/gallery");
@@ -65,8 +65,8 @@ export default function Checkout() {
       buyerName: formData.buyerName,
       buyerEmail: formData.buyerEmail,
       buyerPhone: formData.buyerPhone,
-      amount: String(artwork.priceUSD || artwork.priceZAR),
-      currency: artwork.priceUSD ? "USD" : "ZAR",
+      amount: String(artwork.priceUsd || artwork.priceZar),
+      currency: artwork.priceUsd ? "USD" : "ZAR",
       paymentMethod,
       shippingAddress: formData.shippingAddress,
       notes: formData.notes,
@@ -136,9 +136,9 @@ export default function Checkout() {
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Price:</span>
                   <span className="text-lg text-accent font-bold">
-                    {artwork.priceZAR && `R ${artwork.priceZAR}`}
-                    {artwork.priceUSD && artwork.priceZAR && " / "}
-                    {artwork.priceUSD && `$${artwork.priceUSD}`}
+                    {artwork.priceZar && `R ${artwork.priceZar}`}
+                    {artwork.priceUsd && artwork.priceZar && " / "}
+                    {artwork.priceUsd && `$${artwork.priceUsd}`}
                   </span>
                 </div>
               </div>

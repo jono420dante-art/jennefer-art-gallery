@@ -92,9 +92,9 @@ export default function Home() {
                       {artwork.description}
                     </p>
                     <div className="flex justify-between items-center">
-                      {artwork.priceZAR && (
+                      {artwork.priceZar && (
                         <span className="text-primary font-semibold">
-                          R {artwork.priceZAR}
+                          R {artwork.priceZar}
                         </span>
                       )}
                       <Button variant="ghost" size="sm" className="group">

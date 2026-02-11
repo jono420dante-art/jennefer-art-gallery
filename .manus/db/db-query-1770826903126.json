@@ -1,0 +1,20 @@
+{
+  "query": "SELECT \n  rating,\n  COUNT(*) as count,\n  ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM reviews WHERE isApproved = 1), 1) as percentage\nFROM reviews \nWHERE isApproved = 1\nGROUP BY rating\nORDER BY rating DESC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT \n  rating,\n  COUNT(*) as count,\n  ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM reviews WHERE isApproved = 1), 1) as percentage\nFROM reviews \nWHERE isApproved = 1\nGROUP BY rating\nORDER BY rating DESC;",
+  "rows": [
+    {
+      "rating": "5",
+      "count": "4",
+      "percentage": "80.0"
+    },
+    {
+      "rating": "4",
+      "count": "1",
+      "percentage": "20.0"
+    }
+  ],
+  "messages": [],
+  "stdout": "rating\tcount\tpercentage\n5\t4\t80.0\n4\t1\t20.0\n",
+  "stderr": "",
+  "execution_time_ms": 362
+}

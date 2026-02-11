@@ -45,8 +45,8 @@ export default function Admin() {
     description: "",
     dimensions: "",
     medium: "",
-    priceZAR: "",
-    priceUSD: "",
+    priceZar: "",
+    priceUsd: "",
     isFeatured: 0,
     displayOrder: 0,
   });
@@ -136,8 +136,8 @@ export default function Admin() {
       description: "",
       dimensions: "",
       medium: "",
-      priceZAR: "",
-      priceUSD: "",
+      priceZar: "",
+      priceUsd: "",
       isFeatured: 0,
       displayOrder: 0,
     });
@@ -207,16 +207,16 @@ export default function Admin() {
     // Add timestamp to slug to ensure uniqueness
     slug = `${slug}-${Date.now()}`
 
-    const priceZAR = artworkForm.priceZAR ? parseFloat(artworkForm.priceZAR) : null;
-    const priceUSD = artworkForm.priceUSD ? parseFloat(artworkForm.priceUSD) : null;
+    const priceZar = artworkForm.priceZar ? parseFloat(artworkForm.priceZar) : null;
+    const priceUsd = artworkForm.priceUsd ? parseFloat(artworkForm.priceUsd) : null;
 
     createArtwork.mutate({
       ...artworkForm,
       title: trimmedTitle,
       slug,
       collectionId: collectionIdNum,
-      priceZAR: priceZAR as any,
-      priceUSD: priceUSD as any,
+      priceZar: priceZar as any,
+      priceUsd: priceUsd as any,
       imageBase64: imageFile,
     });
   };
@@ -318,8 +318,8 @@ export default function Admin() {
                   <div>
                     <Label>Price (ZAR)</Label>
                     <Input
-                      value={artworkForm.priceZAR}
-                      onChange={(e) => setArtworkForm({ ...artworkForm, priceZAR: e.target.value })}
+                      value={artworkForm.priceZar}
+                      onChange={(e) => setArtworkForm({ ...artworkForm, priceZar: e.target.value })}
                       className="bg-background"
                       placeholder="5000"
                     />
@@ -328,8 +328,8 @@ export default function Admin() {
                   <div>
                     <Label>Price (USD)</Label>
                     <Input
-                      value={artworkForm.priceUSD}
-                      onChange={(e) => setArtworkForm({ ...artworkForm, priceUSD: e.target.value })}
+                      value={artworkForm.priceUsd}
+                      onChange={(e) => setArtworkForm({ ...artworkForm, priceUsd: e.target.value })}
                       className="bg-background"
                       placeholder="300"
                     />

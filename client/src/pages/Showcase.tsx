@@ -59,8 +59,8 @@ export default function Showcase() {
       filtered.sort((a, b) => {
         switch (sortBy) {
           case "price":
-            const priceA = Number(a.priceUSD) || Number(a.priceZAR) || 0;
-            const priceB = Number(b.priceUSD) || Number(b.priceZAR) || 0;
+            const priceA = Number(a.priceUsd) || Number(a.priceZar) || 0;
+            const priceB = Number(b.priceUsd) || Number(b.priceZar) || 0;
             return priceA - priceB;
           case "newest":
             const dateA = new Date(a.createdAt || 0).getTime();
@@ -92,7 +92,7 @@ export default function Showcase() {
           Array.isArray(allArtworks) && allArtworks.length > 0
             ? (
                 allArtworks.reduce(
-                  (sum, art) => sum + (Number(art.priceUSD) || 0),
+                  (sum, art) => sum + (Number(art.priceUsd) || 0),
                   0
                 ) / allArtworks.length
               ).toFixed(2)
@@ -323,11 +323,11 @@ export default function Showcase() {
 
                         {/* Price */}
                         <div className="mt-4 pt-4 border-t border-border">
-                          {artwork.priceUSD || artwork.priceZAR ? (
+                          {artwork.priceUsd || artwork.priceZar ? (
                             <p className="font-semibold text-accent">
-                              {artwork.priceUSD
-                                ? `$${artwork.priceUSD}`
-                                : `R${artwork.priceZAR}`}
+                              {artwork.priceUsd
+                                ? `$${artwork.priceUsd}`
+                                : `R${artwork.priceZar}`}
                             </p>
                           ) : (
                             <p className="text-muted-foreground text-sm">

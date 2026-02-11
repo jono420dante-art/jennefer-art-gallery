@@ -93,14 +93,14 @@ export default function CollectionDetail() {
                       </p>
                     )}
                     <div className="flex justify-between items-center">
-                      {artwork.priceZAR && (
+                      {artwork.priceZar && (
                         <div className="space-y-1">
                           <span className="text-primary font-semibold block">
-                            R {artwork.priceZAR}
+                            R {artwork.priceZar}
                           </span>
-                          {artwork.priceUSD && (
+                          {artwork.priceUsd && (
                             <span className="text-xs text-muted-foreground">
-                              ${artwork.priceUSD} USD
+                              ${artwork.priceUsd} USD
                             </span>
                           )}
                         </div>

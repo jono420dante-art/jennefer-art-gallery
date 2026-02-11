@@ -1,26 +1,16 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
-  InsertUser, 
   users, 
   collections, 
   artworks, 
   contactSubmissions, 
   comments,
-  InsertCollection,
-  InsertArtwork,
-  InsertContactSubmission,
-  InsertComment,
-  aboutContent,
-  InsertAboutContent,
-  paymentSettings,
-  InsertPaymentSettings,
-  orders,
-  InsertOrder,
   wipImages,
-  InsertWipImage,
   reviews,
-  InsertReview
+  orders,
+  paymentSettings,
+  aboutContent
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -40,7 +30,7 @@ export async function getDb() {
 
 // ============ USER FUNCTIONS ============
 
-export async function upsertUser(user: InsertUser): Promise<void> {
+export async function upsertUser(user: any): Promise<void> {
   if (!user.openId) {
     throw new Error("User openId is required for upsert");
   }
@@ -52,7 +42,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 
   try {
-    const values: InsertUser = {
+    const values: any = {
       openId: user.openId,
     };
     const updateSet: Record<string, unknown> = {};
@@ -125,7 +115,7 @@ export async function getCollectionBySlug(slug: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function createCollection(data: InsertCollection) {
+export async function createCollection(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
@@ -141,7 +131,7 @@ export async function createCollection(data: InsertCollection) {
   return result;
 }
 
-export async function updateCollection(id: number, data: Partial<InsertCollection>) {
+export async function updateCollection(id: number, data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(collections).set(data).where(eq(collections.id, id));
@@ -192,14 +182,14 @@ export async function getArtworkById(id: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function createArtwork(data: InsertArtwork) {
+export async function createArtwork(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(artworks).values(data);
   return result;
 }
 
-export async function updateArtwork(id: number, data: Partial<InsertArtwork>) {
+export async function updateArtwork(id: number, data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(artworks).set(data).where(eq(artworks.id, id));
@@ -213,7 +203,7 @@ export async function deleteArtwork(id: number) {
 
 // ============ CONTACT SUBMISSION FUNCTIONS ============
 
-export async function createContactSubmission(data: InsertContactSubmission) {
+export async function createContactSubmission(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(contactSubmissions).values(data);
@@ -248,7 +238,7 @@ export async function getAllComments() {
   return await db.select().from(comments).orderBy(desc(comments.createdAt));
 }
 
-export async function createComment(data: InsertComment) {
+export async function createComment(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(comments).values(data);
@@ -324,7 +314,7 @@ export async function getPaymentSettings() {
   return result.length > 0 ? result[0] : null;
 }
 
-export async function updatePaymentSettings(data: Partial<InsertPaymentSettings>) {
+export async function updatePaymentSettings(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
@@ -332,13 +322,13 @@ export async function updatePaymentSettings(data: Partial<InsertPaymentSettings>
   if (existing) {
     await db.update(paymentSettings).set(data).where(eq(paymentSettings.id, existing.id));
   } else {
-    await db.insert(paymentSettings).values(data as InsertPaymentSettings);
+    await db.insert(paymentSettings).values(data);
   }
 }
 
 // ============ ORDER FUNCTIONS ============
 
-export async function createOrder(data: InsertOrder) {
+export async function createOrder(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(orders).values(data);
@@ -380,14 +370,14 @@ export async function getActiveWipImages() {
     .orderBy(wipImages.displayOrder);
 }
 
-export async function createWipImage(data: InsertWipImage) {
+export async function createWipImage(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(wipImages).values(data);
   return result;
 }
 
-export async function updateWipImage(id: number, data: Partial<InsertWipImage>) {
+export async function updateWipImage(id: number, data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(wipImages).set(data).where(eq(wipImages.id, id));
@@ -415,7 +405,7 @@ export async function getApprovedReviews() {
     .orderBy(desc(reviews.createdAt));
 }
 
-export async function createReview(data: InsertReview) {
+export async function createReview(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   const result = await db.insert(reviews).values(data);
