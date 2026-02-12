@@ -18,8 +18,7 @@ import AdminLogin from "./pages/AdminLogin";
 import Checkout from "./pages/Checkout";
 import Showcase from "./pages/Showcase";
 import ExitSurvey from "./components/ExitSurvey";
-import MusicPlayer from "./components/MusicPlayer";
-import WorkingOnWidget from "./components/WorkingOnWidget";
+
 
 function Router() {
   return (
@@ -55,8 +54,6 @@ function App() {
           <Toaster />
           <Router />
           <ExitSurvey />
-          <MusicPlayer />
-          <WorkingOnWidget />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
