@@ -1,0 +1,76 @@
+{
+  "query": "SELECT id, name, slug, createdAt FROM collections ORDER BY createdAt ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, name, slug, createdAt FROM collections ORDER BY createdAt ASC;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Domestic Animals",
+      "slug": "modern-art",
+      "createdAt": "2026-01-07 09:18:44"
+    },
+    {
+      "id": "2",
+      "name": "Landscapes",
+      "slug": "landscapes",
+      "createdAt": "2026-01-07 09:18:44"
+    },
+    {
+      "id": "5",
+      "name": "Featured",
+      "slug": "featured",
+      "createdAt": "2026-01-07 09:18:44"
+    },
+    {
+      "id": "6",
+      "name": "For Sale",
+      "slug": "for-sale",
+      "createdAt": "2026-01-07 09:34:16"
+    },
+    {
+      "id": "30001",
+      "name": "Pet potraits",
+      "slug": "Pet",
+      "createdAt": "2026-01-21 05:39:40"
+    },
+    {
+      "id": "30002",
+      "name": "Birds",
+      "slug": "Wildlife",
+      "createdAt": "2026-01-21 06:05:04"
+    },
+    {
+      "id": "30003",
+      "name": "People",
+      "slug": "Peoples love",
+      "createdAt": "2026-01-21 06:10:41"
+    },
+    {
+      "id": "90001",
+      "name": "STILL LIFE",
+      "slug": "Canvas",
+      "createdAt": "2026-01-24 06:36:02"
+    },
+    {
+      "id": "90004",
+      "name": "Wildlife",
+      "slug": "wild",
+      "createdAt": "2026-01-24 07:16:05"
+    },
+    {
+      "id": "120001",
+      "name": "Charity Donations",
+      "slug": "Donations",
+      "createdAt": "2026-01-27 07:26:43"
+    },
+    {
+      "id": "120002",
+      "name": "!!!!! IN PROGRESS !!!!!",
+      "slug": "BUSY WITH",
+      "createdAt": "2026-01-27 07:33:41"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tslug\tcreatedAt\n1\tDomestic Animals\tmodern-art\t2026-01-07 09:18:44\n2\tLandscapes\tlandscapes\t2026-01-07 09:18:44\n5\tFeatured\tfeatured\t2026-01-07 09:18:44\n6\tFor Sale\tfor-sale\t2026-01-07 09:34:16\n30001\tPet potraits\tPet\t2026-01-21 05:39:40\n30002\tBirds\tWildlife\t2026-01-21 06:05:04\n30003\tPeople\tPeoples love\t2026-01-21 06:10:41\n90001\tSTILL LIFE\tCanvas\t2026-01-24 06:36:02\n90004\tWildlife\twild\t2026-01-24 07:16:05\n120001\tCharity Donations\tDonations\t2026-01-27 07:26:43\n120002\t!!!!! IN PROGRESS !!!!!\tBUSY WITH\t2026-01-27 07:33:41\n",
+  "stderr": "",
+  "execution_time_ms": 401
+}

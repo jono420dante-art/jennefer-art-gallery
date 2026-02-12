@@ -208,3 +208,6 @@
 
 ## Widget Removal
 - [x] Remove music player widget from home page
+
+## Collection Ordering
+- [x] Move "For Sale" collection to appear first in gallery - Updated displayOrder to 0
