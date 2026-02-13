@@ -211,3 +211,6 @@
 
 ## Collection Ordering
 - [x] Move "For Sale" collection to appear first in gallery - Updated displayOrder to 0
+
+## Name Correction - Jennifer to Jennefer
+- [x] Change all instances of "Jennifer" to "Jennefer" throughout website - Updated reviews and comments in database
