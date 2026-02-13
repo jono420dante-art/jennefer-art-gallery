@@ -233,8 +233,8 @@ export default function Contact() {
                   <Mail className="text-primary mt-1" size={20} />
                   <div>
                     <p className="font-medium text-foreground">Email</p>
-                    <a href="mailto:jennefer@artgallery.com" className="text-muted-foreground hover:text-primary transition-colors">
-                      jennefer@artgallery.com
+                    <a href="mailto:jennefer.ann.gg@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
+                      jennefer.ann.gg@gmail.com
                     </a>
                   </div>
                 </div>

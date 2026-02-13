@@ -217,3 +217,6 @@
 
 ## Email Address Correction
 - [x] Change jennifer@artgallery.com to jennefer@artgallery.com throughout website - Updated Contact.tsx
+
+## Email Address Update - jennefer.ann.gg@gmail.com
+- [x] Change email from jennefer@artgallery.com to jennefer.ann.gg@gmail.com in all files - Updated Contact.tsx
