@@ -214,3 +214,6 @@
 
 ## Name Correction - Jennifer to Jennefer
 - [x] Change all instances of "Jennifer" to "Jennefer" throughout website - Updated reviews and comments in database
+
+## Email Address Correction
+- [x] Change jennifer@artgallery.com to jennefer@artgallery.com throughout website - Updated Contact.tsx
