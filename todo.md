@@ -220,3 +220,6 @@
 
 ## Email Address Update - jennefer.ann.gg@gmail.com
 - [x] Change email from jennefer@artgallery.com to jennefer.ann.gg@gmail.com in all files - Updated Contact.tsx
+
+## Google Analytics Integration
+- [x] Add Google Analytics tracking code (G-J23S2RL6HP) to website - Added to client/index.html
