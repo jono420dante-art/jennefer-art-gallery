@@ -223,3 +223,14 @@
 
 ## Google Analytics Integration
 - [x] Add Google Analytics tracking code (G-J23S2RL6HP) to website - Added to client/index.html
+
+## SEO Improvements - Home Page
+- [x] Fix page title (currently 24 chars, needs 30-60 chars) - "Jennefer Ann Art Gallery - Realist Oil Paintings" (48 chars)
+- [x] Add meta description (50-160 characters) - "Discover stunning realist oil paintings by Jennefer Ann..."
+- [x] Add keywords to home page - oil paintings, realist art, African wildlife, portrait paintings, landscape art, art gallery, South Africa
+
+## Public Review/Comment Submission Form
+- [x] Create public submission form component - PublicReviewSubmissionForm.tsx
+- [x] Add API endpoints for public submissions - Already existed (reviews.create, comments.create)
+- [x] Integrate form into home page - Added to Home.tsx after Visitor Comments section
+- [x] Test form submission and validation - Form displays with all fields, star ratings, and submit button

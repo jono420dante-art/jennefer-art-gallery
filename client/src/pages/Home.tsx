@@ -5,6 +5,7 @@ import { Link } from "wouter";
 import { Loader2, ArrowRight } from "lucide-react";
 import ReviewsSection from "@/components/ReviewsSection";
 import { PublicComments } from "@/components/PublicComments";
+import { PublicReviewSubmissionForm } from "@/components/PublicReviewSubmissionForm";
 
 export default function Home() {
   const { data: featuredArtworks, isLoading } = trpc.artworks.featured.useQuery();
@@ -168,6 +169,14 @@ export default function Home() {
         </div>
         <div className="max-w-3xl mx-auto">
           <PublicComments isReviewSection={false} />
+        </div>
+      </section>
+
+      {/* Public Review Submission Form */}
+      <section className="container py-20">
+        <div className="section-divider" />
+        <div className="max-w-3xl mx-auto">
+          <PublicReviewSubmissionForm />
         </div>
       </section>
 
