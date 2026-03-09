@@ -234,3 +234,9 @@
 - [x] Add API endpoints for public submissions - Already existed (reviews.create, comments.create)
 - [x] Integrate form into home page - Added to Home.tsx after Visitor Comments section
 - [x] Test form submission and validation - Form displays with all fields, star ratings, and submit button
+
+## Work in Progress Section
+- [ ] Create WorkInProgressSection component to display WIP images
+- [ ] Add WIP section to home page below Featured Works
+- [ ] Display cheetah WIP images with progress bars
+- [ ] Test WIP section displays correctly
