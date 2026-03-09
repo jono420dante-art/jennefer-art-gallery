@@ -1,0 +1,42 @@
+{
+  "query": "SELECT id, title, slug, imageUrl, imageKey, collectionId FROM artworks WHERE title LIKE '%Cheetah%' ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, title, slug, imageUrl, imageKey, collectionId FROM artworks WHERE title LIKE '%Cheetah%' ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "420002",
+      "title": "Cheetah v2",
+      "slug": "in progress-1773054812266",
+      "imageUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1773054813548-kd1zf.jpg",
+      "imageKey": "artworks/1773054813548-kd1zf.jpg",
+      "collectionId": "150001"
+    },
+    {
+      "id": "420001",
+      "title": "Cheetah",
+      "slug": "in progress-1773054466731",
+      "imageUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1773054469269-blg0y6.jpg",
+      "imageKey": "artworks/1773054469269-blg0y6.jpg",
+      "collectionId": "150001"
+    },
+    {
+      "id": "300002",
+      "title": "Cheetah",
+      "slug": "Cheetah-1769874807214",
+      "imageUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1769874808146-v707ob.jpg",
+      "imageKey": "artworks/1769874808146-v707ob.jpg",
+      "collectionId": "120002"
+    },
+    {
+      "id": "150011",
+      "title": "Cheetah",
+      "slug": "Mission",
+      "imageUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1769240264337-hfsyph.jpg",
+      "imageKey": "artworks/1769240264337-hfsyph.jpg",
+      "collectionId": "90004"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tslug\timageUrl\timageKey\tcollectionId\n420002\tCheetah v2\tin progress-1773054812266\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1773054813548-kd1zf.jpg\tartworks/1773054813548-kd1zf.jpg\t150001\n420001\tCheetah\tin progress-1773054466731\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1773054469269-blg0y6.jpg\tartworks/1773054469269-blg0y6.jpg\t150001\n300002\tCheetah\tCheetah-1769874807214\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1769874808146-v707ob.jpg\tartworks/1769874808146-v707ob.jpg\t120002\n150011\tCheetah\tMission\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1769240264337-hfsyph.jpg\tartworks/1769240264337-hfsyph.jpg\t90004\n",
+  "stderr": "",
+  "execution_time_ms": 52
+}

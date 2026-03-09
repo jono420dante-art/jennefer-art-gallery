@@ -241,3 +241,5 @@
 - [x] Display cheetah WIP images with progress bars
 - [x] Test WIP section displays correctly
 - [x] Updated WIP database to display only 2 real uploaded cheetah images (removed 3 placeholder entries)
+- [x] Fixed broken S3 URLs in wipImages table - Updated with correct CloudFront CDN URLs
+- [x] Verified both cheetah images now display correctly with progress bars and carousel navigation
