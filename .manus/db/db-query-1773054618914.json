@@ -1,0 +1,31 @@
+{
+  "query": "SELECT id, title, imageUrl, progress, description FROM wipImages ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, title, imageUrl, progress, description FROM wipImages ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "title": "Cheetah Portrait - Speed Study",
+      "imageUrl": "https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=800",
+      "progress": "65",
+      "description": "Capturing the grace and power of a cheetah in motion. Working on the detailed facial features and spotted coat."
+    },
+    {
+      "id": "2",
+      "title": "Cheetah in Savanna",
+      "imageUrl": "https://images.unsplash.com/photo-1602491453631-e2a5ad90000f?w=800",
+      "progress": "45",
+      "description": "A cheetah resting in the African savanna. Focusing on the landscape background and lighting effects."
+    },
+    {
+      "id": "3",
+      "title": "Cheetah Cubs Playing",
+      "imageUrl": "https://images.unsplash.com/photo-1618826411640-d6df44dd3f7a?w=800",
+      "progress": "55",
+      "description": "Two young cheetah cubs playing together. Working on capturing their playful energy and juvenile features."
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\timageUrl\tprogress\tdescription\n1\tCheetah Portrait - Speed Study\thttps://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=800\t65\tCapturing the grace and power of a cheetah in motion. Working on the detailed facial features and spotted coat.\n2\tCheetah in Savanna\thttps://images.unsplash.com/photo-1602491453631-e2a5ad90000f?w=800\t45\tA cheetah resting in the African savanna. Focusing on the landscape background and lighting effects.\n3\tCheetah Cubs Playing\thttps://images.unsplash.com/photo-1618826411640-d6df44dd3f7a?w=800\t55\tTwo young cheetah cubs playing together. Working on capturing their playful energy and juvenile features.\n",
+  "stderr": "",
+  "execution_time_ms": 490
+}

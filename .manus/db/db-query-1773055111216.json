@@ -1,0 +1,24 @@
+{
+  "query": "SELECT id, title, description, progress, imageUrl FROM wipImages ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, title, description, progress, imageUrl FROM wipImages ORDER BY id;",
+  "rows": [
+    {
+      "id": "30001",
+      "title": "Cheetah v2",
+      "description": "Latest version of the cheetah portrait with refined details and enhanced fur texture",
+      "progress": "70",
+      "imageUrl": "https://manus-webdev-prod.s3.us-west-2.amazonaws.com/in%20progress-1773054812266"
+    },
+    {
+      "id": "30002",
+      "title": "Cheetah Portrait",
+      "description": "Working on capturing the grace and power of a cheetah in motion",
+      "progress": "55",
+      "imageUrl": "https://manus-webdev-prod.s3.us-west-2.amazonaws.com/Cheetah-1769874807214"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tdescription\tprogress\timageUrl\n30001\tCheetah v2\tLatest version of the cheetah portrait with refined details and enhanced fur texture\t70\thttps://manus-webdev-prod.s3.us-west-2.amazonaws.com/in%20progress-1773054812266\n30002\tCheetah Portrait\tWorking on capturing the grace and power of a cheetah in motion\t55\thttps://manus-webdev-prod.s3.us-west-2.amazonaws.com/Cheetah-1769874807214\n",
+  "stderr": "",
+  "execution_time_ms": 56
+}

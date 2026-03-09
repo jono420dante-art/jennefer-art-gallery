@@ -236,7 +236,8 @@
 - [x] Test form submission and validation - Form displays with all fields, star ratings, and submit button
 
 ## Work in Progress Section
-- [ ] Create WorkInProgressSection component to display WIP images
-- [ ] Add WIP section to home page below Featured Works
-- [ ] Display cheetah WIP images with progress bars
-- [ ] Test WIP section displays correctly
+- [x] Create WorkInProgressSection component to display WIP images
+- [x] Add WIP section to home page below Featured Works
+- [x] Display cheetah WIP images with progress bars
+- [x] Test WIP section displays correctly
+- [x] Updated WIP database to display only 2 real uploaded cheetah images (removed 3 placeholder entries)

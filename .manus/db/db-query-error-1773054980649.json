@@ -1,0 +1,8 @@
+{
+  "query": "DELETE FROM wipImages; INSERT INTO wipImages (title, imageUrl, progress, description) VALUES ('Cheetah v2', 'https://manus-webdev-prod.s3.us-west-2.amazonaws.com/in%20progress-1773054812266', 70, 'Latest version of the cheetah portrait with refined details and enhanced fur texture'), ('Cheetah Portrait', 'https://manus-webdev-prod.s3.us-west-2.amazonaws.com/Cheetah-1769874807214', 55, 'Working on capturing the grace and power of a cheetah in motion');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute DELETE FROM wipImages; INSERT INTO wipImages (title, imageUrl, progress, description) VALUES ('Cheetah v2', 'https://manus-webdev-prod.s3.us-west-2.amazonaws.com/in%20progress-1773054812266', 70, 'Latest version of the cheetah portrait with refined details and enhanced fur texture'), ('Cheetah Portrait', 'https://manus-webdev-prod.s3.us-west-2.amazonaws.com/Cheetah-1769874807214', 55, 'Working on capturing the grace and power of a cheetah in motion');",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1364 (HY000) at line 1: Field 'imageKey' doesn't have a default value"
+  ]
+}
