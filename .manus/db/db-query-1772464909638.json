@@ -1,0 +1,21 @@
+{
+  "query": "SELECT COUNT(*) as total_reviews, AVG(rating) as avg_rating FROM reviews WHERE isApproved = 1; SELECT COUNT(*) as total_comments FROM comments WHERE isApproved = 1; SELECT COUNT(*) as total_artworks FROM artworks; SELECT COUNT(*) as total_collections FROM collections;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT COUNT(*) as total_reviews, AVG(rating) as avg_rating FROM reviews WHERE isApproved = 1; SELECT COUNT(*) as total_comments FROM comments WHERE isApproved = 1; SELECT COUNT(*) as total_artworks FROM artworks; SELECT COUNT(*) as total_collections FROM collections;",
+  "rows": [
+    {
+      "total_reviews": "8",
+      "avg_rating": "4.8750"
+    }
+  ],
+  "messages": [
+    "total_comments",
+    "3",
+    "total_artworks",
+    "92",
+    "total_collections",
+    "11"
+  ],
+  "stdout": "total_reviews\tavg_rating\n8\t4.8750\ntotal_comments\n3\ntotal_artworks\n92\ntotal_collections\n11\n",
+  "stderr": "",
+  "execution_time_ms": 887
+}
