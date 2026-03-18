@@ -1,9 +1,0 @@
-{
-  "query": "UPDATE wipImages SET imageUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1773054813548-kd1zf.jpg', imageKey = 'artworks/1773054813548-kd1zf.jpg' WHERE id = 30001; UPDATE wipImages SET imageUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1773054469269-blg0y6.jpg', imageKey = 'artworks/1773054469269-blg0y6.jpg' WHERE id = 30002;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute UPDATE wipImages SET imageUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1773054813548-kd1zf.jpg', imageKey = 'artworks/1773054813548-kd1zf.jpg' WHERE id = 30001; UPDATE wipImages SET imageUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663283061180/gokzRJ3amGZhE8iUCjv6kp/artworks/1773054469269-blg0y6.jpg', imageKey = 'artworks/1773054469269-blg0y6.jpg' WHERE id = 30002;",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 80
-}
