@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE artworks SET description = 'Framed 47x47cm\\n\\nPrice:\\nR 8500.00 ZAR\\n$500.00 USD\\n\\nAvailability:\\nSOLD' WHERE id = '30024';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute UPDATE artworks SET description = 'Framed 47x47cm\\n\\nPrice:\\nR 8500.00 ZAR\\n$500.00 USD\\n\\nAvailability:\\nSOLD' WHERE id = '30024';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 266
+}

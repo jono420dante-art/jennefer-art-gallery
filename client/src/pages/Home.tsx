@@ -6,7 +6,7 @@ import { Loader2, ArrowRight } from "lucide-react";
 import ReviewsSection from "@/components/ReviewsSection";
 import { PublicComments } from "@/components/PublicComments";
 import { PublicReviewSubmissionForm } from "@/components/PublicReviewSubmissionForm";
-import WorkInProgressSection from "@/components/WorkInProgressSection";
+import WildlifeDonationSection from "@/components/WildlifeDonationSection";
 
 export default function Home() {
   const { data: featuredArtworks, isLoading } = trpc.artworks.featured.useQuery();
@@ -155,8 +155,8 @@ export default function Home() {
         </section>
       )}
 
-      {/* Work in Progress Section */}
-      <WorkInProgressSection />
+      {/* Wildlife Donation Section */}
+      <WildlifeDonationSection />
 
       {/* Reviews Section */}
       <ReviewsSection />

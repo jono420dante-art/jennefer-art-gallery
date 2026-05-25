@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, title, slug FROM artworks WHERE id = '30024';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, title, slug FROM artworks WHERE id = '30024';",
+  "rows": [
+    {
+      "id": "30024",
+      "title": "Bunny Cuddles",
+      "slug": "Bunny Cuddles"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tslug\n30024\tBunny Cuddles\tBunny Cuddles\n",
+  "stderr": "",
+  "execution_time_ms": 270
+}

@@ -1,0 +1,22 @@
+{
+  "query": "SELECT a.id, a.title, a.collectionId, c.name as collection FROM artworks a LEFT JOIN collections c ON a.collectionId = c.id WHERE a.title LIKE '%Raina%' OR (a.title LIKE '%Cheetah%' AND c.name = 'For Sale');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT a.id, a.title, a.collectionId, c.name as collection FROM artworks a LEFT JOIN collections c ON a.collectionId = c.id WHERE a.title LIKE '%Raina%' OR (a.title LIKE '%Cheetah%' AND c.name = 'For Sale');",
+  "rows": [
+    {
+      "id": "150030",
+      "title": "Raina",
+      "collectionId": "5",
+      "collection": "Featured"
+    },
+    {
+      "id": "450002",
+      "title": "Cheetah",
+      "collectionId": "6",
+      "collection": "For Sale"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tcollectionId\tcollection\n150030\tRaina\t5\tFeatured\n450002\tCheetah\t6\tFor Sale\n",
+  "stderr": "",
+  "execution_time_ms": 258
+}

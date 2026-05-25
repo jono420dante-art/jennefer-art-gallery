@@ -1,0 +1,65 @@
+{
+  "query": "SELECT id, name, description FROM collections ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, name, description FROM collections ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Domestic Animals",
+      "description": "Bold, expressive works exploring form, color, and emotion through non-representational compositions."
+    },
+    {
+      "id": "2",
+      "name": "Landscapes",
+      "description": "Dramatic interpretations of natural scenes, emphasizing the interplay of light across terrain and sky."
+    },
+    {
+      "id": "5",
+      "name": "Featured",
+      "description": "A curated selection of signature pieces that best represent the artist's vision and technique."
+    },
+    {
+      "id": "6",
+      "name": "For Sale",
+      "description": "Artworks currently available for purchase"
+    },
+    {
+      "id": "30001",
+      "name": "Pet potraits",
+      "description": ""
+    },
+    {
+      "id": "30002",
+      "name": "Birds",
+      "description": ""
+    },
+    {
+      "id": "30003",
+      "name": "People",
+      "description": ""
+    },
+    {
+      "id": "90001",
+      "name": "STILL LIFE",
+      "description": ""
+    },
+    {
+      "id": "90004",
+      "name": "Wildlife",
+      "description": ""
+    },
+    {
+      "id": "120001",
+      "name": "Charity Donations",
+      "description": "Donated to Tortoise Conservation George"
+    },
+    {
+      "id": "150001",
+      "name": "#- Work in Progress-#",
+      "description": "My present moment Work"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tdescription\n1\tDomestic Animals\tBold, expressive works exploring form, color, and emotion through non-representational compositions.\n2\tLandscapes\tDramatic interpretations of natural scenes, emphasizing the interplay of light across terrain and sky.\n5\tFeatured\tA curated selection of signature pieces that best represent the artist's vision and technique.\n6\tFor Sale\tArtworks currently available for purchase\n30001\tPet potraits\t\n30002\tBirds\t\n30003\tPeople\t\n90001\tSTILL LIFE\t\n90004\tWildlife\t\n120001\tCharity Donations\tDonated to Tortoise Conservation George\n150001\t#- Work in Progress-#\tMy present moment Work\n",
+  "stderr": "",
+  "execution_time_ms": 264
+}

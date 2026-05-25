@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, title, collectionId, isAvailable, description FROM artworks WHERE title LIKE '%Robin%' OR title LIKE '%robin%' OR title LIKE '%ROBIN%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, title, collectionId, isAvailable, description FROM artworks WHERE title LIKE '%Robin%' OR title LIKE '%robin%' OR title LIKE '%ROBIN%';",
+  "rows": [
+    {
+      "id": "60003",
+      "title": "LITTLE ROBIN",
+      "collectionId": "6",
+      "isAvailable": "1",
+      "description": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tcollectionId\tisAvailable\tdescription\n60003\tLITTLE ROBIN\t6\t1\t\n",
+  "stderr": "",
+  "execution_time_ms": 925
+}

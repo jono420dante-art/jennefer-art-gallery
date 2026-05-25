@@ -245,3 +245,20 @@
 ## SEO Optimization - Home Page Meta Tags
 - [x] Fix page title to be 30-60 characters - "Jennefer Ann Art Gallery - Realist Oil Paintings" (48 chars) ✓
 - [x] Fix meta description to be 50-160 characters - Updated to "Realist oil paintings by Jennefer Ann. African wildlife, portraits, and landscapes. Commission custom artwork today." (116 chars) ✓
+
+## Admin Dashboard Enhancement
+- [x] Mark Little Robin as SOLD (isAvailable = 0)
+- [x] Add inline edit functionality to artwork list (edit title, description, price, availability)
+- [x] Add "Mark as Sold" / "Mark as Available" toggle button per artwork
+- [x] Add "Move to Collection" dropdown per artwork
+- [x] Add "Toggle Featured" button per artwork
+- [x] Show availability status (SOLD/Available) badge in artwork list
+- [x] Show collection name in artwork list
+- [x] Add search/filter for artworks in admin
+- [x] Updated admin login credentials to grant444/rare444
+
+## Artwork Updates
+- [x] Corrected "Raina" spelling to "Riana"
+- [x] Moved Cheetah painting from For Sale to Wildlife collection with donation note
+- [x] Replaced Work in Progress section with Wildlife Donation section for Cango Wildlife Ranch
+- [x] Updated Bunny Cuddles - removed price from description, marked as SOLD (red badge)

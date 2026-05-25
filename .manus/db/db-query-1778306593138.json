@@ -1,0 +1,16 @@
+{
+  "query": "SELECT a.id, a.title, a.description, c.name as collection FROM artworks a LEFT JOIN collections c ON a.collectionId = c.id WHERE a.title = 'Bunny Cuddles';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT a.id, a.title, a.description, c.name as collection FROM artworks a LEFT JOIN collections c ON a.collectionId = c.id WHERE a.title = 'Bunny Cuddles';",
+  "rows": [],
+  "messages": [
+    "30024\tBunny Cuddles\tFramed 47x47cm",
+    "Price:",
+    "R 8500.00 ZAR",
+    "$500.00 USD",
+    "Availability:",
+    "SOLD\tFor Sale"
+  ],
+  "stdout": "id\ttitle\tdescription\tcollection\n30024\tBunny Cuddles\tFramed 47x47cm\n\nPrice:\nR 8500.00 ZAR\n$500.00 USD\n\nAvailability:\nSOLD\tFor Sale\n",
+  "stderr": "",
+  "execution_time_ms": 277
+}

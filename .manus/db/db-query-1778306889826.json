@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, title, description, isAvailable FROM artworks WHERE id = '30024';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, title, description, isAvailable FROM artworks WHERE id = '30024';",
+  "rows": [
+    {
+      "id": "30024",
+      "title": "Bunny Cuddles",
+      "description": "Framed 47x47cm",
+      "isAvailable": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tdescription\tisAvailable\n30024\tBunny Cuddles\tFramed 47x47cm\t0\n",
+  "stderr": "",
+  "execution_time_ms": 254
+}

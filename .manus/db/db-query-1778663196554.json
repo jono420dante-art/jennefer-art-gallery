@@ -1,0 +1,14 @@
+{
+  "query": "SELECT id, name FROM collections WHERE name LIKE '%Work in Progress%' OR name LIKE '%WORK IN PROGRESS%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, name FROM collections WHERE name LIKE '%Work in Progress%' OR name LIKE '%WORK IN PROGRESS%';",
+  "rows": [
+    {
+      "id": "150001",
+      "name": "#- Work in Progress-#"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n150001\t#- Work in Progress-#\n",
+  "stderr": "",
+  "execution_time_ms": 274
+}

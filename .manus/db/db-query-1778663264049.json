@@ -1,0 +1,9 @@
+{
+  "query": "UPDATE artworks SET collectionId = '90004', description = 'Donated to Cango Wildlife Ranch to help raise funds after the devastating flood. This beautiful cheetah portrait now serves as a memorial to our commitment to wildlife conservation.' WHERE id = '450002';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute UPDATE artworks SET collectionId = '90004', description = 'Donated to Cango Wildlife Ranch to help raise funds after the devastating flood. This beautiful cheetah portrait now serves as a memorial to our commitment to wildlife conservation.' WHERE id = '450002';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 265
+}
