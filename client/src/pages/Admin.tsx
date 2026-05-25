@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Plus, Trash2, Check, X, Pencil, Star, ArrowRightLeft, Eye, EyeOff, Search, Save } from "lucide-react";
-import { useState, useMemo } from "react";
+import { Loader2, Plus, Trash2, Check, X, Pencil, Star, ArrowRightLeft, Eye, EyeOff, Search, Save, Upload, CheckSquare, Square, Image as ImageIcon } from "lucide-react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { useEffect } from "react";
@@ -49,6 +49,9 @@ export default function Admin() {
     displayOrder: 0,
   });
   const [imageFile, setImageFile] = useState<string>("");
+  const [imagePreview, setImagePreview] = useState<string>("");
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // State for collection form
   const [collectionForm, setCollectionForm] = useState<any>({
@@ -64,6 +67,10 @@ export default function Admin() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCollection, setFilterCollection] = useState<string>("all");
   const [filterAvailability, setFilterAvailability] = useState<string>("all");
+
+  // Batch selection state
+  const [selectedArtworks, setSelectedArtworks] = useState<Set<number>>(new Set());
+  const [showBulkActions, setShowBulkActions] = useState(false);
 
   // Queries
   const { data: collections } = trpc.collections.list.useQuery();
@@ -193,6 +200,7 @@ export default function Admin() {
       displayOrder: 0,
     });
     setImageFile("");
+    setImagePreview("");
   };
 
   const resetCollectionForm = () => {
@@ -204,17 +212,48 @@ export default function Admin() {
     });
   };
 
+  // Drag and drop handlers
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      processImageFile(file);
+    } else {
+      toast.error("Please drop an image file");
+    }
+  }, []);
+
+  const processImageFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      setImageFile(result);
+      setImagePreview(result);
+    };
+    reader.onerror = () => {
+      toast.error("Failed to read image file");
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageFile(reader.result as string);
-      };
-      reader.onerror = () => {
-        toast.error("Failed to read image file");
-      };
-      reader.readAsDataURL(file);
+      processImageFile(file);
     }
   };
 
@@ -333,6 +372,62 @@ export default function Admin() {
     return collection?.name || "Unknown";
   };
 
+  // Batch selection handlers
+  const toggleSelectArtwork = (artworkId: number) => {
+    const newSelected = new Set(selectedArtworks);
+    if (newSelected.has(artworkId)) {
+      newSelected.delete(artworkId);
+    } else {
+      newSelected.add(artworkId);
+    }
+    setSelectedArtworks(newSelected);
+    setShowBulkActions(newSelected.size > 0);
+  };
+
+  const selectAll = () => {
+    const allIds = new Set(filteredArtworks.map((a) => a.id));
+    setSelectedArtworks(allIds);
+    setShowBulkActions(allIds.size > 0);
+  };
+
+  const deselectAll = () => {
+    setSelectedArtworks(new Set());
+    setShowBulkActions(false);
+  };
+
+  // Bulk actions
+  const bulkMarkSold = () => {
+    selectedArtworks.forEach((id) => {
+      updateArtwork.mutate({ id, isAvailable: 0 });
+    });
+    toast.success(`${selectedArtworks.size} artwork(s) marked as SOLD`);
+    deselectAll();
+  };
+
+  const bulkMarkAvailable = () => {
+    selectedArtworks.forEach((id) => {
+      updateArtwork.mutate({ id, isAvailable: 1 });
+    });
+    toast.success(`${selectedArtworks.size} artwork(s) marked as Available`);
+    deselectAll();
+  };
+
+  const bulkMoveToCollection = (collectionId: string) => {
+    selectedArtworks.forEach((id) => {
+      updateArtwork.mutate({ id, collectionId: parseInt(collectionId) });
+    });
+    toast.success(`${selectedArtworks.size} artwork(s) moved`);
+    deselectAll();
+  };
+
+  const bulkDelete = () => {
+    selectedArtworks.forEach((id) => {
+      deleteArtwork.mutate({ id });
+    });
+    toast.success(`${selectedArtworks.size} artwork(s) deleted`);
+    deselectAll();
+  };
+
   return (
     <div className="min-h-screen">
       <section className="container py-12">
@@ -354,13 +449,61 @@ export default function Admin() {
 
           {/* Artworks Tab */}
           <TabsContent value="artworks" className="space-y-6">
-            {/* Add New Artwork Form */}
+            {/* Add New Artwork Form - Improved */}
             <Card className="p-6 bg-card border-border">
-              <h2 className="text-2xl font-semibold text-foreground mb-4">Add New Artwork</h2>
-              <form onSubmit={handleArtworkSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Plus size={20} className="text-primary" />
+                Add New Artwork
+              </h2>
+              <form onSubmit={handleArtworkSubmit} className="space-y-6">
+                {/* Drag & Drop Image Upload */}
+                <div
+                  className={`relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
+                    isDragging
+                      ? "border-primary bg-primary/10 scale-[1.02]"
+                      : imagePreview
+                      ? "border-green-500 bg-green-500/5"
+                      : "border-border hover:border-primary/50 hover:bg-muted/30"
+                  }`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  {imagePreview ? (
+                    <div className="flex items-center gap-4">
+                      <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover rounded-lg shadow-md" />
+                      <div className="text-left">
+                        <p className="text-green-400 font-semibold flex items-center gap-2">
+                          <Check size={16} /> Image ready
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-1">Click or drag to replace</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                        <Upload size={24} className="text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-foreground font-medium">Drop your artwork image here</p>
+                        <p className="text-sm text-muted-foreground mt-1">or click to browse files</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Supports: JPG, PNG, WebP (max 10MB)</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label>Collection *</Label>
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wider">Collection *</Label>
                     <Select
                       value={artworkForm.collectionId}
                       onValueChange={(value) =>
@@ -368,7 +511,7 @@ export default function Admin() {
                       }
                       required
                     >
-                      <SelectTrigger className="bg-background">
+                      <SelectTrigger className="bg-background mt-1">
                         <SelectValue placeholder="Select collection" />
                       </SelectTrigger>
                       <SelectContent>
@@ -382,117 +525,77 @@ export default function Admin() {
                   </div>
 
                   <div>
-                    <Label>Title *</Label>
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wider">Title *</Label>
                     <Input
                       value={artworkForm.title}
                       onChange={(e) => setArtworkForm({ ...artworkForm, title: e.target.value })}
                       required
-                      className="bg-background"
+                      className="bg-background mt-1"
+                      placeholder="e.g., African Sunset"
                     />
                   </div>
 
                   <div>
-                    <Label>Slug (auto-generated if empty)</Label>
-                    <Input
-                      value={artworkForm.slug}
-                      onChange={(e) => setArtworkForm({ ...artworkForm, slug: e.target.value })}
-                      className="bg-background"
-                      placeholder="auto-generated-from-title"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Dimensions</Label>
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wider">Dimensions</Label>
                     <Input
                       value={artworkForm.dimensions}
                       onChange={(e) => setArtworkForm({ ...artworkForm, dimensions: e.target.value })}
-                      className="bg-background"
+                      className="bg-background mt-1"
                       placeholder="e.g., 24x36 inches"
                     />
                   </div>
 
                   <div>
-                    <Label>Medium</Label>
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wider">Medium</Label>
                     <Input
                       value={artworkForm.medium}
                       onChange={(e) => setArtworkForm({ ...artworkForm, medium: e.target.value })}
-                      className="bg-background"
+                      className="bg-background mt-1"
                       placeholder="e.g., Oil on canvas"
                     />
                   </div>
 
                   <div>
-                    <Label>Price (ZAR)</Label>
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wider">Price (ZAR)</Label>
                     <Input
                       value={artworkForm.priceZar}
                       onChange={(e) => setArtworkForm({ ...artworkForm, priceZar: e.target.value })}
-                      className="bg-background"
-                      placeholder="5000"
+                      className="bg-background mt-1"
+                      placeholder="e.g., 5000"
                     />
                   </div>
 
                   <div>
-                    <Label>Price (USD)</Label>
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wider">Price (USD)</Label>
                     <Input
                       value={artworkForm.priceUsd}
                       onChange={(e) => setArtworkForm({ ...artworkForm, priceUsd: e.target.value })}
-                      className="bg-background"
-                      placeholder="300"
+                      className="bg-background mt-1"
+                      placeholder="e.g., 300"
                     />
-                  </div>
-
-                  <div>
-                    <Label>Featured</Label>
-                    <Select
-                      value={artworkForm.isFeatured.toString()}
-                      onValueChange={(value) =>
-                        setArtworkForm({ ...artworkForm, isFeatured: parseInt(value) })
-                      }
-                    >
-                      <SelectTrigger className="bg-background">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="0">No</SelectItem>
-                        <SelectItem value="1">Yes</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
 
                 <div>
-                  <Label>Description</Label>
+                  <Label className="text-xs text-muted-foreground uppercase tracking-wider">Description</Label>
                   <Textarea
                     value={artworkForm.description}
                     onChange={(e) => setArtworkForm({ ...artworkForm, description: e.target.value })}
-                    className="bg-background"
+                    className="bg-background mt-1"
                     rows={3}
+                    placeholder="Describe the artwork, inspiration, technique..."
                   />
                 </div>
 
-                <div>
-                  <Label>Image *</Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    required
-                    className="bg-background"
-                  />
-                  {imageFile && (
-                    <img src={imageFile} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />
-                  )}
-                </div>
-
-                <Button type="submit" disabled={createArtwork.isPending}>
+                <Button type="submit" disabled={createArtwork.isPending} size="lg" className="w-full md:w-auto">
                   {createArtwork.isPending ? (
                     <>
                       <Loader2 className="mr-2 animate-spin" size={16} />
-                      Creating...
+                      Uploading...
                     </>
                   ) : (
                     <>
-                      <Plus className="mr-2" size={16} />
+                      <Upload className="mr-2" size={16} />
                       Create Artwork
                     </>
                   )}
@@ -547,12 +650,81 @@ export default function Admin() {
               </div>
             </Card>
 
-            {/* Artworks List - Enhanced */}
+            {/* Bulk Actions Toolbar */}
+            <Card className={`p-4 bg-primary/10 border-primary/30 transition-all ${showBulkActions ? 'opacity-100' : 'opacity-50'}`}>
+              <div className="flex flex-wrap gap-3 items-center">
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="outline" onClick={selectAll} className="text-xs">
+                    <CheckSquare size={14} className="mr-1" /> Select All
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={deselectAll} className="text-xs">
+                    <Square size={14} className="mr-1" /> Deselect
+                  </Button>
+                  <span className="text-sm font-medium text-primary">
+                    {selectedArtworks.size} selected
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 ml-auto">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={bulkMarkSold}
+                    disabled={selectedArtworks.size === 0}
+                    className="text-xs border-red-500/30 text-red-400 hover:bg-red-500/10"
+                  >
+                    <EyeOff size={14} className="mr-1" /> Mark Sold
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={bulkMarkAvailable}
+                    disabled={selectedArtworks.size === 0}
+                    className="text-xs border-green-500/30 text-green-400 hover:bg-green-500/10"
+                  >
+                    <Eye size={14} className="mr-1" /> Mark Available
+                  </Button>
+                  <Select
+                    value=""
+                    onValueChange={(value) => {
+                      if (value) bulkMoveToCollection(value);
+                    }}
+                    disabled={selectedArtworks.size === 0}
+                  >
+                    <SelectTrigger className="h-8 text-xs w-[140px] bg-background">
+                      <ArrowRightLeft size={12} className="mr-1" />
+                      <span>Move to...</span>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {collections?.map((col) => (
+                        <SelectItem key={col.id} value={col.id.toString()}>
+                          {col.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={bulkDelete}
+                    disabled={selectedArtworks.size === 0}
+                    className="text-xs"
+                  >
+                    <Trash2 size={14} className="mr-1" /> Delete
+                  </Button>
+                </div>
+              </div>
+            </Card>
+
+            {/* Artworks List - Enhanced with Checkboxes */}
             <Card className="p-6 bg-card border-border">
               <h2 className="text-2xl font-semibold text-foreground mb-4">Manage Artworks</h2>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {filteredArtworks.map((artwork) => (
-                  <div key={artwork.id} className="p-4 bg-background rounded-lg border border-border">
+                  <div key={artwork.id} className={`p-4 rounded-lg border transition-all ${
+                    selectedArtworks.has(artwork.id)
+                      ? "bg-primary/5 border-primary/40"
+                      : "bg-background border-border"
+                  }`}>
                     {editingArtworkId === artwork.id ? (
                       /* Inline Edit Mode */
                       <div className="space-y-4">
@@ -688,11 +860,23 @@ export default function Admin() {
                       </div>
                     ) : (
                       /* View Mode */
-                      <div className="flex items-start gap-4">
-                        <img src={artwork.imageUrl} alt={artwork.title} className="w-20 h-20 object-cover rounded flex-shrink-0" />
+                      <div className="flex items-start gap-3">
+                        {/* Checkbox */}
+                        <button
+                          onClick={() => toggleSelectArtwork(artwork.id)}
+                          className="mt-1 flex-shrink-0 p-1 rounded hover:bg-muted transition-colors"
+                        >
+                          {selectedArtworks.has(artwork.id) ? (
+                            <CheckSquare size={18} className="text-primary" />
+                          ) : (
+                            <Square size={18} className="text-muted-foreground" />
+                          )}
+                        </button>
+
+                        <img src={artwork.imageUrl} alt={artwork.title} className="w-16 h-16 object-cover rounded flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap mb-1">
-                            <h3 className="font-semibold text-foreground text-lg">{artwork.title}</h3>
+                            <h3 className="font-semibold text-foreground">{artwork.title}</h3>
                             {/* Status Badges */}
                             <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                               artwork.isAvailable === 1 
@@ -707,76 +891,45 @@ export default function Admin() {
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground mb-1">
+                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
                             <span className="bg-muted px-2 py-0.5 rounded text-xs">{getCollectionName(artwork.collectionId)}</span>
                             {artwork.priceZar && <span>R {artwork.priceZar}</span>}
                             {artwork.priceUsd && <span>${artwork.priceUsd}</span>}
                             {artwork.dimensions && <span>{artwork.dimensions}</span>}
                           </div>
-                          {artwork.description && (
-                            <p className="text-sm text-muted-foreground truncate">{artwork.description}</p>
-                          )}
                         </div>
                         
                         {/* Action Buttons */}
-                        <div className="flex flex-col gap-2 flex-shrink-0">
-                          <div className="flex gap-1">
-                            {/* Edit Button */}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => startEditing(artwork)}
-                              title="Edit artwork"
-                            >
-                              <Pencil size={14} />
-                            </Button>
-                            {/* Toggle Sold/Available */}
-                            <Button
-                              size="sm"
-                              variant={artwork.isAvailable === 1 ? "outline" : "default"}
-                              onClick={() => toggleAvailability(artwork)}
-                              title={artwork.isAvailable === 1 ? "Mark as Sold" : "Mark as Available"}
-                              className={artwork.isAvailable === 0 ? "bg-green-600 hover:bg-green-700" : ""}
-                            >
-                              {artwork.isAvailable === 1 ? <EyeOff size={14} /> : <Eye size={14} />}
-                            </Button>
-                            {/* Toggle Featured */}
-                            <Button
-                              size="sm"
-                              variant={artwork.isFeatured === 1 ? "default" : "outline"}
-                              onClick={() => toggleFeatured(artwork)}
-                              title={artwork.isFeatured === 1 ? "Remove from Featured" : "Add to Featured"}
-                              className={artwork.isFeatured === 1 ? "bg-yellow-600 hover:bg-yellow-700" : ""}
-                            >
-                              <Star size={14} />
-                            </Button>
-                            {/* Delete */}
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => deleteArtwork.mutate({ id: artwork.id })}
-                              title="Delete artwork"
-                            >
-                              <Trash2 size={14} />
-                            </Button>
-                          </div>
-                          {/* Move to Collection */}
-                          <Select
-                            value={artwork.collectionId.toString()}
-                            onValueChange={(value) => moveToCollection(artwork.id, value)}
+                        <div className="flex gap-1 flex-shrink-0">
+                          <Button size="sm" variant="outline" onClick={() => startEditing(artwork)} title="Edit artwork">
+                            <Pencil size={14} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={artwork.isAvailable === 1 ? "outline" : "default"}
+                            onClick={() => toggleAvailability(artwork)}
+                            title={artwork.isAvailable === 1 ? "Mark as Sold" : "Mark as Available"}
+                            className={artwork.isAvailable === 0 ? "bg-green-600 hover:bg-green-700" : ""}
                           >
-                            <SelectTrigger className="h-8 text-xs bg-card">
-                              <ArrowRightLeft size={12} className="mr-1" />
-                              <span className="truncate">Move</span>
-                            </SelectTrigger>
-                            <SelectContent>
-                              {collections?.map((col) => (
-                                <SelectItem key={col.id} value={col.id.toString()}>
-                                  {col.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            {artwork.isAvailable === 1 ? <EyeOff size={14} /> : <Eye size={14} />}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={artwork.isFeatured === 1 ? "default" : "outline"}
+                            onClick={() => toggleFeatured(artwork)}
+                            title={artwork.isFeatured === 1 ? "Remove from Featured" : "Add to Featured"}
+                            className={artwork.isFeatured === 1 ? "bg-yellow-600 hover:bg-yellow-700" : ""}
+                          >
+                            <Star size={14} />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => deleteArtwork.mutate({ id: artwork.id })}
+                            title="Delete artwork"
+                          >
+                            <Trash2 size={14} />
+                          </Button>
                         </div>
                       </div>
                     )}

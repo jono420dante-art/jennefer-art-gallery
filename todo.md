@@ -262,3 +262,20 @@
 - [x] Moved Cheetah painting from For Sale to Wildlife collection with donation note
 - [x] Replaced Work in Progress section with Wildlife Donation section for Cango Wildlife Ranch
 - [x] Updated Bunny Cuddles - removed price from description, marked as SOLD (red badge)
+
+## Admin Portal UX Enhancements
+- [x] Add batch selection (checkboxes) for artworks in admin list
+- [x] Add bulk actions toolbar (mark sold, move collection, delete selected)
+- [x] Improve image upload with drag-and-drop and preview
+- [x] Add quick status toggle (sold/available) directly in artwork cards
+- [x] Add collection move dropdown directly on each artwork card
+- [x] Simplify the "Add New Artwork" form with better layout and guidance
+
+## Marketing & SEO for Sales
+- [x] Add Open Graph meta tags for social sharing (Facebook, Twitter, WhatsApp)
+- [x] Add structured data (Schema.org) for artworks (Product schema with price/availability)
+- [ ] Add XML sitemap for search engine indexing
+- [x] Add social sharing buttons on artwork detail pages (Facebook, WhatsApp, Pinterest, Twitter)
+- [x] Add "Share This Artwork" CTA on each artwork page
+- [ ] Add robots.txt for proper crawling
+- [ ] Add canonical URLs to prevent duplicate content

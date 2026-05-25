@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, title, slug FROM artworks WHERE title LIKE '%Riana%' LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4JumtaDgDRJq5kh.root --database gokzRJ3amGZhE8iUCjv6kp --execute SELECT id, title, slug FROM artworks WHERE title LIKE '%Riana%' LIMIT 5;",
+  "rows": [
+    {
+      "id": "150030",
+      "title": "Riana",
+      "slug": "R-1769241286000"
+    },
+    {
+      "id": "270001",
+      "title": "Riana",
+      "slug": "Riana-1769842761058"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tslug\n150030\tRiana\tR-1769241286000\n270001\tRiana\tRiana-1769842761058\n",
+  "stderr": "",
+  "execution_time_ms": 300
+}
