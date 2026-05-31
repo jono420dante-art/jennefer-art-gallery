@@ -18,11 +18,13 @@ import AdminLogin from "./pages/AdminLogin";
 import Checkout from "./pages/Checkout";
 import Showcase from "./pages/Showcase";
 import ExitSurvey from "./components/ExitSurvey";
+import { NotificationManager } from "./components/NotificationManager";
 
 
 function Router() {
   return (
     <>
+      <NotificationManager />
       <Navigation />
       <div className="pt-20 min-h-screen">
         <Switch>

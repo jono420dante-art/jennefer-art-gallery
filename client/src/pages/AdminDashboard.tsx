@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { trpc } from '@/lib/trpc';
 import { useLocation } from 'wouter';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 import { BarChart3, Image, MessageSquare, Users, TrendingUp } from 'lucide-react';
+import { NotificationsPanel } from '@/components/NotificationsPanel';
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -124,6 +125,11 @@ export default function AdminDashboard() {
             </Link>
           </div>
         </Card>
+
+        {/* Notifications */}
+        <div className="mb-8">
+          <NotificationsPanel />
+        </div>
 
         {/* Recent Activity */}
         <Card className="p-8 bg-card">

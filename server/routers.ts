@@ -450,6 +450,29 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ NOTIFICATIONS ROUTES ============
+  notifications: router({
+    sendToAdmin: protectedProcedure
+      .input(z.object({
+        title: z.string(),
+        body: z.string(),
+        type: z.enum(['review', 'message', 'sale', 'system']),
+        data: z.record(z.string(), z.any()).optional(),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // Store notification in database
+        // For now, just return success
+        // In production, this would send to all admin clients via WebSocket or polling
+        console.log('Notification:', input);
+        return { success: true };
+      }),
+
+    list: adminProcedure.query(async () => {
+      // Return list of recent notifications
+      return [];
+    }),
+  }),
+
   // ============ ORDER ROUTES ============
   orders: router({
     create: publicProcedure

@@ -228,6 +228,7 @@
 - [x] Fix page title (currently 24 chars, needs 30-60 chars) - "Jennefer Ann Art Gallery - Realist Oil Paintings" (48 chars)
 - [x] Add meta description (50-160 characters) - "Discover stunning realist oil paintings by Jennefer Ann..."
 - [x] Add keywords to home page - oil paintings, realist art, African wildlife, portrait paintings, landscape art, art gallery, South Africa
+- [x] Reduce keywords from 9 to 6 focused keywords - "realist oil paintings, African wildlife art, portrait paintings, commission artwork, South Africa artist, art gallery"
 
 ## Public Review/Comment Submission Form
 - [x] Create public submission form component - PublicReviewSubmissionForm.tsx
@@ -279,3 +280,14 @@
 - [x] Add "Share This Artwork" CTA on each artwork page
 - [ ] Add robots.txt for proper crawling
 - [ ] Add canonical URLs to prevent duplicate content
+
+
+## Push Notifications for System Events
+- [ ] Create Service Worker for handling push notifications
+- [ ] Add notification permission request on home page
+- [ ] Implement notification triggers for new reviews/comments
+- [ ] Implement notification triggers for visitor messages
+- [ ] Implement notification triggers for artwork sold
+- [ ] Add notification management UI to admin dashboard
+- [ ] Test push notifications on different browsers
+- [ ] Add notification history/log to admin panel

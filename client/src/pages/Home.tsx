@@ -1,3 +1,4 @@
+import React from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,10 +8,16 @@ import ReviewsSection from "@/components/ReviewsSection";
 import { PublicComments } from "@/components/PublicComments";
 import { PublicReviewSubmissionForm } from "@/components/PublicReviewSubmissionForm";
 import WildlifeDonationSection from "@/components/WildlifeDonationSection";
+import { NotificationManager } from "@/components/NotificationManager";
 
 export default function Home() {
   const { data: featuredArtworks, isLoading } = trpc.artworks.featured.useQuery();
   const { data: collections } = trpc.collections.list.useQuery();
+
+  // Initialize notification system on component mount
+  React.useEffect(() => {
+    // Notification manager will auto-initialize
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
