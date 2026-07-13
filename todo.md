@@ -223,7 +223,7 @@
 
 ## Google Analytics Integration
 - [x] Add Google Analytics tracking code (G-J23S2RL6HP) to website - Added to client/index.html
-- [x] Update Google Analytics tracking code to new ID (G-463EDXRSY3) - Updated in client/index.html
+- [x] Update Google Analytics tracking code to correct ID (G-BVGFXTT1HB) - Updated in client/index.html
 
 ## SEO Improvements - Home Page
 - [x] Fix page title (currently 24 chars, needs 30-60 chars) - "Jennefer Ann Art Gallery - Realist Oil Paintings" (48 chars)
