@@ -9,6 +9,7 @@ import { PublicComments } from "@/components/PublicComments";
 import { PublicReviewSubmissionForm } from "@/components/PublicReviewSubmissionForm";
 import WildlifeDonationSection from "@/components/WildlifeDonationSection";
 import { NotificationManager } from "@/components/NotificationManager";
+import { PopupSignup } from "@/components/PopupSignup";
 
 export default function Home() {
   const { data: featuredArtworks, isLoading } = trpc.artworks.featured.useQuery();
@@ -21,6 +22,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
+      <PopupSignup />
       {/* Hero Section - Heavenly Italian Gallery */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden marble-texture">
         {/* Divine Light Effects */}

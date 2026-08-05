@@ -135,3 +135,16 @@ export const wipImages = mysqlTable("wipImages", {
 	createdAt: timestamp({ mode: 'string' }).default('CURRENT_TIMESTAMP').notNull(),
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 });
+
+export const newsletterSignups = mysqlTable("newsletterSignups", {
+	id: int().autoincrement().notNull(),
+	firstName: varchar({ length: 100 }).notNull(),
+	lastName: varchar({ length: 100 }).notNull(),
+	email: varchar({ length: 320 }).notNull(),
+	isSubscribed: int().default(1).notNull(),
+	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	index("newsletterSignups_email_unique").on(table.email),
+]);

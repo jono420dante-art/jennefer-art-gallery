@@ -10,7 +10,8 @@ import {
   reviews,
   orders,
   paymentSettings,
-  aboutContent
+  aboutContent,
+  newsletterSignups
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -422,4 +423,32 @@ export async function deleteReview(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(reviews).where(eq(reviews.id, id));
+}
+
+// ============ NEWSLETTER SIGNUP FUNCTIONS ============
+
+export async function createNewsletterSignup(data: { firstName: string; lastName: string; email: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(newsletterSignups).values(data);
+  return result;
+}
+
+export async function getAllNewsletterSignups() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(newsletterSignups).orderBy(desc(newsletterSignups.createdAt));
+}
+
+export async function getNewsletterSignupByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(newsletterSignups).where(eq(newsletterSignups.email, email)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function deleteNewsletterSignup(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(newsletterSignups).where(eq(newsletterSignups.id, id));
 }

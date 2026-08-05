@@ -283,6 +283,19 @@
 - [ ] Add canonical URLs to prevent duplicate content
 
 
+## Newsletter Signup Popup
+- [x] Create PopupSignup component with form fields (First Name, Last Name, Email)
+- [x] Add popup trigger logic (3s delay or 30% scroll)
+- [x] Style popup with white card, rounded corners, pink accent button
+- [x] Make popup mobile responsive and easy to close
+- [x] Add database schema for newsletter signups
+- [x] Create tRPC procedures for signup, list, delete
+- [x] Integrate PopupSignup component into Home.tsx
+- [x] Write and run Vitest tests for newsletter procedures (12 tests passing)
+- [ ] Add newsletter signup management view to Admin dashboard
+- [ ] Test popup trigger and form submission in browser
+- [ ] Verify signups are correctly stored in database
+
 ## Push Notifications for System Events
 - [ ] Create Service Worker for handling push notifications
 - [ ] Add notification permission request on home page

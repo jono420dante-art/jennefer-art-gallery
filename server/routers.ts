@@ -515,7 +515,44 @@ export const appRouter = router({
         await db.updateOrderStatus(input.id, input.status);
         return { success: true };
       }),
+    }),
+  
+  // ============ NEWSLETTER ROUTES ============
+  newsletter: router({
+    signup: publicProcedure
+      .input(z.object({
+        firstName: z.string().min(1, "First name is required"),
+        lastName: z.string().min(1, "Last name is required"),
+        email: z.string().email("Valid email is required"),
+      }))
+      .mutation(async ({ input }) => {
+        // Check if email already exists
+        const existing = await db.getNewsletterSignupByEmail(input.email);
+        if (existing) {
+          throw new TRPCError({
+            code: 'CONFLICT',
+            message: 'This email is already subscribed to our newsletter',
+          });
+        }
+        
+        await db.createNewsletterSignup({
+          firstName: input.firstName,
+          lastName: input.lastName,
+          email: input.email,
+        });
+        return { success: true, message: 'Successfully subscribed to newsletter' };
+      }),
+    
+    list: adminProcedure.query(async () => {
+      return await db.getAllNewsletterSignups();
+    }),
+    
+    delete: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteNewsletterSignup(input.id);
+        return { success: true };
+      }),
   }),
 });
-
 export type AppRouter = typeof appRouter;
