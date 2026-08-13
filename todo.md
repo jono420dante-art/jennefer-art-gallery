@@ -296,6 +296,16 @@
 - [ ] Test popup trigger and form submission in browser
 - [ ] Verify signups are correctly stored in database
 
+## Product Page Sales Conversion
+- [x] Add dedicated purchase card to available artwork pages
+- [x] Add a secure checkout path and 30% reservation lead path
+- [x] Centralize the artist WhatsApp contact configuration
+- [ ] Confirm that the existing WhatsApp number is artist-approved before launch
+- [x] Add a commission request form and store leads in the existing admin-managed contact records
+- [x] Prepare per-artwork hosted payment-link configuration
+- [ ] Add PayFast checkout/deposit links once merchant links are supplied
+- [ ] Verify the sales and commission flows end-to-end
+
 ## Push Notifications for System Events
 - [ ] Create Service Worker for handling push notifications
 - [ ] Add notification permission request on home page

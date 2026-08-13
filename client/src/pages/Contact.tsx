@@ -14,6 +14,8 @@ import {
 import { Loader2, Mail, MapPin, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { CommissionRequestForm } from "@/components/CommissionRequestForm";
+import { getWhatsAppLink } from "@/lib/galleryContact";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -71,6 +73,10 @@ export default function Contact() {
             Have a question or interested in commissioning a piece? We'd love to hear from you.
           </p>
         </div>
+      </section>
+
+      <section className="container pb-4">
+        <CommissionRequestForm />
       </section>
 
       <section className="container py-12">
@@ -252,7 +258,7 @@ export default function Contact() {
                   <div>
                     <p className="font-medium text-foreground">WhatsApp</p>
                     <a 
-                      href="https://wa.me/27846405120?text=Hi%20Jennefer%2C%20I%27m%20interested%20in%20commissioning%20an%20artwork." 
+                      href={getWhatsAppLink("Hi Jennefer, I'm interested in commissioning an artwork.")}
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-primary hover:text-primary/80 transition-colors font-semibold"

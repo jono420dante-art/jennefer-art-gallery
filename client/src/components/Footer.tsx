@@ -1,3 +1,5 @@
+import { getWhatsAppLink } from "@/lib/galleryContact";
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -58,7 +60,7 @@ export default function Footer() {
               </li>
               <li className="pt-2">
                 <a 
-                  href="https://wa.me/27846405120?text=Hi%20Jennefer%2C%20I%27m%20interested%20in%20commissioning%20an%20artwork." 
+                  href={getWhatsAppLink("Hi Jennefer, I'm interested in commissioning an artwork.")}
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-semibold"

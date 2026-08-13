@@ -8,6 +8,8 @@ import { Loader2, ArrowLeft, ShoppingCart, Share2, Heart, ExternalLink } from "l
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { PublicComments } from "@/components/PublicComments";
+import { ProductPurchaseCard } from "@/components/ProductPurchaseCard";
+import { getArtworkPaymentLinks } from "@/lib/artworkPaymentLinks";
 
 export default function ArtworkDetail() {
   const [, params] = useRoute("/artwork/:slug");
@@ -159,6 +161,8 @@ export default function ArtworkDetail() {
     );
   }
 
+  const paymentLinks = getArtworkPaymentLinks(artwork.slug);
+
   return (
     <div className="min-h-screen">
       {/* Structured Data for this artwork */}
@@ -229,72 +233,20 @@ export default function ArtworkDetail() {
               </p>
             )}
 
-            <div className="space-y-4 mb-8">
-              {artwork.dimensions && (
-                <div className="flex items-center">
-                  <span className="text-sm font-semibold text-foreground w-32">Dimensions:</span>
-                  <span className="text-sm text-muted-foreground">{artwork.dimensions}</span>
-                </div>
-              )}
-
-              {artwork.medium && (
-                <div className="flex items-center">
-                  <span className="text-sm font-semibold text-foreground w-32">Medium:</span>
-                  <span className="text-sm text-muted-foreground">{artwork.medium}</span>
-                </div>
-              )}
-
-              {artwork.priceZar && (
-                <div className="flex items-center">
-                  <span className="text-sm font-semibold text-foreground w-32">Price:</span>
-                  <div className="space-y-1">
-                    <span className="text-xl font-bold text-primary block">
-                      R {artwork.priceZar} ZAR
-                    </span>
-                    {artwork.priceUsd && (
-                      <span className="text-sm text-muted-foreground">
-                        ${artwork.priceUsd} USD
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center">
-                <span className="text-sm font-semibold text-foreground w-32">Availability:</span>
-                <span className={`text-sm font-bold ${artwork.isAvailable ? 'text-green-500' : 'text-red-500'}`}>
-                  {artwork.isAvailable ? 'Available' : 'Sold'}
-                </span>
-              </div>
-            </div>
-
-            {artwork.isAvailable && (
-              <div className="space-y-4 mb-8">
-                {artwork.collectionId === 6 ? (
-                  <>
-                    <Link href={`/checkout/${artwork.slug}`}>
-                      <Button size="lg" className="w-full group">
-                        <ShoppingCart className="mr-2" size={20} />
-                        Buy Now
-                      </Button>
-                    </Link>
-                    <Link href="/contact">
-                      <Button size="lg" variant="outline" className="w-full group">
-                        <ShoppingCart className="mr-2" size={20} />
-                        Inquire or Commission
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
-                  <Link href="/contact">
-                    <Button size="lg" className="w-full group">
-                      <ShoppingCart className="mr-2" size={20} />
-                      Inquire or Commission
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            )}
+            <ProductPurchaseCard
+              artworkTitle={artwork.title}
+              medium={artwork.medium || "Original artwork"}
+              dimensions={artwork.dimensions || ""}
+              priceZar={artwork.priceZar || undefined}
+              priceUsd={artwork.priceUsd || undefined}
+              isAvailable={Boolean(artwork.isAvailable)}
+              isSold={!artwork.isAvailable}
+              checkoutUrl={artwork.collectionId === 6 ? `/checkout/${artwork.slug}` : undefined}
+              fullPaymentLink={paymentLinks.fullPaymentLink}
+              depositPaymentLink={paymentLinks.depositPaymentLink}
+              depositPercentage={paymentLinks.depositPercentage}
+              showArtworkIdentity={false}
+            />
 
             {/* Social Sharing Buttons */}
             <div className="border-t border-border pt-6">
