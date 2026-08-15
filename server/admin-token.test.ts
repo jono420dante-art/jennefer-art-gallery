@@ -55,6 +55,7 @@ describe("server-enforced Admin Portal access", () => {
       () => caller.notifications.sendToAdmin({ title: "System event", body: "Unauthorized notification", type: "system" }),
       () => caller.analytics.summary({ days: 7 }),
       () => caller.newsletter.list(),
+      () => caller.newsletter.delete({ id: 1 }),
       () => caller.orders.list(),
     ];
 
@@ -81,6 +82,7 @@ describe("server-enforced Admin Portal access", () => {
       () => caller.paymentSettings.get(),
       () => caller.analytics.downloadReport({ days: 7 }),
       () => caller.newsletter.list(),
+      () => caller.newsletter.delete({ id: 1 }),
       () => caller.orders.list(),
     ];
 

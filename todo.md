@@ -292,9 +292,13 @@
 - [x] Create tRPC procedures for signup, list, delete
 - [x] Integrate PopupSignup component into Home.tsx
 - [x] Write and run Vitest tests for newsletter procedures (12 tests passing)
-- [ ] Add newsletter signup management view to Admin dashboard
-- [ ] Test popup trigger and form submission in browser
+- [x] Add newsletter signup management view to Admin dashboard
+- [x] Test popup trigger and public form presentation in browser
 - [ ] Verify signups are correctly stored in database
+
+## Newsletter Subscriber Administration
+- [x] Add an Administrator-only subscriber list with signup dates and deletion controls
+- [x] Verify non-administrators cannot read or delete subscriber records
 
 ## Collector Signup Experience Refinement
 - [x] Add a prominent accessible X button to dismiss the collector signup popup

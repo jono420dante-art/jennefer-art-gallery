@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Plus, Trash2, Check, X, Pencil, Star, ArrowRightLeft, Eye, EyeOff, Search, Save, Upload, CheckSquare, Square, Image as ImageIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, Check, X, Pencil, Star, ArrowRightLeft, Eye, EyeOff, Search, Save, Upload, CheckSquare, Square, Image as ImageIcon, Mail } from "lucide-react";
 import { useState, useMemo, useRef, useCallback } from "react";
 import { toast } from "sonner";
 
@@ -66,6 +66,9 @@ export default function Admin() {
     enabled: true,
   });
   const { data: allReviews } = trpc.reviews.listAll.useQuery(undefined, {
+    enabled: true,
+  });
+  const { data: newsletterSubscribers, isLoading: newsletterLoading } = trpc.newsletter.list.useQuery(undefined, {
     enabled: true,
   });
 
@@ -153,6 +156,20 @@ export default function Admin() {
       utils.reviews.listAll.invalidate();
     },
   });
+
+  const deleteNewsletterSubscriber = trpc.newsletter.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Subscriber removed from the collector list.");
+      utils.newsletter.list.invalidate();
+    },
+    onError: (error) => toast.error(error.message || "Could not remove this subscriber."),
+  });
+
+  const removeNewsletterSubscriber = (id: number, email: string) => {
+    if (window.confirm(`Remove ${email} from the collector newsletter list?`)) {
+      deleteNewsletterSubscriber.mutate({ id });
+    }
+  };
 
   // Filtered artworks
   const filteredArtworks = useMemo(() => {
@@ -423,12 +440,13 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="artworks" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid h-auto w-full grid-cols-3 gap-1 sm:grid-cols-6">
             <TabsTrigger value="artworks">Artworks</TabsTrigger>
             <TabsTrigger value="collections">Collections</TabsTrigger>
             <TabsTrigger value="contacts">Contact Forms</TabsTrigger>
             <TabsTrigger value="comments">Comments</TabsTrigger>
             <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            <TabsTrigger value="subscribers">Collectors</TabsTrigger>
           </TabsList>
 
           {/* Artworks Tab */}
@@ -1113,6 +1131,42 @@ export default function Admin() {
                   </div>
                 ))}
               </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="subscribers">
+            <Card className="border-border bg-card p-6">
+              <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 className="flex items-center gap-2 text-2xl font-semibold text-foreground"><Mail className="h-5 w-5 text-primary" /> Collector newsletter</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">First-party collector signups are available only to Administrators.</p>
+                </div>
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">{newsletterSubscribers?.length ?? 0} subscribers</span>
+              </div>
+
+              {newsletterLoading ? (
+                <div className="py-8 text-sm text-muted-foreground">Loading collector subscribers…</div>
+              ) : newsletterSubscribers?.length ? (
+                <div className="overflow-x-auto rounded-lg border border-border">
+                  <table className="w-full min-w-[620px] text-left text-sm">
+                    <thead className="bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                      <tr><th className="px-4 py-3">Collector</th><th className="px-4 py-3">Email</th><th className="px-4 py-3">Joined</th><th className="px-4 py-3 text-right">Action</th></tr>
+                    </thead>
+                    <tbody>
+                      {newsletterSubscribers.map((subscriber) => (
+                        <tr key={subscriber.id} className="border-t border-border bg-background">
+                          <td className="px-4 py-3 font-medium text-foreground">{subscriber.firstName} {subscriber.lastName}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{subscriber.email}</td>
+                          <td className="px-4 py-3 text-muted-foreground">{subscriber.createdAt ? new Date(subscriber.createdAt).toLocaleDateString() : "—"}</td>
+                          <td className="px-4 py-3 text-right"><Button size="sm" variant="outline" className="border-destructive/30 text-destructive hover:bg-destructive/10" onClick={() => removeNewsletterSubscriber(subscriber.id, subscriber.email)} disabled={deleteNewsletterSubscriber.isPending}><Trash2 className="mr-1 h-3.5 w-3.5" /> Remove</Button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">No collector signups have been recorded yet. New public popup signups will appear here.</div>
+              )}
             </Card>
           </TabsContent>
         </Tabs>

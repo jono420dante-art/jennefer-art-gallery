@@ -30,6 +30,12 @@ As a non-destructive live verification, the Collections and Contact Forms tabs w
 
 The Comments and Reviews tabs were also opened under the native Administrator session. Existing moderation records and their action controls loaded successfully without modifying any live comments or reviews.
 
+The protected Collector newsletter tab was verified in the native Administrator session. It loaded the real subscriber list with name, email, signup date, and a confirmation-protected removal control.
+
+The homepage was revisited to recheck the public collector popup. Its previous session-only dismissal state was cleared without submitting a new email address, so the trigger can be verified without creating artificial subscriber data.
+
+The collector popup then appeared with first name, last name, email, submit, prominent close, and “Not now” controls. The “Not now” option was verified to close the modal and restore the homepage without creating a signup record.
+
 ## Remaining manual confirmation
 
 An Administrator must complete the external OAuth sign-in once in the preview or deployed site to confirm the provider's real callback and role assignment. This manual step cannot be simulated without an authenticated administrator account in the browser.
