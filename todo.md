@@ -77,7 +77,12 @@
 - [x] Elegant Italian Renaissance design implemented
 - [x] All features tested and working
 - [x] Ready for artist to upload artworks
-- [ ] Include project overview and features
+- [x] Include project overview and features
+
+## Production Handover and Launch Checks
+- [x] Create a concise operating guide for Administrator sign-in, collector subscribers, analytics, reports, and in-site alerts
+- [x] Verify the public purchase and commission entry points without creating test customer data
+- [ ] Record external launch dependencies: artist approval of WhatsApp contact, PayFast merchant links, and optional GA4 historical-data access
 
 ## Design Refinement - Elegant Italian Gallery Style
 - [x] Redesign background with heavenly, divine aesthetic

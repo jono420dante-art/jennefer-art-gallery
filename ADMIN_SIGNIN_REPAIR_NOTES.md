@@ -40,6 +40,8 @@ Canonical URL verification: an artwork page loaded through the preview with a qu
 
 The first-party collector mailing-list section was verified on the public homepage. It provides a premium compact presentation with optional first name, required email, explicit consent wording, and a clear join action; the matching compact collector form also renders in the shared footer.
 
+Public conversion verification: the available `Survival` artwork page renders its 30% WhatsApp reservation link, WhatsApp artwork enquiry link, certificate/shipping information, and social sharing controls. The Contact page renders the complete commission request form and the general enquiry form. No test lead, order, or customer data was submitted during verification.
+
 ## Remaining manual confirmation
 
 An Administrator must complete the external OAuth sign-in once in the preview or deployed site to confirm the provider's real callback and role assignment. This manual step cannot be simulated without an authenticated administrator account in the browser.
