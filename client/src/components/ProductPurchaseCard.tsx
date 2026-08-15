@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ARTIST_WHATSAPP_PHONE, getWhatsAppLink } from '@/lib/galleryContact';
 
 interface ProductPurchaseCardProps {
+  artworkId?: number;
   artworkTitle: string;
   medium: string;
   dimensions: string;
@@ -20,6 +21,7 @@ interface ProductPurchaseCardProps {
 }
 
 export const ProductPurchaseCard: React.FC<ProductPurchaseCardProps> = ({
+  artworkId,
   artworkTitle,
   medium,
   dimensions,
@@ -104,6 +106,9 @@ export const ProductPurchaseCard: React.FC<ProductPurchaseCardProps> = ({
             <Button asChild className="w-full bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 rounded-lg">
               <a
                 href={purchaseLink}
+                data-analytics-event="click_checkout"
+                data-analytics-target={artworkTitle}
+                data-artwork-id={artworkId}
                 {...(fullPaymentLink ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
                 <ShoppingCart className="w-5 h-5" />
@@ -115,6 +120,9 @@ export const ProductPurchaseCard: React.FC<ProductPurchaseCardProps> = ({
           <Button asChild className="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-lg">
             <a
               href={reservationLink}
+              data-analytics-event="click_reserve"
+              data-analytics-target={artworkTitle}
+              data-artwork-id={artworkId}
               {...(depositPaymentLink ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             >
                 <Clock className="w-5 h-5" />
@@ -128,6 +136,9 @@ export const ProductPurchaseCard: React.FC<ProductPurchaseCardProps> = ({
       <Button asChild className="w-full bg-green-100 hover:bg-green-200 text-green-700 font-bold py-3 rounded-lg">
         <a
           href={whatsappLink}
+          data-analytics-event="click_whatsapp"
+          data-analytics-target={artworkTitle}
+          data-artwork-id={artworkId}
           {...(normalizedArtistPhone ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
         >
           <MessageCircle className="w-5 h-5" />

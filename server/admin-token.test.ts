@@ -1,27 +1,96 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import { TRPCError } from "@trpc/server";
+import { appRouter } from "./routers";
+import type { TrpcContext } from "./_core/context";
 
-describe("Admin Token Authentication", () => {
-  it("should verify that admin token header is correctly checked", () => {
-    // Test that the admin token value matches what's expected
-    const expectedToken = "admin-token-jennefer-2024";
-    const tokenFromContext = "admin-token-jennefer-2024";
-    
-    expect(tokenFromContext).toBe(expectedToken);
+function createContext(user: TrpcContext["user"]): TrpcContext {
+  return {
+    user,
+    req: { protocol: "https", headers: {} } as TrpcContext["req"],
+    res: {} as TrpcContext["res"],
+  };
+}
+
+const artworkInput = {
+  collectionId: 1,
+  title: "Unauthorized test artwork",
+  slug: "unauthorized-test-artwork",
+  imageBase64: "data:image/jpeg;base64,AA==",
+};
+
+describe("server-enforced Admin Portal access", () => {
+  it("rejects an unauthenticated request even when it contains the former admin bypass flag", async () => {
+    const ctx = { ...createContext(null), isAdminAuth: true } as TrpcContext & { isAdminAuth: boolean };
+    const caller = appRouter.createCaller(ctx);
+
+    await expect(caller.artworks.create(artworkInput)).rejects.toMatchObject<Partial<TRPCError>>({
+      code: "FORBIDDEN",
+    });
   });
 
-  it("should verify localStorage key consistency", () => {
-    // Test that the localStorage key is consistent between AdminLogin and main.tsx
-    const adminLoginKey = "adminAuth";
-    const mainTsKey = "adminAuth";
-    
-    expect(adminLoginKey).toBe(mainTsKey);
+  it("rejects a signed-in non-administrator before any admin operation is performed", async () => {
+    const caller = appRouter.createCaller(createContext({
+      id: 24,
+      openId: "standard-user",
+      name: "Standard user",
+      email: "user@example.com",
+      loginMethod: "email",
+      role: "user",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date(),
+    }));
+
+    await expect(caller.artworks.create(artworkInput)).rejects.toMatchObject<Partial<TRPCError>>({
+      code: "FORBIDDEN",
+    });
   });
 
-  it("should verify admin procedure authentication logic", () => {
-    // Simulate the admin procedure check
-    const isAdminAuth = true; // This would be set by context.ts when token matches
-    const isUnauthorized = !isAdminAuth;
-    
-    expect(isUnauthorized).toBe(false);
+  it("rejects unauthenticated callers for every sensitive management data procedure", async () => {
+    const caller = appRouter.createCaller(createContext(null));
+    const restrictedCalls = [
+      () => caller.contact.list(),
+      () => caller.comments.listAll(),
+      () => caller.paymentSettings.get(),
+      () => caller.notifications.sendToAdmin({ title: "System event", body: "Unauthorized notification", type: "system" }),
+      () => caller.analytics.summary({ days: 7 }),
+      () => caller.newsletter.list(),
+      () => caller.orders.list(),
+    ];
+
+    for (const restrictedCall of restrictedCalls) {
+      await expect(restrictedCall()).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
+    }
+  });
+
+  it("rejects signed-in non-administrators for sensitive management data", async () => {
+    const caller = appRouter.createCaller(createContext({
+      id: 25,
+      openId: "non-admin-reader",
+      name: "Non-admin reader",
+      email: "reader@example.com",
+      loginMethod: "email",
+      role: "user",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date(),
+    }));
+    const restrictedCalls = [
+      () => caller.contact.list(),
+      () => caller.comments.listAll(),
+      () => caller.paymentSettings.get(),
+      () => caller.analytics.downloadReport({ days: 7 }),
+      () => caller.newsletter.list(),
+      () => caller.orders.list(),
+    ];
+
+    for (const restrictedCall of restrictedCalls) {
+      await expect(restrictedCall()).rejects.toMatchObject<Partial<TRPCError>>({ code: "FORBIDDEN" });
+    }
+  });
+
+  it("keeps public artwork browsing available without an administrator session", async () => {
+    const caller = appRouter.createCaller(createContext(null));
+    await expect(caller.artworks.list()).resolves.toBeDefined();
   });
 });

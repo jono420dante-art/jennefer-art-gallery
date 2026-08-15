@@ -27,7 +27,7 @@ export default function Checkout() {
     slug: artworkSlug,
   });
 
-  const { data: paymentSettings } = trpc.paymentSettings.get.useQuery();
+  const { data: paymentSettings } = trpc.paymentSettings.getPublicCheckout.useQuery();
 
   const createOrder = trpc.orders.create.useMutation({
     onSuccess: () => {

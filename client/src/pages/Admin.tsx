@@ -15,25 +15,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Plus, Trash2, Check, X, Pencil, Star, ArrowRightLeft, Eye, EyeOff, Search, Save, Upload, CheckSquare, Square, Image as ImageIcon } from "lucide-react";
 import { useState, useMemo, useRef, useCallback } from "react";
 import { toast } from "sonner";
-import { useLocation } from "wouter";
-import { useEffect } from "react";
 
 export default function Admin() {
-  const [, setLocation] = useLocation();
-
-  // Check if user is authenticated as admin
-  useEffect(() => {
-    const isAdminAuth = localStorage.getItem("adminAuth");
-    if (!isAdminAuth) {
-      setLocation("/admin-login");
-    }
-  }, [setLocation]);
   const utils = trpc.useUtils();
-  const isAdminAuth = localStorage.getItem("adminAuth");
-
-  if (!isAdminAuth) {
-    return null; // Will redirect via useEffect
-  }
 
   // State for artwork form
   const [artworkForm, setArtworkForm] = useState<any>({
@@ -76,13 +60,13 @@ export default function Admin() {
   const { data: collections } = trpc.collections.list.useQuery();
   const { data: artworks } = trpc.artworks.list.useQuery();
   const { data: contacts } = trpc.contact.list.useQuery(undefined, {
-    enabled: Boolean(isAdminAuth),
+    enabled: true,
   });
   const { data: allComments } = trpc.comments.listAll.useQuery(undefined, {
-    enabled: Boolean(isAdminAuth),
+    enabled: true,
   });
   const { data: allReviews } = trpc.reviews.listAll.useQuery(undefined, {
-    enabled: Boolean(isAdminAuth),
+    enabled: true,
   });
 
   // Mutations

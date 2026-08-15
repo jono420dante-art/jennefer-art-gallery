@@ -1,41 +1,50 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { adminProcedure, publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import * as db from "./db";
 import { storagePut } from "./storage";
-
-// Admin-only procedure - allows both Manus OAuth admin and localStorage admin token
-const adminProcedure = publicProcedure.use(({ ctx, next }) => {
-  const isMaunsAdmin = ctx.user?.role === 'admin';
-  const isTokenAdmin = ctx.isAdminAuth === true;
-  
-  if (!isMaunsAdmin && !isTokenAdmin) {
-    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Please login (10001)' });
-  }
-  return next({ ctx });
-});
-
-// Public procedure that can be used for public admin operations
-const publicAdminProcedure = publicProcedure.use(({ ctx, next }) => {
-  const isTokenAdmin = ctx.isAdminAuth === true;
-  
-  if (!isTokenAdmin) {
-    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Please login (10001)' });
-  }
-  return next({ ctx });
-});
+import { createAnalyticsPdf } from "./analyticsReport";
+import { areNativeAdminCredentialsValid, createNativeAdminSession, NATIVE_ADMIN_COOKIE } from "./_core/nativeAdminAuth";
 
 export const appRouter = router({
   system: systemRouter,
   
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    nativeAdminLogin: publicProcedure
+      .input(z.object({
+        username: z.string().min(1).max(120),
+        password: z.string().min(1).max(512),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        if (!areNativeAdminCredentialsValid(input.username, input.password)) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid Administrator credentials" });
+        }
+
+        const sessionToken = await createNativeAdminSession();
+        ctx.res.cookie(NATIVE_ADMIN_COOKIE, sessionToken, {
+          ...getSessionCookieOptions(ctx.req),
+          maxAge: 8 * 60 * 60 * 1000,
+        });
+        return {
+          success: true as const,
+          user: {
+            id: 0,
+            openId: "gallery-native-admin",
+            name: "Gallery Administrator",
+            email: null,
+            loginMethod: "native_admin",
+            role: "admin" as const,
+          },
+        };
+      }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      ctx.res.clearCookie(NATIVE_ADMIN_COOKIE, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
   }),
@@ -237,7 +246,7 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    list: publicProcedure.query(async () => {
+    list: adminProcedure.query(async () => {
       return await db.getAllContactSubmissions();
     }),
 
@@ -260,7 +269,7 @@ export const appRouter = router({
         return await db.getCommentsByArtwork(input.artworkId);
       }),
 
-    listAll: publicProcedure.query(async () => {
+    listAll: adminProcedure.query(async () => {
       return await db.getAllComments();
     }),
 
@@ -327,8 +336,12 @@ export const appRouter = router({
 
   // ============ PAYMENT SETTINGS ROUTES ============
   paymentSettings: router({
-    get: publicProcedure.query(async () => {
+    get: adminProcedure.query(async () => {
       return await db.getPaymentSettings();
+    }),
+
+    getPublicCheckout: publicProcedure.query(async () => {
+      return await db.getPublicCheckoutPaymentSettings();
     }),
 
     update: adminProcedure
@@ -452,7 +465,7 @@ export const appRouter = router({
 
   // ============ NOTIFICATIONS ROUTES ============
   notifications: router({
-    sendToAdmin: protectedProcedure
+    sendToAdmin: adminProcedure
       .input(z.object({
         title: z.string(),
         body: z.string(),
@@ -552,6 +565,62 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await db.deleteNewsletterSignup(input.id);
         return { success: true };
+      }),
+  }),
+
+  // ============ FIRST-PARTY ANALYTICS ROUTES ============
+  analytics: router({
+    track: publicProcedure
+      .input(z.object({
+        sessionId: z.string().min(16).max(64),
+        landingPath: z.string().min(1).max(500),
+        referrerDomain: z.string().max(255).optional(),
+        source: z.string().min(1).max(120),
+        medium: z.string().max(120).optional(),
+        campaign: z.string().max(180).optional(),
+        deviceType: z.enum(["mobile", "tablet", "desktop", "unknown"]).optional(),
+        eventType: z.enum([
+          "page_view",
+          "heartbeat",
+          "click_artwork",
+          "click_checkout",
+          "click_reserve",
+          "click_whatsapp",
+          "click_commission",
+          "click_newsletter",
+          "click_share",
+        ]),
+        pagePath: z.string().min(1).max(500),
+        target: z.string().max(255).optional(),
+        artworkId: z.number().int().positive().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.recordAnalyticsEvent(input);
+        return { success: true };
+      }),
+
+    summary: adminProcedure
+      .input(z.object({ days: z.number().int().min(1).max(90).default(7) }).optional())
+      .query(async ({ input }) => {
+        return await db.getAnalyticsSummary(input?.days ?? 7);
+      }),
+
+    clearExpired: adminProcedure
+      .input(z.object({ retentionDays: z.number().int().min(30).max(365).default(90) }))
+      .mutation(async ({ input }) => {
+        await db.deleteAnalyticsOlderThan(input.retentionDays);
+        return { success: true };
+      }),
+
+    downloadReport: adminProcedure
+      .input(z.object({ days: z.number().int().min(1).max(90).default(7) }))
+      .query(async ({ input }) => {
+        const summary = await db.getAnalyticsSummary(input.days);
+        const pdf = await createAnalyticsPdf(summary, input.days);
+        return {
+          filename: `jennefer-ann-growth-report-${input.days}-days.pdf`,
+          contentBase64: pdf.toString("base64"),
+        };
       }),
   }),
 });

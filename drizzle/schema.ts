@@ -1,4 +1,4 @@
-import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, varchar, text, timestamp, index, decimal, mysqlEnum } from "drizzle-orm/mysql-core"
+import { mysqlTable, mysqlSchema, AnyMySqlColumn, int, varchar, text, timestamp, index, uniqueIndex, decimal, mysqlEnum } from "drizzle-orm/mysql-core"
 import { sql } from "drizzle-orm"
 
 export const aboutContent = mysqlTable("aboutContent", {
@@ -137,7 +137,7 @@ export const wipImages = mysqlTable("wipImages", {
 });
 
 export const newsletterSignups = mysqlTable("newsletterSignups", {
-	id: int().autoincrement().notNull(),
+	id: int().autoincrement().primaryKey(),
 	firstName: varchar({ length: 100 }).notNull(),
 	lastName: varchar({ length: 100 }).notNull(),
 	email: varchar({ length: 320 }).notNull(),
@@ -146,5 +146,46 @@ export const newsletterSignups = mysqlTable("newsletterSignups", {
 	updatedAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
 },
 (table) => [
-	index("newsletterSignups_email_unique").on(table.email),
+	uniqueIndex("newsletterSignups_email_unique").on(table.email),
+]);
+
+/**
+ * Anonymous, first-party browsing sessions. No raw IP addresses, email addresses,
+ * or full user-agent strings are stored in analytics records.
+ */
+export const analyticsSessions = mysqlTable("analyticsSessions", {
+	id: int().autoincrement().primaryKey(),
+	sessionId: varchar({ length: 64 }).notNull(),
+	landingPath: varchar({ length: 500 }).notNull(),
+	referrerDomain: varchar({ length: 255 }),
+	source: varchar({ length: 120 }).notNull(),
+	medium: varchar({ length: 120 }),
+	campaign: varchar({ length: 180 }),
+	deviceType: varchar({ length: 20 }),
+	firstSeenAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+	lastSeenAt: timestamp({ mode: 'string' }).defaultNow().onUpdateNow().notNull(),
+},
+(table) => [
+	uniqueIndex("analyticsSessions_sessionId_unique").on(table.sessionId),
+	index("analyticsSessions_lastSeenAt_idx").on(table.lastSeenAt),
+	index("analyticsSessions_source_idx").on(table.source),
+]);
+
+/**
+ * Aggregatable visitor events for page views and explicit conversion clicks.
+ */
+export const analyticsEvents = mysqlTable("analyticsEvents", {
+	id: int().autoincrement().primaryKey(),
+	sessionId: varchar({ length: 64 }).notNull(),
+	eventType: varchar({ length: 80 }).notNull(),
+	pagePath: varchar({ length: 500 }).notNull(),
+	target: varchar({ length: 255 }),
+	artworkId: int(),
+	createdAt: timestamp({ mode: 'string' }).defaultNow().notNull(),
+},
+(table) => [
+	index("analyticsEvents_createdAt_idx").on(table.createdAt),
+	index("analyticsEvents_eventType_idx").on(table.eventType),
+	index("analyticsEvents_sessionId_idx").on(table.sessionId),
+	index("analyticsEvents_target_idx").on(table.target),
 ]);

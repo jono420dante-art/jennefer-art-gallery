@@ -1,4 +1,4 @@
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, count, gte, lt, like } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   users, 
@@ -11,7 +11,9 @@ import {
   orders,
   paymentSettings,
   aboutContent,
-  newsletterSignups
+  newsletterSignups,
+  analyticsSessions,
+  analyticsEvents
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -315,6 +317,11 @@ export async function getPaymentSettings() {
   return result.length > 0 ? result[0] : null;
 }
 
+export async function getPublicCheckoutPaymentSettings() {
+  const settings = await getPaymentSettings();
+  return settings ? { paypalEmail: settings.paypalEmail } : null;
+}
+
 export async function updatePaymentSettings(data: any) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -451,4 +458,158 @@ export async function deleteNewsletterSignup(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(newsletterSignups).where(eq(newsletterSignups.id, id));
+}
+
+// ============ FIRST-PARTY ANALYTICS FUNCTIONS ============
+
+export type AnalyticsEventInput = {
+  sessionId: string;
+  landingPath: string;
+  referrerDomain?: string;
+  source: string;
+  medium?: string;
+  campaign?: string;
+  deviceType?: string;
+  eventType: string;
+  pagePath: string;
+  target?: string;
+  artworkId?: number;
+};
+
+function mysqlTimestamp(date: Date) {
+  return date.toISOString().slice(0, 19).replace("T", " ");
+}
+
+export async function recordAnalyticsEvent(data: AnalyticsEventInput) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const now = mysqlTimestamp(new Date());
+  await db.insert(analyticsSessions).values({
+    sessionId: data.sessionId,
+    landingPath: data.landingPath,
+    referrerDomain: data.referrerDomain,
+    source: data.source,
+    medium: data.medium,
+    campaign: data.campaign,
+    deviceType: data.deviceType,
+    firstSeenAt: now,
+    lastSeenAt: now,
+  }).onDuplicateKeyUpdate({
+    set: { lastSeenAt: now },
+  });
+
+  await db.insert(analyticsEvents).values({
+    sessionId: data.sessionId,
+    eventType: data.eventType,
+    pagePath: data.pagePath,
+    target: data.target,
+    artworkId: data.artworkId,
+    createdAt: now,
+  });
+}
+
+export async function getAnalyticsSummary(days = 7) {
+  const db = await getDb();
+  if (!db) {
+    return {
+      uniqueSessions: 0,
+      pageViews: 0,
+      conversionClicks: 0,
+      activeVisitors: 0,
+      trafficSources: [],
+      referrers: [],
+      topPages: [],
+      topClicks: [],
+      generatedAt: new Date().toISOString(),
+    };
+  }
+
+  const rangeStart = mysqlTimestamp(new Date(Date.now() - days * 24 * 60 * 60 * 1000));
+  const activeStart = mysqlTimestamp(new Date(Date.now() - 30 * 60 * 1000));
+
+  const [sessionCount] = await db.select({ value: count() })
+    .from(analyticsSessions)
+    .where(gte(analyticsSessions.firstSeenAt, rangeStart));
+  const [pageViewCount] = await db.select({ value: count() })
+    .from(analyticsEvents)
+    .where(and(
+      eq(analyticsEvents.eventType, "page_view"),
+      gte(analyticsEvents.createdAt, rangeStart),
+    ));
+  const [conversionClickCount] = await db.select({ value: count() })
+    .from(analyticsEvents)
+    .where(and(
+      like(analyticsEvents.eventType, "click_%"),
+      gte(analyticsEvents.createdAt, rangeStart),
+    ));
+  const [activeVisitorCount] = await db.select({ value: count() })
+    .from(analyticsSessions)
+    .where(gte(analyticsSessions.lastSeenAt, activeStart));
+
+  const trafficSources = await db.select({
+    source: analyticsSessions.source,
+    sessions: count(),
+  }).from(analyticsSessions)
+    .where(gte(analyticsSessions.firstSeenAt, rangeStart))
+    .groupBy(analyticsSessions.source)
+    .orderBy(desc(count()))
+    .limit(8);
+
+  const referrers = await db.select({
+    referrerDomain: analyticsSessions.referrerDomain,
+    sessions: count(),
+  }).from(analyticsSessions)
+    .where(and(
+      gte(analyticsSessions.firstSeenAt, rangeStart),
+      like(analyticsSessions.referrerDomain, "%"),
+    ))
+    .groupBy(analyticsSessions.referrerDomain)
+    .orderBy(desc(count()))
+    .limit(8);
+
+  const topPages = await db.select({
+    pagePath: analyticsEvents.pagePath,
+    views: count(),
+  }).from(analyticsEvents)
+    .where(and(
+      eq(analyticsEvents.eventType, "page_view"),
+      gte(analyticsEvents.createdAt, rangeStart),
+    ))
+    .groupBy(analyticsEvents.pagePath)
+    .orderBy(desc(count()))
+    .limit(8);
+
+  const topClicks = await db.select({
+    eventType: analyticsEvents.eventType,
+    target: analyticsEvents.target,
+    clicks: count(),
+  }).from(analyticsEvents)
+    .where(and(
+      like(analyticsEvents.eventType, "click_%"),
+      gte(analyticsEvents.createdAt, rangeStart),
+    ))
+    .groupBy(analyticsEvents.eventType, analyticsEvents.target)
+    .orderBy(desc(count()))
+    .limit(10);
+
+  return {
+    uniqueSessions: sessionCount?.value ?? 0,
+    pageViews: pageViewCount?.value ?? 0,
+    conversionClicks: conversionClickCount?.value ?? 0,
+    activeVisitors: activeVisitorCount?.value ?? 0,
+    trafficSources,
+    referrers: referrers.filter((item) => item.referrerDomain),
+    topPages,
+    topClicks,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+export async function deleteAnalyticsOlderThan(days: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const cutoff = mysqlTimestamp(new Date(Date.now() - days * 24 * 60 * 60 * 1000));
+  await db.delete(analyticsEvents).where(lt(analyticsEvents.createdAt, cutoff));
+  await db.delete(analyticsSessions).where(lt(analyticsSessions.lastSeenAt, cutoff));
 }

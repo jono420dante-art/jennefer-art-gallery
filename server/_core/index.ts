@@ -7,6 +7,8 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import * as db from "../db";
+import { createAnalyticsPdf } from "../analyticsReport";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -35,6 +37,23 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+  app.get("/api/admin/analytics-report", async (req, res) => {
+    const ctx = await createContext({ req, res } as any);
+    if (ctx.user?.role !== "admin") {
+      res.status(403).json({ error: "Administrator access required" });
+      return;
+    }
+
+    const daysValue = Number(req.query.days ?? 7);
+    const days = Number.isInteger(daysValue) && daysValue >= 1 && daysValue <= 90 ? daysValue : 7;
+    const summary = await db.getAnalyticsSummary(days);
+    const pdf = await createAnalyticsPdf(summary, days);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="jennefer-ann-growth-report-${days}-days.pdf"`);
+    res.setHeader("Cache-Control", "no-store");
+    res.send(pdf);
+  });
   // tRPC API
   app.use(
     "/api/trpc",

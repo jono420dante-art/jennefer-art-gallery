@@ -276,10 +276,10 @@
 ## Marketing & SEO for Sales
 - [x] Add Open Graph meta tags for social sharing (Facebook, Twitter, WhatsApp)
 - [x] Add structured data (Schema.org) for artworks (Product schema with price/availability)
-- [ ] Add XML sitemap for search engine indexing
+- [x] Add XML sitemap for search engine indexing
 - [x] Add social sharing buttons on artwork detail pages (Facebook, WhatsApp, Pinterest, Twitter)
 - [x] Add "Share This Artwork" CTA on each artwork page
-- [ ] Add robots.txt for proper crawling
+- [x] Add robots.txt for proper crawling
 - [ ] Add canonical URLs to prevent duplicate content
 
 
@@ -295,6 +295,87 @@
 - [ ] Add newsletter signup management view to Admin dashboard
 - [ ] Test popup trigger and form submission in browser
 - [ ] Verify signups are correctly stored in database
+
+## Collector Signup Experience Refinement
+- [x] Add a prominent accessible X button to dismiss the collector signup popup
+- [x] Ensure dismissing the popup immediately restores uninterrupted page scrolling
+- [x] Refresh collector signup wording with a concise modern art-gallery voice
+- [x] Verify popup controls and page scrolling in the browser
+
+## Newsletter Database Repair
+- [x] Inspect and repair the missing or mismatched `newsletterSignups` database table
+- [x] Preserve any existing newsletter subscriber records during the repair (the repaired table contained zero rows)
+- [x] Add regression coverage for newsletter duplicate checks against the live schema
+- [ ] Verify newsletter signup works from the homepage
+
+## Admin Growth Control Panel
+- [x] Add first-party storage for real page views, sessions, referrers, campaign tags, and click events
+- [x] Instrument artwork, checkout, reservation, WhatsApp, commission, and newsletter conversion clicks
+- [x] Build admin metrics for live activity, traffic sources, referrers, top pages, and conversion clicks
+- [x] Add an SEO health panel for title, description, robots, sitemap, and structured data checks
+- [x] Add a downloadable PDF summary built from the recorded analytics data
+- [x] Add retention controls and privacy-safe event handling for analytics records
+- [ ] Add optional GA4 historical reporting when the Google Analytics data access is connected
+- [x] Add tests and browser verification for analytics collection and reporting
+- [x] Make SEO health checks verify the public pages, robots.txt, sitemap.xml, and artwork structured data at runtime
+- [ ] Complete authenticated browser verification of dashboard metrics, retention, and PDF download
+- [x] Record authenticated Admin Growth Control verification results
+
+## Admin SEO Dashboard Visibility Fix
+- [x] Inspect why the SEO dashboard was not obvious in Admin Control
+- [x] Add a clear SEO dashboard entry point and visible summary for administrators
+- [x] Verify the SEO dashboard route and controls in the browser
+
+## End-to-End Admin Portal Security
+- [x] Audit and remove client-side admin authentication bypasses
+- [x] Add server-enforced administrator authentication for all admin routes and procedures
+- [x] Restore a secure sign-in popup and sign-out path for the Admin Portal
+- [x] Block unauthenticated access to Admin Dashboard, SEO, analytics, reports, and management tools
+- [x] Add security regression tests for portal access and administrator-only procedures
+- [ ] Verify sign-in, sign-out, protected routes, and protected API calls in the browser
+
+## Admin Portal Sign-in Repair
+- [x] Diagnose and repair the administrator OAuth return redirect so a verified administrator reaches the Admin Dashboard
+- [x] Verify the Administrator role is present after the native encrypted session is established
+- [x] Test native sign-in success, invalid credential denial, sign-out, and protected-route recovery
+
+## Administrator Dashboard Refinement
+- [x] Preserve the secure sign-in gate and server-enforced Administrator-only access for every dashboard route and tool
+- [x] Redesign the Administrator Dashboard header, operational summary, and primary controls with a clearer premium visual hierarchy
+- [x] Improve the dashboard’s management, growth, and SEO tool navigation for faster administrator workflows
+- [x] Validate the upgraded dashboard design without exposing any protected data or actions to public visitors
+
+## Administrator Password Protection Clarification
+- [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
+- [x] Confirm whether a separate second portal password factor is required in addition to the secure account sign-in — not required; retain the secure account sign-in only
+
+## Gallery-Native Administrator Sign-in
+- [x] Replace the external-only sign-in redirect with a gallery-native username-and-password form
+- [x] Store the Administrator credential as a secure secret and validate it only on the server
+- [x] Create an encrypted, HTTP-only Administrator session after valid credentials are submitted
+- [x] Keep every Admin Portal route and sensitive procedure inaccessible until that session is valid
+- [x] Add regression coverage for invalid credentials, valid sign-in, session sign-out, and Administrator-only access
+
+## Administrator Login and Full Control Dashboard Request
+- [x] Configure the supplied Administrator username `grant444` and password `rare444` as server-side secrets, not frontend code
+- [x] Direct a valid native Administrator sign-in to the Gallery Command Centre dashboard
+- [ ] Preserve protected artwork upload, edit, delete, collection, lead, report, notification, and project-management tools
+- [x] Ensure protected analytics includes live traffic, source, click, SEO, and available geographic insight controls without fabricating visitor data
+- [x] Replace any simulated dashboard notification content with real database-backed activity or an honest empty state
+
+## Native Administrator Workflow Verification
+- [ ] Verify authenticated analytics PDF generation and retention controls under the native Administrator session — PDF validated in browser; retention handler validated with an Administrator regression test without purging live history
+- [x] Re-test the native Administrator workflow across management tools, lead views, real activity, and report access
+
+## Safe Live Administrator Workflow Verification
+- [x] Verify Contact Forms, Comments, Reviews, and Collections tabs load under the native Administrator session without changing live data
+- [x] Verify protected report access in-browser and preserve retention cleanup as a server-side regression test until a live purge is explicitly approved
+
+## Remaining Server-Side Administrator Enforcement
+- [x] Protect contact leads, moderation lists, payment settings, and every other sensitive management procedure with `adminProcedure`
+- [x] Add regression tests proving unauthenticated and non-administrator callers cannot read sensitive management data
+- [x] Verify that the protected dashboard receives no sensitive data before a verified Administrator session exists
+- [x] Add an Admin Portal guard regression test covering logged-out, non-administrator, and Administrator render paths
 
 ## Product Page Sales Conversion
 - [x] Add dedicated purchase card to available artwork pages

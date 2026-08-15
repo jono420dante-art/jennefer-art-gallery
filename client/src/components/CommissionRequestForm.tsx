@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Palette, Mail, Phone, Calendar, DollarSign, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { trpc } from '@/lib/trpc';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 interface CommissionRequestFormProps {
   onSuccess?: () => void;
 }
 
 export const CommissionRequestForm: React.FC<CommissionRequestFormProps> = ({ onSuccess }) => {
+  const { trackEvent } = useAnalytics();
   const [formData, setFormData] = useState({
     clientName: '',
     clientEmail: '',
@@ -79,6 +81,7 @@ export const CommissionRequestForm: React.FC<CommissionRequestFormProps> = ({ on
         commissionBudget: formData.budget.trim(),
         commissionTimeline: formData.timeline.trim(),
       });
+      trackEvent('click_commission', 'commission_request_submitted');
       setIsSubmitted(true);
       
       // Reset form after 3 seconds

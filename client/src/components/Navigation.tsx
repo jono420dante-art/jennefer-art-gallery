@@ -1,12 +1,12 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 export default function Navigation() {
   const [location] = useLocation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -17,7 +17,7 @@ export default function Navigation() {
   ];
 
   if (user?.role === "admin") {
-    navLinks.push({ href: "/admin", label: "Admin" });
+    navLinks.push({ href: "/admin-dashboard", label: "Admin Control" });
   }
 
   return (
@@ -53,6 +53,11 @@ export default function Navigation() {
                 </Button>
               </Link>
             )}
+            {user?.role === "admin" && (
+              <Button size="sm" variant="outline" onClick={() => logout()}>
+                <LogOut className="mr-2 h-4 w-4" /> Sign out
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -84,6 +89,11 @@ export default function Navigation() {
                     Admin Login
                   </Button>
                 </Link>
+              )}
+              {user?.role === "admin" && (
+                <Button size="sm" variant="outline" className="w-full" onClick={() => logout()}>
+                  <LogOut className="mr-2 h-4 w-4" /> Sign out
+                </Button>
               )}
             </div>
           </div>

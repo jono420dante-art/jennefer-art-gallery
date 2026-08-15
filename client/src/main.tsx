@@ -43,18 +43,9 @@ const trpcClient = trpc.createClient({
       url: "/api/trpc",
       transformer: superjson,
       fetch(input, init) {
-        // Add admin token header if user is logged in as admin
-        const isAdminLoggedIn = localStorage.getItem('adminAuth') === 'true';
-        const headers = new Headers(init?.headers || {});
-        
-        if (isAdminLoggedIn) {
-          headers.set('x-admin-token', 'admin-token-jennefer-2024');
-        }
-        
         return globalThis.fetch(input, {
           ...(init ?? {}),
           credentials: "include",
-          headers,
         });
       },
     }),

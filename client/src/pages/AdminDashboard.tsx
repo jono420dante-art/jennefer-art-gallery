@@ -1,155 +1,226 @@
-import { useState, useEffect } from 'react';
-import { trpc } from '@/lib/trpc';
-import { useLocation } from 'wouter';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Link } from 'wouter';
-import { BarChart3, Image, MessageSquare, Users, TrendingUp } from 'lucide-react';
-import { NotificationsPanel } from '@/components/NotificationsPanel';
+import { useMemo } from "react";
+import { trpc } from "@/lib/trpc";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  BarChart3,
+  ClipboardList,
+  Eye,
+  FolderKanban,
+  Image,
+  LineChart,
+  MessageSquare,
+  Palette,
+  ShieldCheck,
+  Sparkles,
+  Users,
+} from "lucide-react";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { NotificationsPanel, type OperationalNotification } from "@/components/NotificationsPanel";
+import { AdminGrowthPanel } from "@/components/AdminGrowthPanel";
 
-export default function AdminDashboard() {
-  const [, setLocation] = useLocation();
-  const [stats, setStats] = useState({
-    totalArtworks: 0,
-    totalCollections: 0,
-    pendingReviews: 0,
-    totalContacts: 0,
-  });
+type StatCardProps = {
+  icon: typeof Image;
+  label: string;
+  value: number | string;
+  detail: string;
+  accent: string;
+};
 
-  // Check if user is authenticated as admin
-  useEffect(() => {
-    const isAdminAuth = localStorage.getItem('adminAuth');
-    if (!isAdminAuth) {
-      setLocation('/admin-login');
-    }
-  }, [setLocation]);
-
-  const artworksQuery = trpc.artworks.list.useQuery();
-  const collectionsQuery = trpc.collections.list.useQuery();
-  const contactsQuery = trpc.contact.list.useQuery();
-  const reviewsQuery = trpc.reviews.list.useQuery();
-
-  useEffect(() => {
-    if (artworksQuery.data && collectionsQuery.data && contactsQuery.data && reviewsQuery.data) {
-      setStats({
-        totalArtworks: artworksQuery.data.length,
-        totalCollections: collectionsQuery.data.length,
-        pendingReviews: reviewsQuery.data.length,
-        totalContacts: contactsQuery.data.length,
-      });
-    }
-  }, [artworksQuery.data, collectionsQuery.data, contactsQuery.data, reviewsQuery.data]);
-
-
-
-  const StatCard = ({ icon: Icon, label, value, color }: any) => (
-    <Card className="p-6 bg-card hover:shadow-lg transition-shadow">
-      <div className="flex items-center justify-between">
+function StatCard({ icon: Icon, label, value, detail, accent }: StatCardProps) {
+  return (
+    <Card className="group relative overflow-hidden border-border/70 bg-card/90 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className={`absolute inset-x-0 top-0 h-1 ${accent}`} />
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-muted-foreground mb-1">{label}</p>
-          <p className="text-3xl font-bold">{value}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">{label}</p>
+          <p className="mt-3 text-4xl font-black tracking-tight text-foreground">{value}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{detail}</p>
         </div>
-        <div className={`p-3 rounded-lg ${color}`}>
-          <Icon className="w-6 h-6 text-white" />
+        <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${accent} text-white shadow-lg`}>
+          <Icon className="h-5 w-5" />
         </div>
       </div>
     </Card>
   );
+}
+
+type CommandCardProps = {
+  title: string;
+  description: string;
+  href: string;
+  icon: typeof Palette;
+  tone: string;
+};
+
+function CommandCard({ title, description, href, icon: Icon, tone }: CommandCardProps) {
+  return (
+    <Link href={href} className="group block h-full rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+      <Card className="h-full border-border/70 bg-card p-5 transition-all duration-300 hover:border-primary/50 hover:shadow-xl">
+        <div className="flex items-start justify-between gap-4">
+          <div className={`grid h-11 w-11 place-items-center rounded-xl ${tone}`}><Icon className="h-5 w-5" /></div>
+          <ArrowUpRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-primary" />
+        </div>
+        <h3 className="mt-5 text-base font-bold text-foreground">{title}</h3>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
+      </Card>
+    </Link>
+  );
+}
+
+export default function AdminDashboard() {
+  const { user } = useAuth();
+  const artworksQuery = trpc.artworks.list.useQuery();
+  const collectionsQuery = trpc.collections.list.useQuery();
+  const contactsQuery = trpc.contact.list.useQuery();
+  const reviewsQuery = trpc.reviews.listAll.useQuery();
+  const ordersQuery = trpc.orders.list.useQuery();
+
+  const isLoading = artworksQuery.isLoading || collectionsQuery.isLoading || contactsQuery.isLoading || reviewsQuery.isLoading || ordersQuery.isLoading;
+  const collectionNames = useMemo(
+    () => new Map((collectionsQuery.data ?? []).map((collection: any) => [collection.id, collection.name])),
+    [collectionsQuery.data],
+  );
+
+  const stats = {
+    totalArtworks: artworksQuery.data?.length ?? 0,
+    totalCollections: collectionsQuery.data?.length ?? 0,
+    totalReviews: reviewsQuery.data?.length ?? 0,
+    totalContacts: contactsQuery.data?.length ?? 0,
+  };
+
+  const operationalNotifications = useMemo<OperationalNotification[]>(() => {
+    const contactActivity = (contactsQuery.data ?? []).map((contact: any) => ({
+      id: `contact-${contact.id}`,
+      title: "Collector enquiry received",
+      body: `${contact.subject || "General"} enquiry from ${contact.name || "a visitor"}.`,
+      type: "message" as const,
+      timestamp: contact.createdAt ?? null,
+    }));
+    const reviewActivity = (reviewsQuery.data ?? []).map((review: any) => ({
+      id: `review-${review.id}`,
+      title: review.isApproved ? "Review approved" : "Review awaiting moderation",
+      body: `Review submission from ${review.name || "a visitor"}.`,
+      type: "review" as const,
+      timestamp: review.createdAt ?? null,
+    }));
+    const orderActivity = (ordersQuery.data ?? []).map((order: any) => ({
+      id: `order-${order.id}`,
+      title: `Order ${order.status || "created"}`,
+      body: `${order.currency || "ZAR"} ${order.amount || ""} order from ${order.buyerName || "a buyer"}.`,
+      type: "sale" as const,
+      timestamp: order.createdAt ?? null,
+    }));
+    return [...contactActivity, ...reviewActivity, ...orderActivity]
+      .sort((left, right) => new Date(right.timestamp ?? 0).getTime() - new Date(left.timestamp ?? 0).getTime())
+      .slice(0, 8);
+  }, [contactsQuery.data, ordersQuery.data, reviewsQuery.data]);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-card border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, Admin</p>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            icon={Image}
-            label="Total Artworks"
-            value={stats.totalArtworks}
-            color="bg-blue-500"
-          />
-          <StatCard
-            icon={BarChart3}
-            label="Collections"
-            value={stats.totalCollections}
-            color="bg-green-500"
-          />
-          <StatCard
-            icon={MessageSquare}
-            label="Pending Reviews"
-            value={stats.pendingReviews}
-            color="bg-orange-500"
-          />
-          <StatCard
-            icon={Users}
-            label="Contact Submissions"
-            value={stats.totalContacts}
-            color="bg-purple-500"
-          />
-        </div>
-
-        {/* Quick Actions */}
-        <Card className="p-8 bg-card mb-8">
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <TrendingUp className="w-6 h-6" />
-            Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link href="/admin">
-              <Button variant="outline" className="w-full">
-                Upload Artwork
-              </Button>
-            </Link>
-            <Link href="/admin">
-              <Button variant="outline" className="w-full">
-                Manage Collections
-              </Button>
-            </Link>
-            <Link href="/admin">
-              <Button variant="outline" className="w-full">
-                Review Submissions
-              </Button>
-            </Link>
-            <Link href="/admin">
-              <Button variant="outline" className="w-full">
-                View All Artworks
-              </Button>
-            </Link>
-          </div>
-        </Card>
-
-        {/* Notifications */}
-        <div className="mb-8">
-          <NotificationsPanel />
-        </div>
-
-        {/* Recent Activity */}
-        <Card className="p-8 bg-card">
-          <h2 className="text-2xl font-bold mb-6">Recent Activity</h2>
-          <div className="space-y-4">
-            {artworksQuery.data && artworksQuery.data.slice(0, 5).map((artwork: any) => (
-              <div key={artwork.id} className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
-                <div>
-                  <p className="font-semibold">{artwork.title}</p>
-                  <p className="text-sm text-muted-foreground">Added to {artwork.collectionId}</p>
-                </div>
-                <Button variant="ghost" size="sm">View</Button>
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--primary)/0.15),_transparent_38%),linear-gradient(180deg,hsl(var(--background)),hsl(var(--muted)/0.35))] pb-14">
+      <section className="border-b border-border/70 bg-background/75 backdrop-blur">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <div className="max-w-2xl">
+              <div className="mb-3 flex items-center gap-2 text-xs font-bold tracking-[0.16em] text-primary">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.16)]" />
+                SECURE ADMINISTRATOR SESSION
               </div>
-            ))}
-            {(!artworksQuery.data || artworksQuery.data.length === 0) && (
-              <p className="text-muted-foreground text-center py-8">No recent activity</p>
-            )}
+              <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Gallery Command Centre</h1>
+              <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">Welcome back, {user?.name || "Administrator"}. Manage the collection, collector activity, marketing performance, and SEO health from one protected control point.</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild variant="outline" className="border-primary/30 bg-card/80"><Link href="/"><Eye className="mr-2 h-4 w-4" />View gallery</Link></Button>
+              <Button asChild className="shadow-lg shadow-primary/20"><Link href="/admin"><Palette className="mr-2 h-4 w-4" />Manage artwork</Link></Button>
+            </div>
           </div>
-        </Card>
-      </div>
+          <div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 border-t border-border/60 pt-5 text-sm">
+            <a href="#operations" className="font-medium text-muted-foreground transition-colors hover:text-primary">Operations</a>
+            <a href="#growth-control" className="font-medium text-muted-foreground transition-colors hover:text-primary">Growth & analytics</a>
+            <a href="#activity" className="font-medium text-muted-foreground transition-colors hover:text-primary">Collection activity</a>
+            <a href="#notifications" className="font-medium text-muted-foreground transition-colors hover:text-primary">System notices</a>
+          </div>
+        </div>
+      </section>
+
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <section aria-label="Gallery overview" className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard icon={Image} label="Artworks" value={isLoading ? "—" : stats.totalArtworks} detail="In the current catalogue" accent="bg-violet-600" />
+          <StatCard icon={FolderKanban} label="Collections" value={isLoading ? "—" : stats.totalCollections} detail="Organised gallery categories" accent="bg-cyan-600" />
+          <StatCard icon={MessageSquare} label="Reviews" value={isLoading ? "—" : stats.totalReviews} detail="Submissions to monitor" accent="bg-amber-500" />
+          <StatCard icon={Users} label="Collector leads" value={isLoading ? "—" : stats.totalContacts} detail="Contact and commission enquiries" accent="bg-emerald-600" />
+        </section>
+
+        <section id="operations" className="mt-10 scroll-mt-24">
+          <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Operations</p>
+              <h2 className="mt-1 text-2xl font-black tracking-tight text-foreground">Your primary workspace</h2>
+            </div>
+            <Link href="/admin" className="inline-flex items-center text-sm font-semibold text-primary transition-colors hover:text-primary/80">Open full management studio <ArrowRight className="ml-1 h-4 w-4" /></Link>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <CommandCard title="Artwork studio" description="Upload work, update stories, pricing, availability and featured placement." href="/admin" icon={Palette} tone="bg-violet-500/15 text-violet-700 dark:text-violet-300" />
+            <CommandCard title="Collection control" description="Move work between collections and keep the public gallery organised." href="/admin" icon={FolderKanban} tone="bg-cyan-500/15 text-cyan-700 dark:text-cyan-300" />
+            <CommandCard title="Collector inbox" description="Review contact, commission, reservation and artwork enquiry leads." href="/admin" icon={ClipboardList} tone="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" />
+            <CommandCard title="Review moderation" description="Moderate submissions and maintain the public-facing conversation." href="/admin" icon={MessageSquare} tone="bg-amber-500/15 text-amber-700 dark:text-amber-300" />
+          </div>
+        </section>
+
+        <section id="growth-control" className="mt-10 scroll-mt-24">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Growth intelligence</p>
+              <h2 className="mt-1 text-2xl font-black tracking-tight text-foreground">Traffic, conversions & SEO</h2>
+            </div>
+            <div className="hidden items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 sm:flex"><LineChart className="h-3.5 w-3.5" />LIVE FIRST-PARTY DATA</div>
+          </div>
+          <AdminGrowthPanel />
+        </section>
+
+        <div className="mt-10 grid grid-cols-1 gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <section id="activity" className="scroll-mt-24">
+            <Card className="h-full border-border/70 bg-card p-6 sm:p-7">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Collection activity</p>
+                  <h2 className="mt-1 text-2xl font-black tracking-tight text-foreground">Latest catalogue entries</h2>
+                </div>
+                <Sparkles className="h-5 w-5 text-primary" />
+              </div>
+              <div className="mt-6 divide-y divide-border/70">
+                {(artworksQuery.data ?? []).slice(0, 5).map((artwork: any) => (
+                  <div key={artwork.id} className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-foreground">{artwork.title}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{collectionNames.get(artwork.collectionId) ?? "Gallery collection"}</p>
+                    </div>
+                    {artwork.slug && <Button asChild variant="ghost" size="sm" className="shrink-0"><Link href={`/artwork/${artwork.slug}`}>View <ArrowUpRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}
+                  </div>
+                ))}
+                {!artworksQuery.isLoading && (artworksQuery.data ?? []).length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">No catalogue activity recorded yet.</p>}
+                {artworksQuery.isLoading && <p className="py-8 text-center text-sm text-muted-foreground">Loading collection activity…</p>}
+              </div>
+            </Card>
+          </section>
+
+          <section id="notifications" className="scroll-mt-24">
+            <Card className="h-full border-primary/20 bg-gradient-to-br from-card to-primary/5 p-6 sm:p-7">
+              <div className="mb-6 flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Security & system</p>
+                  <h2 className="mt-1 text-2xl font-black tracking-tight text-foreground">Operational notices</h2>
+                </div>
+                <ShieldCheck className="h-6 w-6 text-primary" />
+              </div>
+              <NotificationsPanel notifications={operationalNotifications} />
+            </Card>
+          </section>
+        </div>
+      </main>
     </div>
   );
 }

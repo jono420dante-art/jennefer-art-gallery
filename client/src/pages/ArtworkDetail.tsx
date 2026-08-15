@@ -234,6 +234,7 @@ export default function ArtworkDetail() {
             )}
 
             <ProductPurchaseCard
+              artworkId={artwork.id}
               artworkTitle={artwork.title}
               medium={artwork.medium || "Original artwork"}
               dimensions={artwork.dimensions || ""}
