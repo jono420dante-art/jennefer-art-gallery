@@ -78,6 +78,10 @@ export default function AdminDashboard() {
   const contactsQuery = trpc.contact.list.useQuery();
   const reviewsQuery = trpc.reviews.listAll.useQuery();
   const ordersQuery = trpc.orders.list.useQuery();
+  const notificationEventsQuery = trpc.notifications.list.useQuery();
+  const utils = trpc.useUtils();
+  const markEventRead = trpc.notifications.markRead.useMutation({ onSuccess: () => utils.notifications.list.invalidate() });
+  const markAllEventsRead = trpc.notifications.markAllRead.useMutation({ onSuccess: () => utils.notifications.list.invalidate() });
 
   const isLoading = artworksQuery.isLoading || collectionsQuery.isLoading || contactsQuery.isLoading || reviewsQuery.isLoading || ordersQuery.isLoading;
   const collectionNames = useMemo(
@@ -93,31 +97,15 @@ export default function AdminDashboard() {
   };
 
   const operationalNotifications = useMemo<OperationalNotification[]>(() => {
-    const contactActivity = (contactsQuery.data ?? []).map((contact: any) => ({
-      id: `contact-${contact.id}`,
-      title: "Collector enquiry received",
-      body: `${contact.subject || "General"} enquiry from ${contact.name || "a visitor"}.`,
-      type: "message" as const,
-      timestamp: contact.createdAt ?? null,
+    return (notificationEventsQuery.data ?? []).map((event: any) => ({
+      id: event.id,
+      title: event.title,
+      body: event.body,
+      type: event.type,
+      timestamp: event.createdAt,
+      isRead: event.isRead,
     }));
-    const reviewActivity = (reviewsQuery.data ?? []).map((review: any) => ({
-      id: `review-${review.id}`,
-      title: review.isApproved ? "Review approved" : "Review awaiting moderation",
-      body: `Review submission from ${review.name || "a visitor"}.`,
-      type: "review" as const,
-      timestamp: review.createdAt ?? null,
-    }));
-    const orderActivity = (ordersQuery.data ?? []).map((order: any) => ({
-      id: `order-${order.id}`,
-      title: `Order ${order.status || "created"}`,
-      body: `${order.currency || "ZAR"} ${order.amount || ""} order from ${order.buyerName || "a buyer"}.`,
-      type: "sale" as const,
-      timestamp: order.createdAt ?? null,
-    }));
-    return [...contactActivity, ...reviewActivity, ...orderActivity]
-      .sort((left, right) => new Date(right.timestamp ?? 0).getTime() - new Date(left.timestamp ?? 0).getTime())
-      .slice(0, 8);
-  }, [contactsQuery.data, ordersQuery.data, reviewsQuery.data]);
+  }, [notificationEventsQuery.data]);
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_hsl(var(--primary)/0.15),_transparent_38%),linear-gradient(180deg,hsl(var(--background)),hsl(var(--muted)/0.35))] pb-14">
@@ -216,7 +204,7 @@ export default function AdminDashboard() {
                 </div>
                 <ShieldCheck className="h-6 w-6 text-primary" />
               </div>
-              <NotificationsPanel notifications={operationalNotifications} />
+              <NotificationsPanel notifications={operationalNotifications} onMarkRead={(id) => markEventRead.mutate({ id })} onMarkAllRead={() => markAllEventsRead.mutate()} />
             </Card>
           </section>
         </div>

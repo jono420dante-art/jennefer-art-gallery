@@ -13,7 +13,8 @@ import {
   aboutContent,
   newsletterSignups,
   analyticsSessions,
-  analyticsEvents
+  analyticsEvents,
+  notificationEvents
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -458,6 +459,44 @@ export async function deleteNewsletterSignup(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.delete(newsletterSignups).where(eq(newsletterSignups.id, id));
+}
+
+// ============ FIRST-PARTY NOTIFICATION EVENT FUNCTIONS ============
+
+export type NotificationEventType = "review" | "message" | "sale" | "collector" | "system";
+
+export async function recordNotificationEvent(data: {
+  title: string;
+  body: string;
+  type: NotificationEventType;
+  metadata?: Record<string, unknown>;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return await db.insert(notificationEvents).values({
+    title: data.title,
+    body: data.body,
+    type: data.type,
+    metadata: data.metadata ? JSON.stringify(data.metadata) : null,
+  });
+}
+
+export async function getNotificationEvents(limit = 30) {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select().from(notificationEvents).orderBy(desc(notificationEvents.createdAt)).limit(limit);
+}
+
+export async function markNotificationEventRead(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(notificationEvents).set({ isRead: 1 }).where(eq(notificationEvents.id, id));
+}
+
+export async function markAllNotificationEventsRead() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(notificationEvents).set({ isRead: 1 }).where(eq(notificationEvents.isRead, 0));
 }
 
 // ============ FIRST-PARTY ANALYTICS FUNCTIONS ============

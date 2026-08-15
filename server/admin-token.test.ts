@@ -56,6 +56,8 @@ describe("server-enforced Admin Portal access", () => {
       () => caller.analytics.summary({ days: 7 }),
       () => caller.newsletter.list(),
       () => caller.newsletter.delete({ id: 1 }),
+      () => caller.notifications.list(),
+      () => caller.notifications.markRead({ id: 1 }),
       () => caller.orders.list(),
     ];
 
@@ -83,6 +85,8 @@ describe("server-enforced Admin Portal access", () => {
       () => caller.analytics.downloadReport({ days: 7 }),
       () => caller.newsletter.list(),
       () => caller.newsletter.delete({ id: 1 }),
+      () => caller.notifications.list(),
+      () => caller.notifications.markAllRead(),
       () => caller.orders.list(),
     ];
 

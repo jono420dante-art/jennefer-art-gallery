@@ -214,6 +214,14 @@ export const appRouter = router({
             ...(convertedPriceUSD !== undefined && { priceUSD: convertedPriceUSD }),
           });
         }
+        if (input.isAvailable === 0) {
+          await db.recordNotificationEvent({
+            title: "Artwork marked sold",
+            body: "An artwork availability status was changed to sold in the protected management studio.",
+            type: "sale",
+            metadata: { artworkId: input.id },
+          });
+        }
         
         return { success: true };
       }),
@@ -243,6 +251,11 @@ export const appRouter = router({
       }))
       .mutation(async ({ input }) => {
         await db.createContactSubmission(input);
+        await db.recordNotificationEvent({
+          title: "Collector enquiry received",
+          body: `${input.subject} enquiry received from a gallery visitor.`,
+          type: "message",
+        });
         return { success: true };
       }),
 
@@ -284,6 +297,12 @@ export const appRouter = router({
         await db.createComment({
           ...input,
           isApproved: 0, // Requires admin approval
+        });
+        await db.recordNotificationEvent({
+          title: "Comment awaiting moderation",
+          body: "A visitor comment has been submitted for Administrator review.",
+          type: "review",
+          metadata: { artworkId: input.artworkId },
         });
         return { success: true };
       }),
@@ -445,6 +464,11 @@ export const appRouter = router({
           ...input,
           isApproved: 0, // Requires admin approval
         });
+        await db.recordNotificationEvent({
+          title: "Review awaiting moderation",
+          body: "A visitor review has been submitted for Administrator review.",
+          type: "review",
+        });
         return { success: true };
       }),
 
@@ -472,17 +496,28 @@ export const appRouter = router({
         type: z.enum(['review', 'message', 'sale', 'system']),
         data: z.record(z.string(), z.any()).optional(),
       }))
-      .mutation(async ({ input, ctx }) => {
-        // Store notification in database
-        // For now, just return success
-        // In production, this would send to all admin clients via WebSocket or polling
-        console.log('Notification:', input);
+      .mutation(async ({ input }) => {
+        await db.recordNotificationEvent({
+          title: input.title,
+          body: input.body,
+          type: input.type,
+          metadata: input.data,
+        });
         return { success: true };
       }),
 
     list: adminProcedure.query(async () => {
-      // Return list of recent notifications
-      return [];
+      return await db.getNotificationEvents();
+    }),
+
+    markRead: adminProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+      await db.markNotificationEventRead(input.id);
+      return { success: true };
+    }),
+
+    markAllRead: adminProcedure.mutation(async () => {
+      await db.markAllNotificationEventsRead();
+      return { success: true };
     }),
   }),
 
@@ -512,6 +547,12 @@ export const appRouter = router({
           shippingAddress: input.shippingAddress,
           notes: input.notes,
         });
+        await db.recordNotificationEvent({
+          title: "New order created",
+          body: `A ${input.currency} order was created from the public checkout flow.`,
+          type: "sale",
+          metadata: { artworkId: input.artworkId },
+        });
         return { success: true };
       }),
 
@@ -534,9 +575,10 @@ export const appRouter = router({
   newsletter: router({
     signup: publicProcedure
       .input(z.object({
-        firstName: z.string().min(1, "First name is required"),
-        lastName: z.string().min(1, "Last name is required"),
+        firstName: z.string().trim().max(100).default(""),
+        lastName: z.string().trim().max(100).default(""),
         email: z.string().email("Valid email is required"),
+        consent: z.literal(true),
       }))
       .mutation(async ({ input }) => {
         // Check if email already exists
@@ -552,6 +594,11 @@ export const appRouter = router({
           firstName: input.firstName,
           lastName: input.lastName,
           email: input.email,
+        });
+        await db.recordNotificationEvent({
+          title: "Collector joined the mailing list",
+          body: "A new visitor gave explicit consent to receive gallery updates.",
+          type: "collector",
         });
         return { success: true, message: 'Successfully subscribed to newsletter' };
       }),

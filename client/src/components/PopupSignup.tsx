@@ -12,7 +12,7 @@ export const PopupSignup: React.FC<PopupSignupProps> = ({ onClose }) => {
   const { trackEvent } = useAnalytics();
   const [isOpen, setIsOpen] = useState(false);
   const [hasDismissed, setHasDismissed] = useState(() => wasCollectorSignupDismissed());
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', consent: false });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -39,7 +39,7 @@ export const PopupSignup: React.FC<PopupSignupProps> = ({ onClose }) => {
     setIsOpen(false);
     setHasDismissed(true);
     dismissCollectorSignup();
-    setFormData({ firstName: '', lastName: '', email: '' });
+    setFormData({ firstName: '', lastName: '', email: '', consent: false });
     setIsSubmitted(false);
     setError('');
     onClose?.();
@@ -67,6 +67,7 @@ export const PopupSignup: React.FC<PopupSignupProps> = ({ onClose }) => {
     if (!formData.lastName.trim()) return setError('Last name is required.');
     if (!formData.email.trim()) return setError('Email is required.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return setError('Please enter a valid email address.');
+    if (!formData.consent) return setError('Please confirm that you would like collector updates.');
 
     setIsLoading(true);
     try {
@@ -74,6 +75,7 @@ export const PopupSignup: React.FC<PopupSignupProps> = ({ onClose }) => {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim(),
+        consent: true,
       });
       trackEvent('click_newsletter', 'newsletter_signup_submitted');
       setIsSubmitted(true);
@@ -141,6 +143,10 @@ export const PopupSignup: React.FC<PopupSignupProps> = ({ onClose }) => {
                   <label htmlFor="email" className="mb-1 block text-sm font-medium text-[#51303a]">Email Address</label>
                   <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" disabled={isLoading} className="w-full rounded-xl border border-[#dec4cb] bg-white/80 px-4 py-3 text-[#35131f] placeholder:text-[#9b7e86] outline-none transition focus:border-transparent focus:ring-2 focus:ring-[#d64c75]" />
                 </div>
+                <label className="flex cursor-pointer items-start gap-2 text-xs leading-5 text-[#765865]">
+                  <input type="checkbox" checked={formData.consent} onChange={(event) => setFormData((previous) => ({ ...previous, consent: event.target.checked }))} disabled={isLoading} className="mt-1 accent-[#c54369]" />
+                  <span>I would like occasional updates on new artworks, commissions, exhibitions, and special conservation releases.</span>
+                </label>
 
                 {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3"><p className="text-sm text-red-700">{error}</p></div>}
 

@@ -43,6 +43,13 @@
       "when": 1786622320578,
       "tag": "0005_wandering_mister_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1786810891875,
+      "tag": "0006_careful_puppet_master",
+      "breakpoints": true
     }
   ]
 }

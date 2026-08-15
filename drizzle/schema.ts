@@ -188,4 +188,23 @@ export const analyticsEvents = mysqlTable("analyticsEvents", {
 	index("analyticsEvents_eventType_idx").on(table.eventType),
 	index("analyticsEvents_sessionId_idx").on(table.sessionId),
 	index("analyticsEvents_target_idx").on(table.target),
+	]);
+
+/**
+ * First-party operational alerts for the protected Administrator Portal.
+ * Metadata stores non-sensitive routing context only; visitor contact details remain in their source records.
+ */
+export const notificationEvents = mysqlTable("notificationEvents", {
+	id: int().autoincrement().primaryKey(),
+	title: varchar({ length: 200 }).notNull(),
+	body: text().notNull(),
+	type: mysqlEnum(["review", "message", "sale", "collector", "system"]).notNull(),
+	metadata: text(),
+	isRead: int().default(0).notNull(),
+	createdAt: timestamp({ mode: "string" }).defaultNow().notNull(),
+},
+(table) => [
+	index("notificationEvents_createdAt_idx").on(table.createdAt),
+	index("notificationEvents_isRead_idx").on(table.isRead),
+	index("notificationEvents_type_idx").on(table.type),
 ]);

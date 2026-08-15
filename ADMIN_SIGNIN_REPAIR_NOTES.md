@@ -38,6 +38,8 @@ The collector popup then appeared with first name, last name, email, submit, pro
 
 Canonical URL verification: an artwork page loaded through the preview with a query parameter rendered both its canonical link and Open Graph URL as the clean `https://artbyjennefer.manus.space/artwork/Survival` public URL, with `index, follow` robots metadata.
 
+The first-party collector mailing-list section was verified on the public homepage. It provides a premium compact presentation with optional first name, required email, explicit consent wording, and a clear join action; the matching compact collector form also renders in the shared footer.
+
 ## Remaining manual confirmation
 
 An Administrator must complete the external OAuth sign-in once in the preview or deployed site to confirm the provider's real callback and role assignment. This manual step cannot be simulated without an authenticated administrator account in the browser.

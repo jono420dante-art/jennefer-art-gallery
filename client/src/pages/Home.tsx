@@ -10,6 +10,7 @@ import { PublicReviewSubmissionForm } from "@/components/PublicReviewSubmissionF
 import WildlifeDonationSection from "@/components/WildlifeDonationSection";
 import { NotificationManager } from "@/components/NotificationManager";
 import { PopupSignup } from "@/components/PopupSignup";
+import { CollectorSignupForm } from "@/components/CollectorSignupForm";
 
 export default function Home() {
   const { data: featuredArtworks, isLoading } = trpc.artworks.featured.useQuery();
@@ -64,6 +65,21 @@ export default function Home() {
                 Commission Artwork
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="container py-10 sm:py-14">
+        <div className="overflow-hidden rounded-[2rem] border border-primary/20 bg-[radial-gradient(circle_at_top_right,rgba(213,139,52,0.22),transparent_38%),linear-gradient(120deg,rgba(63,33,24,0.95),rgba(27,20,17,0.98))] px-6 py-10 shadow-2xl sm:px-10 sm:py-12">
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div>
+              <p className="mb-3 text-[11px] font-bold tracking-[0.24em] text-primary">JENNEFER ANN / PRIVATE VIEW</p>
+              <h2 className="heading-font mb-4 text-5xl leading-none text-white sm:text-6xl">JOIN THE COLLECTOR MAILING LIST</h2>
+              <p className="max-w-xl text-base leading-7 text-white/70">Be first to see new artworks, hear about commission openings, and receive considered studio news and conservation releases.</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-black/25 p-5 sm:p-6">
+              <CollectorSignupForm placement="home" />
+            </div>
           </div>
         </div>
       </section>

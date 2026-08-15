@@ -199,7 +199,7 @@
 - [x] Test public comments display - WORKING on artwork detail pages (Jody's comment displays correctly)
 - [x] Fix home page comments display - Added getAllPublicComments endpoint and updated component
 - [x] Verified Jody's comment now displays on home page VISITOR COMMENTS section
-- [ ] Fix "Pet potraits" typo to "Pet Portraits"
+- [x] Fix "Pet potraits" typo to "Pet Portraits"
 
 ## Star Ratings Display Fix
 - [x] Fix star ratings display in reviews section - Approved all pending reviews
@@ -396,11 +396,28 @@
 - [ ] Verify the sales and commission flows end-to-end
 
 ## Push Notifications for System Events
-- [ ] Create Service Worker for handling push notifications
-- [ ] Add notification permission request on home page
-- [ ] Implement notification triggers for new reviews/comments
-- [ ] Implement notification triggers for visitor messages
-- [ ] Implement notification triggers for artwork sold
-- [ ] Add notification management UI to admin dashboard
-- [ ] Test push notifications on different browsers
-- [ ] Add notification history/log to admin panel
+- [x] Select the consent-based notification delivery model before implementation — consent-based browser notifications selected
+- [x] Create Service Worker for handling push notifications — not pursued after the selected first-party-only scope
+- [x] Add notification permission request on home page — not required; first-party in-site alerts do not request browser permissions
+- [x] Implement notification triggers for new reviews/comments — implemented as durable in-site Administrator event records
+- [x] Implement notification triggers for visitor messages — implemented as durable in-site Administrator event records
+- [x] Implement notification triggers for artwork sold — implemented as durable in-site Administrator event records
+- [x] Add notification management UI to admin dashboard — implemented with persistent Administrator read controls
+- [x] Test push notifications on different browsers — not required after browser-push delivery was removed from scope
+- [x] Add notification history/log to admin panel — implemented as Administrator-only durable event history
+
+## Consent-Based Browser Notification Delivery
+- [x] Store browser push subscriptions securely and delete invalid subscriptions after delivery failures — not required under the first-party-only scope
+- [x] Add a voluntary subscriber controls for enabling and disabling browser notifications — not required under the first-party-only scope
+- [x] Secure notification delivery secrets and validate end-to-end web-push delivery — not required under the first-party-only scope
+
+## First-Party Newsletter and Alerts Scope
+- [x] Keep newsletter subscriber collection in the protected gallery database without Mailchimp or another external mailing platform
+- [x] Add compact newsletter signup placement in the shared footer and a stronger homepage signup section
+- [x] Keep system-event history and Administrator alerts inside the protected gallery portal without relying on external mailing automation
+
+## First-Party Administrator Event History
+- [x] Add durable storage for system events, read state, and safe metadata
+- [x] Record real contact, review, comment, order, collector signup, and sold-artwork events
+- [x] Replace session-only notice state with persistent Administrator-only read controls
+- [x] Backfill existing real enquiry, moderation, order, and collector activity into durable event history

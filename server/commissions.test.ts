@@ -3,6 +3,7 @@ import type { TrpcContext } from "./_core/context";
 
 vi.mock("./db", () => ({
   createContactSubmission: vi.fn(),
+  recordNotificationEvent: vi.fn(),
 }));
 
 import { appRouter } from "./routers";

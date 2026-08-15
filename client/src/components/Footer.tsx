@@ -1,12 +1,14 @@
 import { getWhatsAppLink } from "@/lib/galleryContact";
 
+import { CollectorSignupForm } from "@/components/CollectorSignupForm";
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-card border-t border-border mt-20">
       <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
           {/* Brand */}
           <div>
             <h3 className="heading-font text-2xl gradient-text mb-4">JENNEFER ANN</h3>
@@ -14,6 +16,13 @@ export default function Footer() {
               Contemporary artist exploring the boundaries between light and shadow, 
               creating works that speak to the human experience.
             </p>
+          </div>
+
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5 xl:col-span-2">
+            <p className="mb-2 text-[11px] font-bold tracking-[0.2em] text-primary">COLLECTOR MAILING LIST</p>
+            <h4 className="mb-2 font-serif text-xl font-semibold text-foreground">Be first to see new artworks.</h4>
+            <p className="mb-4 text-sm leading-6 text-muted-foreground">Quiet updates on commissions, exhibitions, and special releases. Join only if you would like to hear from the studio.</p>
+            <CollectorSignupForm placement="footer" />
           </div>
 
           {/* Quick Links */}
