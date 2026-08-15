@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { PublicComments } from "@/components/PublicComments";
 import { ProductPurchaseCard } from "@/components/ProductPurchaseCard";
 import { getArtworkPaymentLinks } from "@/lib/artworkPaymentLinks";
+import { canonicalUrlForPath } from "@/lib/canonicalUrl";
 
 export default function ArtworkDetail() {
   const [, params] = useRoute("/artwork/:slug");
@@ -59,7 +60,7 @@ export default function ArtworkDetail() {
       updateMetaTag('og:title', `${artwork.title} - Jennefer Ann Art Gallery`);
       updateMetaTag('og:description', artwork.description || `Original realist oil painting by Jennefer Ann`);
       updateMetaTag('og:image', artwork.imageUrl);
-      updateMetaTag('og:url', window.location.href);
+      updateMetaTag('og:url', canonicalUrlForPath(`/artwork/${encodeURIComponent(artwork.slug)}`));
       updateMetaTag('og:type', 'product');
       // Twitter
       updateMetaTag('twitter:title', `${artwork.title} - Jennefer Ann Art Gallery`);
@@ -173,6 +174,7 @@ export default function ArtworkDetail() {
             "@context": "https://schema.org",
             "@type": "VisualArtwork",
             "name": artwork.title,
+            "url": canonicalUrlForPath(`/artwork/${encodeURIComponent(artwork.slug)}`),
             "description": artwork.description || `Original realist oil painting by Jennefer Ann`,
             "image": artwork.imageUrl,
             "artist": {

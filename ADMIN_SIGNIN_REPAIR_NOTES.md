@@ -36,6 +36,8 @@ The homepage was revisited to recheck the public collector popup. Its previous s
 
 The collector popup then appeared with first name, last name, email, submit, prominent close, and “Not now” controls. The “Not now” option was verified to close the modal and restore the homepage without creating a signup record.
 
+Canonical URL verification: an artwork page loaded through the preview with a query parameter rendered both its canonical link and Open Graph URL as the clean `https://artbyjennefer.manus.space/artwork/Survival` public URL, with `index, follow` robots metadata.
+
 ## Remaining manual confirmation
 
 An Administrator must complete the external OAuth sign-in once in the preview or deployed site to confirm the provider's real callback and role assignment. This manual step cannot be simulated without an authenticated administrator account in the browser.

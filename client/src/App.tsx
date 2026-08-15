@@ -24,6 +24,7 @@ import { AnalyticsTracker } from "./hooks/useAnalytics";
 import { AdminPortalGuard } from "./components/AdminPortalGuard";
 import { consumeAdminPortalReturn } from "./lib/adminPortalReturn";
 import { useAuth } from "./_core/hooks/useAuth";
+import { applyCanonicalMetadata } from "./lib/canonicalUrl";
 
 const ProtectedAdmin = () => <AdminPortalGuard><Admin /></AdminPortalGuard>;
 const ProtectedAdminDashboard = () => <AdminPortalGuard><AdminDashboard /></AdminPortalGuard>;
@@ -43,6 +44,15 @@ function AdminPortalReturnRedirect() {
   return null;
 }
 
+function RouteCanonicalMetadata() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    applyCanonicalMetadata(location);
+  }, [location]);
+
+  return null;
+}
 
 function Router() {
   return (
@@ -50,6 +60,7 @@ function Router() {
       <NotificationManager />
       <AnalyticsTracker />
       <AdminPortalReturnRedirect />
+      <RouteCanonicalMetadata />
       <Navigation />
       <div className="pt-20 min-h-screen">
         <Switch>

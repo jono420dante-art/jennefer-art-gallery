@@ -280,7 +280,11 @@
 - [x] Add social sharing buttons on artwork detail pages (Facebook, WhatsApp, Pinterest, Twitter)
 - [x] Add "Share This Artwork" CTA on each artwork page
 - [x] Add robots.txt for proper crawling
-- [ ] Add canonical URLs to prevent duplicate content
+- [x] Add canonical URLs to prevent duplicate content
+
+## Canonical URL Implementation
+- [x] Add dynamic canonical links for public pages and individual artwork detail routes
+- [x] Verify canonical markup resolves to the configured public gallery domain
 
 
 ## Newsletter Signup Popup
