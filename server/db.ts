@@ -1,4 +1,4 @@
-import { eq, desc, and, count, gte, lt, like, sql } from "drizzle-orm";
+import { eq, desc, and, count, gte, lt, like } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   users, 
@@ -519,6 +519,61 @@ function mysqlTimestamp(date: Date) {
   return date.toISOString().slice(0, 19).replace("T", " ");
 }
 
+export type DailyTrafficEntry = {
+  date: string;
+  sessions: number;
+  pageViews: number;
+  conversionClicks: number;
+};
+
+function analyticsDateKey(timestamp: string | Date) {
+  if (timestamp instanceof Date) return timestamp.toISOString().slice(0, 10);
+  return timestamp.slice(0, 10);
+}
+
+/**
+ * Builds a calendar-aligned traffic series without database-specific DATE() functions.
+ * The dashboard retains zeroes for dates with no stored activity; all non-zero values
+ * come exclusively from real, recorded first-party analytics timestamps.
+ */
+export function buildDailyTrafficSeries({
+  days,
+  sessionTimestamps,
+  pageViewTimestamps,
+  conversionTimestamps,
+  now = new Date(),
+}: {
+  days: number;
+  sessionTimestamps: Array<string | Date>;
+  pageViewTimestamps: Array<string | Date>;
+  conversionTimestamps: Array<string | Date>;
+  now?: Date;
+}): DailyTrafficEntry[] {
+  const lastDay = new Date(`${mysqlTimestamp(now).slice(0, 10)}T00:00:00.000Z`);
+  const dailyTraffic = Array.from({ length: days }, (_, index) => {
+    const date = new Date(lastDay);
+    date.setUTCDate(date.getUTCDate() - (days - 1 - index));
+    return {
+      date: date.toISOString().slice(0, 10),
+      sessions: 0,
+      pageViews: 0,
+      conversionClicks: 0,
+    };
+  });
+  const dailyTrafficByDate = new Map(dailyTraffic.map((entry) => [entry.date, entry]));
+  const countTimestamps = (timestamps: Array<string | Date>, metric: "sessions" | "pageViews" | "conversionClicks") => {
+    timestamps.forEach((timestamp) => {
+      const entry = dailyTrafficByDate.get(analyticsDateKey(timestamp));
+      if (entry) entry[metric] += 1;
+    });
+  };
+
+  countTimestamps(sessionTimestamps, "sessions");
+  countTimestamps(pageViewTimestamps, "pageViews");
+  countTimestamps(conversionTimestamps, "conversionClicks");
+  return dailyTraffic;
+}
+
 export async function recordAnalyticsEvent(data: AnalyticsEventInput) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -549,21 +604,6 @@ export async function recordAnalyticsEvent(data: AnalyticsEventInput) {
 }
 
 export async function getAnalyticsSummary(days = 7) {
-  const createDailyTraffic = () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return Array.from({ length: days }, (_, index) => {
-      const date = new Date(today);
-      date.setDate(date.getDate() - (days - 1 - index));
-      return {
-        date: date.toISOString().slice(0, 10),
-        sessions: 0,
-        pageViews: 0,
-        conversionClicks: 0,
-      };
-    });
-  };
-
   const db = await getDb();
   if (!db) {
     return {
@@ -575,7 +615,7 @@ export async function getAnalyticsSummary(days = 7) {
       referrers: [],
       topPages: [],
       topClicks: [],
-      dailyTraffic: createDailyTraffic(),
+      dailyTraffic: buildDailyTrafficSeries({ days, sessionTimestamps: [], pageViewTimestamps: [], conversionTimestamps: [] }),
       generatedAt: new Date().toISOString(),
     };
   }
@@ -648,48 +688,30 @@ export async function getAnalyticsSummary(days = 7) {
     .orderBy(desc(count()))
     .limit(10);
 
-  const sessionDate = sql<string>`DATE(${analyticsSessions.firstSeenAt})`;
-  const eventDate = sql<string>`DATE(${analyticsEvents.createdAt})`;
   const [dailySessionRows, dailyPageViewRows, dailyConversionRows] = await Promise.all([
-    db.select({ date: sessionDate.as("date"), sessions: count() })
+    db.select({ timestamp: analyticsSessions.firstSeenAt })
       .from(analyticsSessions)
-      .where(gte(analyticsSessions.firstSeenAt, rangeStart))
-      .groupBy(sessionDate)
-      .orderBy(sessionDate),
-    db.select({ date: eventDate.as("date"), pageViews: count() })
+      .where(gte(analyticsSessions.firstSeenAt, rangeStart)),
+    db.select({ timestamp: analyticsEvents.createdAt })
       .from(analyticsEvents)
       .where(and(
         eq(analyticsEvents.eventType, "page_view"),
         gte(analyticsEvents.createdAt, rangeStart),
-      ))
-      .groupBy(eventDate)
-      .orderBy(eventDate),
-    db.select({ date: eventDate.as("date"), conversionClicks: count() })
+      )),
+    db.select({ timestamp: analyticsEvents.createdAt })
       .from(analyticsEvents)
       .where(and(
         like(analyticsEvents.eventType, "click_%"),
         gte(analyticsEvents.createdAt, rangeStart),
-      ))
-      .groupBy(eventDate)
-      .orderBy(eventDate),
+      )),
   ]);
 
-  const dailyTraffic = createDailyTraffic();
-  const dailyTrafficByDate = new Map(dailyTraffic.map((entry) => [entry.date, entry]));
-  const applyDailyMetric = (rows: Array<{ date: unknown; sessions?: number; pageViews?: number; conversionClicks?: number }>) => {
-    rows.forEach((row) => {
-      const dateKey = row.date instanceof Date ? row.date.toISOString().slice(0, 10) : String(row.date).slice(0, 10);
-      const entry = dailyTrafficByDate.get(dateKey);
-      if (!entry) return;
-      if (row.sessions !== undefined) entry.sessions = Number(row.sessions);
-      if (row.pageViews !== undefined) entry.pageViews = Number(row.pageViews);
-      if (row.conversionClicks !== undefined) entry.conversionClicks = Number(row.conversionClicks);
-    });
-  };
-
-  applyDailyMetric(dailySessionRows);
-  applyDailyMetric(dailyPageViewRows);
-  applyDailyMetric(dailyConversionRows);
+  const dailyTraffic = buildDailyTrafficSeries({
+    days,
+    sessionTimestamps: dailySessionRows.map((row) => row.timestamp),
+    pageViewTimestamps: dailyPageViewRows.map((row) => row.timestamp),
+    conversionTimestamps: dailyConversionRows.map((row) => row.timestamp),
+  });
 
   return {
     uniqueSessions: sessionCount?.value ?? 0,

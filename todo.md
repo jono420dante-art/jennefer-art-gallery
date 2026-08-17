@@ -369,6 +369,12 @@
 - [x] Add real first-party visualisations for available traffic, conversion, source, and catalogue signals without fabricating data
 - [x] Validate dense dashboard panels for responsive containment, readable text, and accessible controls
 
+## Daily Analytics Aggregation Repair
+- [x] Repair the TiDB-incompatible DATE() grouping query that prevents the protected dashboard analytics summary from loading
+- [x] Preserve a complete zero-filled daily traffic series using real first-party records only
+- [x] Add a regression test for the repaired daily analytics aggregation path
+- [x] Verify authenticated dashboard metrics load without API query errors
+
 ## Administrator Password Protection Clarification
 - [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
 - [x] Confirm whether a separate second portal password factor is required in addition to the secure account sign-in — not required; retain the secure account sign-in only

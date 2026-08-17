@@ -15,3 +15,9 @@ The protected `/admin-dashboard` route redirected a logged-out browser to the na
 The **Traffic & clicks** view was also opened in the authenticated browser. Its source, referrer, page, click and geographic panels rendered in the executive grid without overlap. Since the current real first-party traffic totals are zero, each panel correctly states that it will populate after genuine visitor activity instead of displaying fabricated marketing figures.
 
 The traffic chart is intentionally empty until live public sessions are recorded. It does not insert synthetic activity.
+
+## Daily Aggregation Repair
+
+On 17 August 2026, the dashboard API query failed because the database rejected the `DATE()` grouping expression used in the initial traffic series implementation. The aggregation now selects only real timestamp values and performs the calendar bucketing in the server application, avoiding database-specific date SQL while retaining a complete zero-filled series.
+
+The authenticated dashboard was reloaded successfully after the repair. It returned real current values of **11 sessions**, **23 page views**, and **2 active visitors**, rendered the seven-day chart, and produced no browser-console errors.
