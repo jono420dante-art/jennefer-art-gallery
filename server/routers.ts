@@ -615,6 +615,60 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ OPTIONAL ANALYTICS SETTINGS ============
+  analyticsSettings: router({
+    get: adminProcedure.query(async () => db.getAnalyticsIntegrationSettings()),
+    update: adminProcedure
+      .input(z.object({
+        gaMeasurementId: z.string().trim().regex(/^G-[A-Z0-9]+$/i, "Use a GA4 measurement ID such as G-ABC123").max(48).nullable().optional(),
+        gaPropertyId: z.string().trim().max(96).nullable().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await db.updateAnalyticsIntegrationSettings(input);
+        return { success: true };
+      }),
+  }),
+
+  // ============ NEWSLETTER STUDIO ============
+  newsletterStudio: router({
+    overview: adminProcedure.query(async () => {
+      const [subscribers, campaigns, contacts, replyDrafts] = await Promise.all([
+        db.getAllNewsletterSignups(),
+        db.getNewsletterCampaigns(),
+        db.getAllContactSubmissions(),
+        db.getContactReplyDrafts(),
+      ]);
+      return { subscribers, campaigns, contacts, replyDrafts, deliveryConfigured: false };
+    }),
+    createCampaign: adminProcedure
+      .input(z.object({ title: z.string().trim().min(2).max(200), subject: z.string().trim().min(2).max(200), body: z.string().trim().min(10).max(20_000) }))
+      .mutation(async ({ input }) => {
+        const subscribers = await db.getAllNewsletterSignups();
+        await db.createNewsletterCampaign({ ...input, recipientCount: subscribers.filter((subscriber) => subscriber.isSubscribed === 1).length });
+        return { success: true };
+      }),
+    updateCampaign: adminProcedure
+      .input(z.object({ id: z.number().int().positive(), title: z.string().trim().min(2).max(200).optional(), subject: z.string().trim().min(2).max(200).optional(), body: z.string().trim().min(10).max(20_000).optional() }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await db.updateNewsletterCampaign(id, data);
+        return { success: true };
+      }),
+    deleteCampaign: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ input }) => {
+      await db.deleteNewsletterCampaign(input.id);
+      return { success: true };
+    }),
+    createReplyDraft: adminProcedure
+      .input(z.object({ contactSubmissionId: z.number().int().positive(), subject: z.string().trim().min(2).max(200), body: z.string().trim().min(2).max(20_000) }))
+      .mutation(async ({ input }) => {
+        const contacts = await db.getAllContactSubmissions();
+        const contact = contacts.find((entry) => entry.id === input.contactSubmissionId);
+        if (!contact) throw new TRPCError({ code: "NOT_FOUND", message: "Collector enquiry not found" });
+        await db.createContactReplyDraft({ ...input, recipientEmail: contact.email });
+        return { success: true };
+      }),
+  }),
+
   // ============ FIRST-PARTY ANALYTICS ROUTES ============
   analytics: router({
     track: publicProcedure

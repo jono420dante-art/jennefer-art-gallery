@@ -391,6 +391,14 @@
 - [x] Add a protected Jennefer profile spotlight card with gallery-artwork selection and custom image upload as its background only
 - [x] Validate the teal executive layout, upload flow, data panels, and protected access in browser and regression tests
 
+## Optional GA4 Settings and Newsletter Studio
+- [x] Add an Administrator-only manual GA4 configuration panel with transparent connection status and no fabricated reports
+- [x] Create a protected Newsletter Studio for consented collector list management, editorial drafts, studio news, exhibitions, and upcoming adventures
+- [x] Store newsletter drafts and sent-message history without pretending messages were delivered before an email provider is connected
+- [x] Add consent-safe one-to-one replies from the Administrator inbox to visitor enquiries where a contact email exists
+- [ ] Connect a real sending provider only after the owner supplies authorised credentials, then test delivery and unsubscribe handling
+- [x] Validate all Newsletter Studio and optional analytics settings permissions, data integrity, and responsive browser workflows
+
 ## Administrator Password Protection Clarification
 - [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
 - [x] Confirm whether a separate second portal password factor is required in addition to the secure account sign-in — not required; retain the secure account sign-in only

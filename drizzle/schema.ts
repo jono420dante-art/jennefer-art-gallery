@@ -203,6 +203,44 @@ export const adminDashboardSettings = mysqlTable("adminDashboardSettings", {
 	updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
 });
 
+/** Owner-entered analytics identifiers only. A connected flag remains false until
+ * a real Google Analytics Data API integration is authorised. */
+export const analyticsIntegrationSettings = mysqlTable("analyticsIntegrationSettings", {
+	id: int().autoincrement().primaryKey(),
+	gaMeasurementId: varchar({ length: 48 }),
+	gaPropertyId: varchar({ length: 96 }),
+	dataApiConnected: int().default(0).notNull(),
+	updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
+});
+
+/** Editorial records for consent-based collector updates. Drafts are durable but
+ * never represent email delivery until a sending provider is explicitly connected. */
+export const newsletterCampaigns = mysqlTable("newsletterCampaigns", {
+	id: int().autoincrement().primaryKey(),
+	title: varchar({ length: 200 }).notNull(),
+	subject: varchar({ length: 200 }).notNull(),
+	body: text().notNull(),
+	status: mysqlEnum(["draft", "sent"]).default("draft").notNull(),
+	recipientCount: int().default(0).notNull(),
+	sentAt: timestamp({ mode: "string" }),
+	createdAt: timestamp({ mode: "string" }).defaultNow().notNull(),
+	updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
+});
+
+/** Prepared Administrator responses to genuine contact enquiries. A response is
+ * only marked sent by an authorised future delivery integration. */
+export const contactReplyDrafts = mysqlTable("contactReplyDrafts", {
+	id: int().autoincrement().primaryKey(),
+	contactSubmissionId: int().notNull(),
+	recipientEmail: varchar({ length: 320 }).notNull(),
+	subject: varchar({ length: 200 }).notNull(),
+	body: text().notNull(),
+	status: mysqlEnum(["draft", "sent"]).default("draft").notNull(),
+	sentAt: timestamp({ mode: "string" }),
+	createdAt: timestamp({ mode: "string" }).defaultNow().notNull(),
+	updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
+});
+
 /**
  * First-party operational alerts for the protected Administrator Portal.
  * Metadata stores non-sensitive routing context only; visitor contact details remain in their source records.

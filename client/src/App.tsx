@@ -15,6 +15,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import AdminDashboard from "./pages/AdminDashboard";
+import NewsletterStudio from "./pages/NewsletterStudio";
 import AdminLogin from "./pages/AdminLogin";
 import Checkout from "./pages/Checkout";
 import Showcase from "./pages/Showcase";
@@ -28,6 +29,7 @@ import { applyCanonicalMetadata } from "./lib/canonicalUrl";
 
 const ProtectedAdmin = () => <AdminPortalGuard><Admin /></AdminPortalGuard>;
 const ProtectedAdminDashboard = () => <AdminPortalGuard><AdminDashboard /></AdminPortalGuard>;
+const ProtectedNewsletterStudio = () => <AdminPortalGuard><NewsletterStudio /></AdminPortalGuard>;
 
 function AdminPortalReturnRedirect() {
   const [location, setLocation] = useLocation();
@@ -74,6 +76,7 @@ function Router() {
           <Route path="/admin-login" component={AdminLogin} />
           <Route path="/admin" component={ProtectedAdmin} />
           <Route path="/admin-dashboard" component={ProtectedAdminDashboard} />
+          <Route path="/admin/newsletter-studio" component={ProtectedNewsletterStudio} />
           <Route path="/checkout/:slug" component={Checkout} />
           <Route path="/404" component={NotFound} />
           <Route component={NotFound} />

@@ -33,3 +33,9 @@ The **Audience & interest** tab displayed recorded sources and most-viewed publi
 The new teal opening board was verified while authenticated as Administrator. It rendered live consented newsletter count and monthly growth, 30-day page views, completed-sale zero state, SEO readiness checks, attention funnel, popular public-page signals, and the existing protected deep-analytics cockpit without console errors.
 
 The Jennefer profile spotlight selector was tested end to end using the **Silent Watcher (Little Leopard Cub)** gallery artwork. The selected artwork was persisted in the new protected dashboard settings table and appeared only as the background of Jennefer’s Administrator profile card.
+
+## Newsletter Studio and Optional GA4 Settings
+
+The protected Newsletter Studio was browser-verified on 17 August 2026. It displayed the real consented collector list, newsletter editorial composer, campaign draft archive, contact-enquiry reply draft tools, and manual GA4 identifier form. The interface makes the delivery boundary explicit: no campaign or reply is represented as sent while no authorised email provider is configured.
+
+The optional GA4 panel correctly reports that identifier entry alone does not authorise the Data API, create geographic reports, or manufacture additional data. The Administrator page loaded without browser-console errors.

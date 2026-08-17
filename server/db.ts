@@ -13,6 +13,9 @@ import {
   aboutContent,
   newsletterSignups,
   adminDashboardSettings,
+  analyticsIntegrationSettings,
+  newsletterCampaigns,
+  contactReplyDrafts,
   analyticsSessions,
   analyticsEvents,
   notificationEvents
@@ -484,6 +487,64 @@ export async function updateAdminDashboardSettings(data: {
     return;
   }
   await db.insert(adminDashboardSettings).values(data);
+}
+
+// ============ OPTIONAL ANALYTICS CONFIGURATION ============
+
+export async function getAnalyticsIntegrationSettings() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(analyticsIntegrationSettings).limit(1);
+  return result[0] ?? null;
+}
+
+export async function updateAnalyticsIntegrationSettings(data: { gaMeasurementId?: string | null; gaPropertyId?: string | null }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const current = await getAnalyticsIntegrationSettings();
+  if (current) {
+    await db.update(analyticsIntegrationSettings).set({ ...data, dataApiConnected: 0 }).where(eq(analyticsIntegrationSettings.id, current.id));
+    return;
+  }
+  await db.insert(analyticsIntegrationSettings).values({ ...data, dataApiConnected: 0 });
+}
+
+// ============ NEWSLETTER STUDIO DRAFTS ============
+
+export async function getNewsletterCampaigns() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(newsletterCampaigns).orderBy(desc(newsletterCampaigns.updatedAt));
+}
+
+export async function createNewsletterCampaign(data: { title: string; subject: string; body: string; recipientCount: number }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.insert(newsletterCampaigns).values({ ...data, status: "draft" });
+}
+
+export async function updateNewsletterCampaign(id: number, data: { title?: string; subject?: string; body?: string; recipientCount?: number }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(newsletterCampaigns).set(data).where(eq(newsletterCampaigns.id, id));
+}
+
+export async function deleteNewsletterCampaign(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(newsletterCampaigns).where(eq(newsletterCampaigns.id, id));
+}
+
+export async function getContactReplyDrafts() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(contactReplyDrafts).orderBy(desc(contactReplyDrafts.updatedAt));
+}
+
+export async function createContactReplyDraft(data: { contactSubmissionId: number; recipientEmail: string; subject: string; body: string }) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.insert(contactReplyDrafts).values({ ...data, status: "draft" });
 }
 
 // ============ FIRST-PARTY NOTIFICATION EVENT FUNCTIONS ============
