@@ -21,3 +21,9 @@ The traffic chart is intentionally empty until live public sessions are recorded
 On 17 August 2026, the dashboard API query failed because the database rejected the `DATE()` grouping expression used in the initial traffic series implementation. The aggregation now selects only real timestamp values and performs the calendar bucketing in the server application, avoiding database-specific date SQL while retaining a complete zero-filled series.
 
 The authenticated dashboard was reloaded successfully after the repair. It returned real current values of **11 sessions**, **23 page views**, and **2 active visitors**, rendered the seven-day chart, and produced no browser-console errors.
+
+## GA4-Inspired Analytics Cockpit
+
+The enhanced protected Command Centre was browser-verified on 17 August 2026. It displayed the real session, page-view, conversion, active-engagement, device-mix, traffic-source, content-interest and buyer-action panels in a compact executive layout without visible overlap.
+
+The **Audience & interest** tab displayed recorded sources and most-viewed public paths. Its engagement and conversion areas correctly showed future-facing empty states where no matching live events had yet been recorded. The **Geographic view** panel clearly confirms that the public GA tag is present while the GA4 Data API is not yet authorised; it does not invent country/city map points from first-party records.

@@ -375,6 +375,13 @@
 - [x] Add a regression test for the repaired daily analytics aggregation path
 - [x] Verify authenticated dashboard metrics load without API query errors
 
+## GA4-Inspired Analytics Cockpit
+- [x] Define and display real first-party sessions, views, conversion actions, engagement time, events per session, and engagement rate
+- [x] Track and report privacy-safe device mix and content-interest signals for artworks and pages
+- [x] Add GA4-inspired executive visualisations for real traffic trends, sources, engagement, popular content, and conversion events
+- [ ] Provide a clear geographic analytics panel that uses connected GA4 access without inventing visitor locations
+- [x] Validate every added analytics panel with protected live data, regression tests, and responsive browser review
+
 ## Administrator Password Protection Clarification
 - [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
 - [x] Confirm whether a separate second portal password factor is required in addition to the secure account sign-in — not required; retain the secure account sign-in only

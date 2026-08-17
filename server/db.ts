@@ -526,6 +526,88 @@ export type DailyTrafficEntry = {
   conversionClicks: number;
 };
 
+type AnalyticsSessionTiming = {
+  sessionId: string;
+  firstSeenAt: string | Date;
+  lastSeenAt: string | Date;
+  deviceType: string | null;
+};
+
+type AnalyticsEventRecord = {
+  sessionId: string;
+  eventType: string;
+  pagePath: string;
+  target: string | null;
+  artworkId: number | null;
+  createdAt: string | Date;
+};
+
+function timestampMilliseconds(timestamp: string | Date) {
+  if (timestamp instanceof Date) return timestamp.getTime();
+  const normalized = timestamp.includes("T") ? timestamp : `${timestamp.replace(" ", "T")}Z`;
+  const milliseconds = Date.parse(normalized);
+  return Number.isNaN(milliseconds) ? null : milliseconds;
+}
+
+export function buildEngagementMetrics({
+  sessions,
+  events,
+}: {
+  sessions: AnalyticsSessionTiming[];
+  events: AnalyticsEventRecord[];
+}) {
+  const eventsBySession = new Map<string, AnalyticsEventRecord[]>();
+  events.forEach((event) => {
+    const existing = eventsBySession.get(event.sessionId) ?? [];
+    existing.push(event);
+    eventsBySession.set(event.sessionId, existing);
+  });
+
+  let totalEngagementSeconds = 0;
+  let engagedSessions = 0;
+  const deviceTotals = new Map<string, number>();
+  sessions.forEach((session) => {
+    // Each historical heartbeat confirms one visible minute. New engagement ticks
+    // confirm 15 visible seconds. This avoids overstating time when a browser session
+    // remains open across pauses, sleep, or separate browsing windows.
+    const sessionEvents = eventsBySession.get(session.sessionId) ?? [];
+    const durationSeconds = sessionEvents.filter((event) => event.eventType === "heartbeat").length * 60
+      + sessionEvents.filter((event) => event.eventType === "engagement_tick").length * 15;
+    totalEngagementSeconds += durationSeconds;
+    const pageViews = sessionEvents.filter((event) => event.eventType === "page_view").length;
+    const hasConversion = sessionEvents.some((event) => event.eventType.startsWith("click_"));
+    if (durationSeconds >= 60 || pageViews >= 2 || hasConversion) engagedSessions += 1;
+    const device = session.deviceType || "unknown";
+    deviceTotals.set(device, (deviceTotals.get(device) ?? 0) + 1);
+  });
+
+  const totalSessions = sessions.length;
+  const deviceMix = Array.from(deviceTotals.entries())
+    .map(([device, sessionsForDevice]) => ({
+      device,
+      sessions: sessionsForDevice,
+      percentage: totalSessions ? Number(((sessionsForDevice / totalSessions) * 100).toFixed(1)) : 0,
+    }))
+    .sort((a, b) => b.sessions - a.sessions);
+  const engagementSignals = ["click_artwork", "scroll_depth", "click_checkout", "click_reserve", "click_whatsapp", "click_commission", "click_newsletter"]
+    .map((eventType) => ({
+      eventType,
+      events: events.filter((event) => event.eventType === eventType).length,
+    }))
+    .filter((item) => item.events > 0)
+    .sort((a, b) => b.events - a.events);
+
+  return {
+    totalEngagementSeconds,
+    averageEngagementSeconds: totalSessions ? Math.round(totalEngagementSeconds / totalSessions) : 0,
+    engagedSessions,
+    engagementRate: totalSessions ? Number(((engagedSessions / totalSessions) * 100).toFixed(1)) : 0,
+    eventsPerSession: totalSessions ? Number((events.length / totalSessions).toFixed(2)) : 0,
+    deviceMix,
+    engagementSignals,
+  };
+}
+
 function analyticsDateKey(timestamp: string | Date) {
   if (timestamp instanceof Date) return timestamp.toISOString().slice(0, 10);
   return timestamp.slice(0, 10);
@@ -616,6 +698,13 @@ export async function getAnalyticsSummary(days = 7) {
       topPages: [],
       topClicks: [],
       dailyTraffic: buildDailyTrafficSeries({ days, sessionTimestamps: [], pageViewTimestamps: [], conversionTimestamps: [] }),
+      totalEngagementSeconds: 0,
+      averageEngagementSeconds: 0,
+      engagedSessions: 0,
+      engagementRate: 0,
+      eventsPerSession: 0,
+      deviceMix: [],
+      engagementSignals: [],
       generatedAt: new Date().toISOString(),
     };
   }
@@ -641,6 +730,26 @@ export async function getAnalyticsSummary(days = 7) {
   const [activeVisitorCount] = await db.select({ value: count() })
     .from(analyticsSessions)
     .where(gte(analyticsSessions.lastSeenAt, activeStart));
+
+  const [sessionTimingRows, eventRecords] = await Promise.all([
+    db.select({
+      sessionId: analyticsSessions.sessionId,
+      firstSeenAt: analyticsSessions.firstSeenAt,
+      lastSeenAt: analyticsSessions.lastSeenAt,
+      deviceType: analyticsSessions.deviceType,
+    }).from(analyticsSessions)
+      .where(gte(analyticsSessions.firstSeenAt, rangeStart)),
+    db.select({
+      sessionId: analyticsEvents.sessionId,
+      eventType: analyticsEvents.eventType,
+      pagePath: analyticsEvents.pagePath,
+      target: analyticsEvents.target,
+      artworkId: analyticsEvents.artworkId,
+      createdAt: analyticsEvents.createdAt,
+    }).from(analyticsEvents)
+      .where(gte(analyticsEvents.createdAt, rangeStart)),
+  ]);
+  const engagementMetrics = buildEngagementMetrics({ sessions: sessionTimingRows, events: eventRecords });
 
   const trafficSources = await db.select({
     source: analyticsSessions.source,
@@ -688,29 +797,11 @@ export async function getAnalyticsSummary(days = 7) {
     .orderBy(desc(count()))
     .limit(10);
 
-  const [dailySessionRows, dailyPageViewRows, dailyConversionRows] = await Promise.all([
-    db.select({ timestamp: analyticsSessions.firstSeenAt })
-      .from(analyticsSessions)
-      .where(gte(analyticsSessions.firstSeenAt, rangeStart)),
-    db.select({ timestamp: analyticsEvents.createdAt })
-      .from(analyticsEvents)
-      .where(and(
-        eq(analyticsEvents.eventType, "page_view"),
-        gte(analyticsEvents.createdAt, rangeStart),
-      )),
-    db.select({ timestamp: analyticsEvents.createdAt })
-      .from(analyticsEvents)
-      .where(and(
-        like(analyticsEvents.eventType, "click_%"),
-        gte(analyticsEvents.createdAt, rangeStart),
-      )),
-  ]);
-
   const dailyTraffic = buildDailyTrafficSeries({
     days,
-    sessionTimestamps: dailySessionRows.map((row) => row.timestamp),
-    pageViewTimestamps: dailyPageViewRows.map((row) => row.timestamp),
-    conversionTimestamps: dailyConversionRows.map((row) => row.timestamp),
+    sessionTimestamps: sessionTimingRows.map((row) => row.firstSeenAt),
+    pageViewTimestamps: eventRecords.filter((event) => event.eventType === "page_view").map((event) => event.createdAt),
+    conversionTimestamps: eventRecords.filter((event) => event.eventType.startsWith("click_")).map((event) => event.createdAt),
   });
 
   return {
@@ -723,6 +814,7 @@ export async function getAnalyticsSummary(days = 7) {
     topPages,
     topClicks,
     dailyTraffic,
+    ...engagementMetrics,
     generatedAt: new Date().toISOString(),
   };
 }

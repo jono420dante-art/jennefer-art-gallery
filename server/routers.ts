@@ -629,6 +629,7 @@ export const appRouter = router({
         eventType: z.enum([
           "page_view",
           "heartbeat",
+          "engagement_tick",
           "click_artwork",
           "click_checkout",
           "click_reserve",
@@ -636,6 +637,7 @@ export const appRouter = router({
           "click_commission",
           "click_newsletter",
           "click_share",
+          "scroll_depth",
         ]),
         pagePath: z.string().min(1).max(500),
         target: z.string().max(255).optional(),

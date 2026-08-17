@@ -5,13 +5,15 @@ import { trpc } from "@/lib/trpc";
 type AnalyticsEventType =
   | "page_view"
   | "heartbeat"
+  | "engagement_tick"
   | "click_artwork"
   | "click_checkout"
   | "click_reserve"
   | "click_whatsapp"
   | "click_commission"
   | "click_newsletter"
-  | "click_share";
+  | "click_share"
+  | "scroll_depth";
 
 type TrackerContext = {
   sessionId: string;
@@ -113,9 +115,9 @@ export function AnalyticsTracker() {
 
     const heartbeat = window.setInterval(() => {
       if (document.visibilityState === "visible") {
-        trackEvent("heartbeat");
+        trackEvent("engagement_tick");
       }
-    }, 60_000);
+    }, 15_000);
 
     const handleClick = (event: MouseEvent) => {
       const element = event.target instanceof Element
@@ -138,10 +140,23 @@ export function AnalyticsTracker() {
       }
     };
 
+    let trackedScrollDepth = false;
+    const handleScroll = () => {
+      if (trackedScrollDepth || document.visibilityState !== "visible") return;
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollableHeight <= 0) return;
+      if (window.scrollY / scrollableHeight >= 0.75) {
+        trackedScrollDepth = true;
+        trackEvent("scroll_depth", "75_percent_page_depth");
+      }
+    };
+
     document.addEventListener("click", handleClick, true);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.clearInterval(heartbeat);
       document.removeEventListener("click", handleClick, true);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [location, trackEvent]);
 
