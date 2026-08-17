@@ -422,6 +422,11 @@
 - [ ] Integrate verified country/city reporting into the Command Centre geographic map and refresh controls
 - [ ] Validate geographic results, protected access, and truthful no-data behaviour
 
+## Final Internal Operational Completion
+- [x] Audit every remaining gallery task and complete all work that does not require external credentials, merchant links, or owner-provided consent data
+- [x] Preserve clear ready-to-connect controls for deferred GA4 geographic reporting, Gmail delivery, and PayFast checkout activation
+- [x] Validate all completed public sales paths and protected Administrator workflows before final operational handover
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID

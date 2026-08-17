@@ -55,3 +55,7 @@ The public gallery homepage and protected Command Centre were reviewed after the
 ## Dual GA4 Property Tracking
 
 The public page now uses one Google tag loader with two independently configured owner-authorised GA4 destinations: **G-J23S2RL6HP** and **G-BVGFXTT1HB**. Browser inspection confirmed both configuration commands in the live `dataLayer` command queue. The protected Command Centre continues to report only its separate first-party database metrics and does not merge these two external GA4 properties into a double-counted dashboard figure.
+
+## Public Sales Path and Activation Readiness
+
+The public Gallery, For Sale collection, and an available artwork detail page were checked without submitting customer data or starting payment. The artwork view displayed the real available status, ZAR/USD pricing, internal **Buy Now Securely** path, 30% reservation action, artwork-specific WhatsApp enquiry, certificate statement, delivery information, and social-sharing controls. The external activations that cannot be truthfully completed without owner accounts or approval are consolidated in `OWNER_ACTIVATION_CHECKLIST.md`.
