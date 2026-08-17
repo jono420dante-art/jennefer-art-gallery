@@ -59,3 +59,7 @@ The public page now uses one Google tag loader with two independently configured
 ## Public Sales Path and Activation Readiness
 
 The public Gallery, For Sale collection, and an available artwork detail page were checked without submitting customer data or starting payment. The artwork view displayed the real available status, ZAR/USD pricing, internal **Buy Now Securely** path, 30% reservation action, artwork-specific WhatsApp enquiry, certificate statement, delivery information, and social-sharing controls. The external activations that cannot be truthfully completed without owner accounts or approval are consolidated in `OWNER_ACTIVATION_CHECKLIST.md`.
+
+## Administrator Login Transport Repair
+
+The native login route was checked directly and returned a structured tRPC JSON `401` response for invalid credentials rather than an HTML document. The browser sign-out → protected-route gate → Administrator sign-in → Command Centre flow was then completed successfully with the verified session. No browser-console errors appeared after the corrected origin-rooted tRPC endpoint was used.

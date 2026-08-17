@@ -427,6 +427,12 @@
 - [x] Preserve clear ready-to-connect controls for deferred GA4 geographic reporting, Gmail delivery, and PayFast checkout activation
 - [x] Validate all completed public sales paths and protected Administrator workflows before final operational handover
 
+## Administrator Login Response Repair
+- [x] Diagnose why the native administrator login mutation receives an HTML document instead of a tRPC JSON response
+- [x] Repair the client/server login request route and preserve encrypted HTTP-only session security
+- [x] Add regression coverage for expected JSON login responses and user-safe failure messages
+- [x] Verify valid login, invalid credential denial, sign-out, and protected-route recovery in the browser
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID
