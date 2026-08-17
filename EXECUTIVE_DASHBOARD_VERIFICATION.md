@@ -51,3 +51,7 @@ The Website Operations & Growth Report PDF was compiled successfully, passed det
 The public homepage was checked after the owner-supplied GA4 tracking replacement. Its document contains exactly one Google tag script, using the verified measurement ID **G-J23S2RL6HP**. The prior measurement ID is not loaded, avoiding duplicate GA4 page-view tracking.
 
 The public gallery homepage and protected Command Centre were reviewed after the tracking update. Primary navigation, artwork/commission controls, collector form, dashboard action row, profile spotlight, newsletter metric, executive panels, and analytics controls remained contained and readable. The protected dashboard showed live first-party page views increasing from real browser activity and produced no browser-console errors.
+
+## Dual GA4 Property Tracking
+
+The public page now uses one Google tag loader with two independently configured owner-authorised GA4 destinations: **G-J23S2RL6HP** and **G-BVGFXTT1HB**. Browser inspection confirmed both configuration commands in the live `dataLayer` command queue. The protected Command Centre continues to report only its separate first-party database metrics and does not merge these two external GA4 properties into a double-counted dashboard figure.

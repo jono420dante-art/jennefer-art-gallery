@@ -416,11 +416,22 @@
 - [ ] Connect authorised GA4 OAuth/Data API access for country and city activity when the owner supplies it
 - [ ] Validate country highlighting, privacy boundaries, and protected map access with real reported activity
 
+## Connected GA4 Geographic Reporting
+- [ ] Verify the owner-authorised GA4 reporting connection for the active `G-J23S2RL6HP` measurement property
+- [ ] Retrieve protected real country and city activity data from the authorised GA4 property
+- [ ] Integrate verified country/city reporting into the Command Centre geographic map and refresh controls
+- [ ] Validate geographic results, protected access, and truthful no-data behaviour
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID
 - [x] Review public gallery and protected Command Centre flows for focused responsive smoothness and visual polish
 - [x] Validate tracking-tag presence, TypeScript, tests, production build, and live browser flows
+
+## Dual GA4 Property Tracking
+- [x] Add the owner-requested `G-BVGFXTT1HB` GA4 property alongside `G-J23S2RL6HP` on the public site
+- [x] Keep the Command Centre’s first-party metrics separate from both external GA4 properties to avoid merged or duplicated dashboard figures
+- [x] Verify that both GA4 properties are configured from a single public tag loader and the protected dashboard remains stable
 
 ## Administrator Password Protection Clarification
 - [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
