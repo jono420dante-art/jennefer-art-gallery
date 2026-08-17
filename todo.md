@@ -345,7 +345,7 @@
 - [x] Restore a secure sign-in popup and sign-out path for the Admin Portal
 - [x] Block unauthenticated access to Admin Dashboard, SEO, analytics, reports, and management tools
 - [x] Add security regression tests for portal access and administrator-only procedures
-- [ ] Verify sign-in, sign-out, protected routes, and protected API calls in the browser
+- [x] Verify sign-in, sign-out, protected routes, and protected API calls in the browser
 
 ## Admin Portal Sign-in Repair
 - [x] Diagnose and repair the administrator OAuth return redirect so a verified administrator reaches the Admin Dashboard
@@ -362,6 +362,12 @@
 - [x] Add clearer visual metric cards, performance summaries, and feature navigation to the Administrator command centre
 - [x] Improve desktop and mobile dashboard spacing, text wrapping, card alignment, bubbles, and border containment
 - [x] Verify no dashboard text, controls, or decorative elements overlap at supported viewports
+
+## Executive Command Centre Reference Refinement
+- [x] Personalise the secure dashboard greeting to “Welcome back, Jennefer”
+- [x] Reorganise the command centre into compact executive-style metric panels inspired by the supplied dashboard reference
+- [x] Add real first-party visualisations for available traffic, conversion, source, and catalogue signals without fabricating data
+- [x] Validate dense dashboard panels for responsive containment, readable text, and accessible controls
 
 ## Administrator Password Protection Clarification
 - [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
@@ -386,8 +392,8 @@
 
 ## Final Live Browser Verification
 - [ ] Submit one real consented newsletter signup from the homepage and confirm it appears in the protected Collector list
-- [ ] Verify browser sign-out returns protected administrator routes to the native sign-in gate
-- [ ] Verify a logged-out browser cannot retrieve protected Administrator dashboard data
+- [x] Verify browser sign-out returns protected administrator routes to the native sign-in gate
+- [x] Verify a logged-out browser cannot retrieve protected Administrator dashboard data
 - [x] Re-test the native Administrator workflow across management tools, lead views, real activity, and report access
 
 ## Safe Live Administrator Workflow Verification

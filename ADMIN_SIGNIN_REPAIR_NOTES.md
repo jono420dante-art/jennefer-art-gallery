@@ -44,6 +44,8 @@ Public conversion verification: the available `Survival` artwork page renders it
 
 Administrator dashboard refinement verification: the protected command centre now shows six clear operational metrics—catalogue inventory with available/sold split, collection count, reviews, collector leads, 7-day sessions, and unread action signals. The metric grid was adjusted from six constrained columns to a stable three-column desktop grid with responsive wrapping, and action controls, tabs, badges, cards, text, and notice rows were updated with containment and wrap-safe spacing.
 
+Live native-session verification: signing out from Gallery Command Centre immediately returned `/admin-dashboard` to the secure sign-in gate. A direct logged-out browser request to the protected `notifications.list` procedure returned HTTP 403 / `FORBIDDEN` and no event data, confirming browser-level protection is enforced beyond the visible route gate.
+
 ## Remaining manual confirmation
 
 An Administrator must complete the external OAuth sign-in once in the preview or deployed site to confirm the provider's real callback and role assignment. This manual step cannot be simulated without an authenticated administrator account in the browser.

@@ -70,6 +70,29 @@ describe("first-party analytics", () => {
     expect(db.recordAnalyticsEvent).not.toHaveBeenCalled();
   });
 
+  it("returns the recorded daily traffic series only to an Administrator", async () => {
+    const recordedSummary = {
+      uniqueSessions: 12,
+      pageViews: 31,
+      conversionClicks: 6,
+      activeVisitors: 2,
+      trafficSources: [{ source: "instagram", sessions: 8 }],
+      referrers: [{ referrerDomain: "instagram.com", sessions: 8 }],
+      topPages: [{ pagePath: "/artwork/riana-1769842761058", views: 9 }],
+      topClicks: [{ eventType: "click_whatsapp", target: "Riana", clicks: 4 }],
+      dailyTraffic: [
+        { date: "2026-08-12", sessions: 4, pageViews: 10, conversionClicks: 2 },
+        { date: "2026-08-13", sessions: 8, pageViews: 21, conversionClicks: 4 },
+      ],
+      generatedAt: "2026-08-13T12:00:00.000Z",
+    };
+    vi.mocked(db.getAnalyticsSummary).mockResolvedValue(recordedSummary);
+    const caller = appRouter.createCaller(createAdminContext());
+
+    await expect(caller.analytics.summary({ days: 7 })).resolves.toEqual(recordedSummary);
+    expect(db.getAnalyticsSummary).toHaveBeenCalledWith(7);
+  });
+
   it("creates a valid PDF from recorded analytics data", async () => {
     const pdf = await createAnalyticsPdf({
       uniqueSessions: 12,
