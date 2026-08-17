@@ -191,6 +191,19 @@ export const analyticsEvents = mysqlTable("analyticsEvents", {
 	]);
 
 /**
+ * Sole-owner visual preferences for the protected Gallery Command Centre.
+ * The selected artwork or uploaded image is displayed only inside the
+ * Administrator profile spotlight card.
+ */
+export const adminDashboardSettings = mysqlTable("adminDashboardSettings", {
+	id: int().autoincrement().primaryKey(),
+	spotlightArtworkId: int(),
+	spotlightImageUrl: text(),
+	spotlightImageKey: text(),
+	updatedAt: timestamp({ mode: "string" }).defaultNow().onUpdateNow().notNull(),
+});
+
+/**
  * First-party operational alerts for the protected Administrator Portal.
  * Metadata stores non-sensitive routing context only; visitor contact details remain in their source records.
  */

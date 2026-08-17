@@ -12,6 +12,7 @@ import {
   paymentSettings,
   aboutContent,
   newsletterSignups,
+  adminDashboardSettings,
   analyticsSessions,
   analyticsEvents,
   notificationEvents
@@ -461,6 +462,30 @@ export async function deleteNewsletterSignup(id: number) {
   await db.delete(newsletterSignups).where(eq(newsletterSignups.id, id));
 }
 
+// ============ ADMIN COMMAND CENTRE SETTINGS ============
+
+export async function getAdminDashboardSettings() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(adminDashboardSettings).limit(1);
+  return result[0] ?? null;
+}
+
+export async function updateAdminDashboardSettings(data: {
+  spotlightArtworkId?: number | null;
+  spotlightImageUrl?: string | null;
+  spotlightImageKey?: string | null;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const current = await getAdminDashboardSettings();
+  if (current) {
+    await db.update(adminDashboardSettings).set(data).where(eq(adminDashboardSettings.id, current.id));
+    return;
+  }
+  await db.insert(adminDashboardSettings).values(data);
+}
+
 // ============ FIRST-PARTY NOTIFICATION EVENT FUNCTIONS ============
 
 export type NotificationEventType = "review" | "message" | "sale" | "collector" | "system";
@@ -608,6 +633,26 @@ export function buildEngagementMetrics({
   };
 }
 
+export function buildMonthlyCountSeries(
+  timestamps: Array<string | Date>,
+  months = 6,
+  now = new Date(),
+) {
+  const finalMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const entries = Array.from({ length: months }, (_, index) => {
+    const month = new Date(finalMonth);
+    month.setUTCMonth(month.getUTCMonth() - (months - 1 - index));
+    const key = month.toISOString().slice(0, 7);
+    return { key, label: month.toLocaleDateString("en", { month: "short" }), count: 0 };
+  });
+  const byMonth = new Map(entries.map((entry) => [entry.key, entry]));
+  timestamps.forEach((timestamp) => {
+    const entry = byMonth.get(analyticsDateKey(timestamp).slice(0, 7));
+    if (entry) entry.count += 1;
+  });
+  return entries;
+}
+
 function analyticsDateKey(timestamp: string | Date) {
   if (timestamp instanceof Date) return timestamp.toISOString().slice(0, 10);
   return timestamp.slice(0, 10);
@@ -705,6 +750,8 @@ export async function getAnalyticsSummary(days = 7) {
       eventsPerSession: 0,
       deviceMix: [],
       engagementSignals: [],
+      artworkDetailViews: 0,
+      highIntentClicks: 0,
       generatedAt: new Date().toISOString(),
     };
   }
@@ -814,6 +861,8 @@ export async function getAnalyticsSummary(days = 7) {
     topPages,
     topClicks,
     dailyTraffic,
+    artworkDetailViews: eventRecords.filter((event) => event.eventType === "page_view" && event.pagePath.startsWith("/artwork/")).length,
+    highIntentClicks: eventRecords.filter((event) => ["click_checkout", "click_reserve", "click_whatsapp", "click_commission", "click_newsletter"].includes(event.eventType)).length,
     ...engagementMetrics,
     generatedAt: new Date().toISOString(),
   };
@@ -825,4 +874,41 @@ export async function deleteAnalyticsOlderThan(days: number) {
   const cutoff = mysqlTimestamp(new Date(Date.now() - days * 24 * 60 * 60 * 1000));
   await db.delete(analyticsEvents).where(lt(analyticsEvents.createdAt, cutoff));
   await db.delete(analyticsSessions).where(lt(analyticsSessions.lastSeenAt, cutoff));
+}
+
+export async function getExecutiveDashboardSummary(days = 30) {
+  const analytics = await getAnalyticsSummary(days);
+  const db = await getDb();
+  if (!db) {
+    return {
+      analytics,
+      newsletter: { totalSubscribers: 0, newSubscribers: 0, monthly: buildMonthlyCountSeries([]) },
+      sales: { completedOrders: 0, completedSalesZar: 0, ordersRecorded: 0 },
+    };
+  }
+
+  const rangeStart = mysqlTimestamp(new Date(Date.now() - days * 24 * 60 * 60 * 1000));
+  const [allSubscribers, newSubscribers, orderRows] = await Promise.all([
+    db.select({ createdAt: newsletterSignups.createdAt }).from(newsletterSignups),
+    db.select({ createdAt: newsletterSignups.createdAt }).from(newsletterSignups).where(gte(newsletterSignups.createdAt, rangeStart)),
+    db.select({ amount: orders.amount, currency: orders.currency, paymentStatus: orders.paymentStatus }).from(orders).where(gte(orders.createdAt, rangeStart)),
+  ]);
+  const completedOrders = orderRows.filter((order) => order.paymentStatus === "completed");
+  const completedSalesZar = completedOrders
+    .filter((order) => order.currency === "ZAR")
+    .reduce((sum, order) => sum + Number(order.amount || 0), 0);
+
+  return {
+    analytics,
+    newsletter: {
+      totalSubscribers: allSubscribers.length,
+      newSubscribers: newSubscribers.length,
+      monthly: buildMonthlyCountSeries(allSubscribers.map((entry) => entry.createdAt)),
+    },
+    sales: {
+      completedOrders: completedOrders.length,
+      completedSalesZar: Number(completedSalesZar.toFixed(2)),
+      ordersRecorded: orderRows.length,
+    },
+  };
 }

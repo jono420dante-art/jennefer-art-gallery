@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,225 +6,99 @@ import { Link } from "wouter";
 import {
   ArrowRight,
   ArrowUpRight,
-  BellRing,
-  ClipboardList,
+  BarChart3,
+  CheckCircle2,
+  ChevronDown,
+  CircleDollarSign,
+  Clock3,
   Eye,
-  FolderKanban,
-  Image,
-  LineChart,
-  MessageSquare,
+  FileImage,
+  ImagePlus,
+  Layers3,
+  MailCheck,
+  MapPinned,
+  MousePointerClick,
   Palette,
+  SearchCheck,
   ShieldCheck,
   Sparkles,
+  TrendingUp,
+  UserRoundCheck,
   Users,
 } from "lucide-react";
 import { NotificationsPanel, type OperationalNotification } from "@/components/NotificationsPanel";
 import { AdminGrowthPanel } from "@/components/AdminGrowthPanel";
+import { toast } from "sonner";
 
-type StatCardProps = {
-  icon: typeof Image;
-  label: string;
-  value: number | string;
-  detail: string;
-  accent: "violet" | "blue" | "emerald" | "amber" | "rose" | "cyan";
-};
+const PANEL = "border border-cyan-100/15 bg-[linear-gradient(145deg,rgba(11,88,88,0.92),rgba(5,52,56,0.94))] shadow-[0_20px_45px_-35px_rgba(0,0,0,0.95)]";
 
-const accentStyles: Record<StatCardProps["accent"], { icon: string; dot: string; bars: string }> = {
-  violet: { icon: "bg-violet-500/15 text-violet-300", dot: "bg-violet-400", bars: "bg-violet-400/75" },
-  blue: { icon: "bg-blue-500/15 text-blue-300", dot: "bg-blue-400", bars: "bg-blue-400/75" },
-  emerald: { icon: "bg-emerald-500/15 text-emerald-300", dot: "bg-emerald-400", bars: "bg-emerald-400/75" },
-  amber: { icon: "bg-amber-500/15 text-amber-300", dot: "bg-amber-400", bars: "bg-amber-400/75" },
-  rose: { icon: "bg-rose-500/15 text-rose-300", dot: "bg-rose-400", bars: "bg-rose-400/75" },
-  cyan: { icon: "bg-cyan-500/15 text-cyan-300", dot: "bg-cyan-400", bars: "bg-cyan-400/75" },
-};
-
-function MetricPulse({ bars, className }: { bars: number[]; className: string }) {
-  const max = Math.max(...bars, 0);
-  if (max === 0) return <span className="text-[10px] font-medium text-slate-500">Awaiting recorded activity</span>;
-  return (
-    <div className="flex h-8 items-end gap-1" aria-hidden="true">
-      {bars.map((bar, index) => (
-        <span
-          key={index}
-          className={`w-1.5 rounded-t-sm ${className}`}
-          style={{ height: `${Math.max(16, Math.round((bar / max) * 100))}%` }}
-        />
-      ))}
-    </div>
-  );
+function MiniBars({ values, tint = "bg-cyan-300" }: { values: number[]; tint?: string }) {
+  const maximum = Math.max(...values, 0);
+  if (maximum === 0) return <span className="text-xs text-teal-100/55">Awaiting real data</span>;
+  return <div className="flex h-24 items-end gap-1.5" aria-hidden="true">{values.map((value, index) => <i key={index} className={`min-w-1 flex-1 rounded-t-sm ${tint}`} style={{ height: `${Math.max(9, (value / maximum) * 100)}%`, opacity: 0.38 + ((index + 1) / values.length) * 0.62 }} />)}</div>;
 }
 
-function StatCard({ icon: Icon, label, value, detail, accent }: StatCardProps) {
-  const styles = accentStyles[accent];
-  return (
-    <Card className="group min-w-0 overflow-hidden rounded-xl border border-white/8 bg-[#15171c] p-4 shadow-[0_18px_35px_-28px_rgba(0,0,0,0.9)] transition duration-200 hover:-translate-y-0.5 hover:border-white/15 hover:bg-[#191c22] sm:p-5">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span className={`h-1.5 w-1.5 rounded-full ${styles.dot}`} />
-            <p className="break-words text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">{label}</p>
-          </div>
-          <p className="mt-3 break-words text-3xl font-black tracking-tight text-white sm:text-4xl">{value}</p>
-          <p className="mt-2 min-h-8 break-words text-xs leading-4 text-slate-400">{detail}</p>
-        </div>
-        <div className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${styles.icon}`}><Icon className="h-4 w-4" /></div>
-      </div>
-      <div className="mt-3 border-t border-white/6 pt-3"><MetricPulse bars={[2, 4, 3, 6, 4, 7, 5]} className={styles.bars} /></div>
-    </Card>
-  );
+function ExecutivePanel({ eyebrow, title, icon: Icon, children, className = "" }: { eyebrow: string; title: string; icon: typeof TrendingUp; children: React.ReactNode; className?: string }) {
+  return <Card className={`${PANEL} min-w-0 overflow-hidden rounded-2xl p-4 text-teal-50 sm:p-5 ${className}`}><div className="mb-4 flex items-start justify-between gap-4"><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-cyan-100/55">{eyebrow}</p><h2 className="mt-1 break-words text-base font-black tracking-tight text-white sm:text-lg">{title}</h2></div><div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-cyan-100/15 bg-cyan-200/10"><Icon className="h-4 w-4 text-cyan-200" /></div></div>{children}</Card>;
 }
 
-type CommandCardProps = {
-  title: string;
-  description: string;
-  href: string;
-  icon: typeof Palette;
-  tone: string;
-};
-
-function CommandCard({ title, description, href, icon: Icon, tone }: CommandCardProps) {
-  return (
-    <Link href={href} className="group block h-full rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">
-      <Card className="h-full min-w-0 rounded-xl border border-white/8 bg-[#15171c] p-4 transition duration-200 hover:border-violet-400/35 hover:bg-[#191c22] sm:p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className={`grid h-10 w-10 place-items-center rounded-lg ${tone}`}><Icon className="h-4 w-4" /></div>
-          <ArrowUpRight className="h-4 w-4 text-slate-500 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-violet-300" />
-        </div>
-        <h3 className="mt-5 break-words text-sm font-bold text-slate-100">{title}</h3>
-        <p className="mt-2 break-words text-xs leading-5 text-slate-400">{description}</p>
-      </Card>
-    </Link>
-  );
+function FunnelStep({ label, value, percent, accent }: { label: string; value: number; percent: number; accent: string }) {
+  return <div><div className="mb-1.5 flex items-center justify-between gap-3 text-xs"><span className="min-w-0 truncate text-teal-50/80">{label}</span><strong className="shrink-0 text-white">{value.toLocaleString()}</strong></div><div className="h-9 overflow-hidden rounded-md bg-[#063a3e]"><div className={`flex h-full min-w-10 items-center justify-end rounded-md px-3 text-[10px] font-bold text-white ${accent}`} style={{ width: `${Math.max(8, percent)}%` }}>{percent.toFixed(1)}%</div></div></div>;
 }
 
-function TrafficPulseChart({ dailyTraffic }: { dailyTraffic: Array<{ date: string; sessions: number; pageViews: number; conversionClicks: number }> }) {
-  const maxSessions = Math.max(...dailyTraffic.map((entry) => entry.sessions), 0);
-  const totalSessions = dailyTraffic.reduce((total, entry) => total + entry.sessions, 0);
-  const totalViews = dailyTraffic.reduce((total, entry) => total + entry.pageViews, 0);
-
-  return (
-    <Card className="min-w-0 overflow-hidden rounded-xl border border-white/8 bg-[#15171c] p-4 sm:p-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2"><LineChart className="h-4 w-4 text-violet-300" /><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Visitor activity</p></div>
-          <h2 className="mt-2 text-lg font-black tracking-tight text-white">Seven-day traffic pulse</h2>
-          <p className="mt-1 text-xs leading-5 text-slate-400">Sessions and page views captured by the gallery&apos;s first-party tracker.</p>
-        </div>
-        <div className="flex gap-4 text-xs sm:text-right">
-          <div><p className="font-black text-white">{totalSessions}</p><p className="text-slate-500">sessions</p></div>
-          <div><p className="font-black text-white">{totalViews}</p><p className="text-slate-500">views</p></div>
-        </div>
-      </div>
-      {maxSessions > 0 ? (
-        <div className="mt-6">
-          <div className="flex h-36 items-end gap-2 border-b border-white/10 pb-1 sm:h-40 sm:gap-3">
-            {dailyTraffic.map((entry) => (
-              <div key={entry.date} className="group relative flex h-full min-w-0 flex-1 items-end justify-center">
-                <div className="absolute bottom-full z-10 mb-2 hidden w-32 rounded-md border border-white/10 bg-[#252831] px-2 py-1.5 text-center text-[10px] text-slate-200 shadow-xl group-hover:block">
-                  {entry.sessions} sessions · {entry.pageViews} views · {entry.conversionClicks} conversion clicks
-                </div>
-                <div className="w-full max-w-8 rounded-t-md bg-gradient-to-t from-violet-600 to-blue-400 transition-opacity group-hover:opacity-80" style={{ height: `${Math.max(6, (entry.sessions / maxSessions) * 100)}%` }} />
-              </div>
-            ))}
-          </div>
-          <div className="mt-2 grid grid-cols-7 gap-2 text-center text-[9px] font-semibold uppercase tracking-wide text-slate-500">
-            {dailyTraffic.map((entry) => <span key={entry.date}>{new Date(`${entry.date}T00:00:00Z`).toLocaleDateString(undefined, { weekday: "short" })}</span>)}
-          </div>
-        </div>
-      ) : <p className="mt-8 rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-5 text-center text-sm text-slate-400">No visits have been recorded in the last seven days. The chart will populate from real public sessions.</p>}
-    </Card>
-  );
+function AttentionRows({ items }: { items: Array<{ label: string; value: number }> }) {
+  const maximum = Math.max(...items.map((item) => item.value), 0);
+  if (!items.length) return <p className="rounded-xl border border-dashed border-cyan-100/15 bg-black/10 p-4 text-center text-xs leading-5 text-teal-50/60">Attention signals will appear when public visitors browse artworks and use the sales controls.</p>;
+  return <div className="space-y-3">{items.slice(0, 5).map((item) => <div key={item.label}><div className="mb-1 flex items-center justify-between gap-3 text-xs"><span className="min-w-0 truncate text-teal-50/80">{item.label}</span><strong className="shrink-0 text-cyan-100">{item.value.toLocaleString()}</strong></div><div className="h-1.5 overflow-hidden rounded-full bg-black/20"><div className="h-full rounded-full bg-gradient-to-r from-cyan-300 to-emerald-300" style={{ width: `${maximum ? (item.value / maximum) * 100 : 0}%` }} /></div></div>)}</div>;
 }
 
 export default function AdminDashboard() {
+  const [seoReady, setSeoReady] = useState({ tag: false, robots: false, sitemap: false });
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const artworksQuery = trpc.artworks.list.useQuery();
-  const collectionsQuery = trpc.collections.list.useQuery();
-  const contactsQuery = trpc.contact.list.useQuery();
-  const reviewsQuery = trpc.reviews.listAll.useQuery();
-  const notificationEventsQuery = trpc.notifications.list.useQuery();
-  const growthSummaryQuery = trpc.analytics.summary.useQuery({ days: 7 }, { refetchInterval: 30_000 });
+  const dashboardQuery = trpc.dashboard.summary.useQuery({ days: 30 }, { refetchInterval: 30_000 });
+  const spotlightQuery = trpc.dashboard.spotlight.useQuery();
+  const notificationsQuery = trpc.notifications.list.useQuery();
   const utils = trpc.useUtils();
+  const selectSpotlightMutation = trpc.dashboard.selectSpotlightArtwork.useMutation({ onSuccess: () => { utils.dashboard.spotlight.invalidate(); toast.success("Artwork selected for Jennefer’s admin profile card."); }, onError: (error) => toast.error(error.message) });
+  const uploadSpotlightMutation = trpc.dashboard.uploadSpotlightImage.useMutation({ onSuccess: () => { utils.dashboard.spotlight.invalidate(); toast.success("Custom image saved for Jennefer’s admin profile card."); }, onError: (error) => toast.error(error.message || "Could not upload the image.") });
   const markEventRead = trpc.notifications.markRead.useMutation({ onSuccess: () => utils.notifications.list.invalidate() });
   const markAllEventsRead = trpc.notifications.markAllRead.useMutation({ onSuccess: () => utils.notifications.list.invalidate() });
 
-  const isLoading = artworksQuery.isLoading || collectionsQuery.isLoading || contactsQuery.isLoading || reviewsQuery.isLoading;
-  const collectionNames = useMemo(() => new Map((collectionsQuery.data ?? []).map((collection: any) => [collection.id, collection.name])), [collectionsQuery.data]);
-  const inventory = useMemo(() => {
-    const artworks = artworksQuery.data ?? [];
-    return { available: artworks.filter((artwork: any) => artwork.isAvailable === 1).length, sold: artworks.filter((artwork: any) => artwork.isAvailable === 0).length };
-  }, [artworksQuery.data]);
-  const operationalNotifications = useMemo<OperationalNotification[]>(() => (notificationEventsQuery.data ?? []).map((event: any) => ({ id: event.id, title: event.title, body: event.body, type: event.type, timestamp: event.createdAt, isRead: event.isRead })), [notificationEventsQuery.data]);
-  const unreadAlerts = operationalNotifications.filter((event) => !event.isRead).length;
-  const conversionRate = growthSummaryQuery.data?.uniqueSessions ? ((growthSummaryQuery.data.conversionClicks / growthSummaryQuery.data.uniqueSessions) * 100).toFixed(1) : "0.0";
-  const dailyTraffic = growthSummaryQuery.data?.dailyTraffic ?? [];
+  useEffect(() => {
+    let active = true;
+    Promise.all([
+      fetch("/robots.txt").then((response) => response.ok).catch(() => false),
+      fetch("/sitemap.xml").then((response) => response.ok).catch(() => false),
+    ]).then(([robots, sitemap]) => { if (active) setSeoReady({ tag: Boolean(document.querySelector('script[src*="googletagmanager.com/gtag/js"]')), robots, sitemap }); });
+    return () => { active = false; };
+  }, []);
 
-  return (
-    <div className="min-h-screen bg-[#090b10] pb-14 text-slate-100 selection:bg-violet-500/40">
-      <section className="border-b border-white/8 bg-[radial-gradient(ellipse_at_top_right,rgba(124,58,237,0.22),transparent_36%),linear-gradient(180deg,#12141a_0%,#0c0e13_100%)]">
-        <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-            <div className="min-w-0">
-              <div className="mb-3 flex items-center gap-2 text-[10px] font-bold tracking-[0.16em] text-emerald-300"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.12)]" /> SECURE ADMINISTRATOR SESSION</div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Jennefer Ann Art Gallery</p>
-              <h1 className="mt-1 text-3xl font-black tracking-tight text-white sm:text-4xl">Gallery Command Centre</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400"><strong className="font-semibold text-slate-200">Welcome back, Jennefer.</strong> Your protected gallery cockpit for the catalogue, collector interest, first-party traffic and search readiness.</p>
-            </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-              <Button asChild variant="outline" className="border-white/15 bg-white/[0.03] text-slate-100 hover:bg-white/[0.08] hover:text-white"><Link href="/"><Eye className="mr-2 h-4 w-4" />View gallery</Link></Button>
-              <Button asChild className="bg-violet-600 text-white shadow-lg shadow-violet-950/60 hover:bg-violet-500"><Link href="/admin"><Palette className="mr-2 h-4 w-4" />Manage artwork</Link></Button>
-            </div>
-          </div>
-          <nav aria-label="Command Centre sections" className="mt-6 flex gap-2 overflow-x-auto border-t border-white/8 pt-4 text-xs font-semibold text-slate-400 [scrollbar-width:thin]">
-            <a href="#overview" className="shrink-0 rounded-md bg-white/[0.07] px-3 py-2 text-slate-100">Overview</a>
-            <a href="#operations" className="shrink-0 rounded-md px-3 py-2 hover:bg-white/[0.06] hover:text-white">Operations</a>
-            <a href="#growth-control" className="shrink-0 rounded-md px-3 py-2 hover:bg-white/[0.06] hover:text-white">Growth intelligence</a>
-            <a href="#activity" className="shrink-0 rounded-md px-3 py-2 hover:bg-white/[0.06] hover:text-white">Catalogue activity</a>
-            <a href="#notifications" className="shrink-0 rounded-md px-3 py-2 hover:bg-white/[0.06] hover:text-white">System notices</a>
-          </nav>
-        </div>
-      </section>
+  const handleSpotlightUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("Choose an image file for the profile background."); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Use an image smaller than 5 MB for the profile background."); return; }
+    const reader = new FileReader();
+    reader.onloadend = () => uploadSpotlightMutation.mutate({ imageBase64: String(reader.result) });
+    reader.onerror = () => toast.error("The selected image could not be read.");
+    reader.readAsDataURL(file);
+  };
 
-      <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
-        <section id="overview" aria-label="Gallery executive overview" className="scroll-mt-24">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-300">Executive overview</p><h2 className="mt-1 text-xl font-black text-white">Live gallery performance</h2></div><p className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-bold tracking-[0.12em] text-emerald-300">LIVE FIRST-PARTY DATA</p></div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-            <StatCard icon={Image} label="Artworks" value={isLoading ? "—" : artworksQuery.data?.length ?? 0} detail={`${inventory.available} available · ${inventory.sold} sold`} accent="violet" />
-            <StatCard icon={FolderKanban} label="Collections" value={isLoading ? "—" : collectionsQuery.data?.length ?? 0} detail="Organised public categories" accent="cyan" />
-            <StatCard icon={MessageSquare} label="Reviews" value={isLoading ? "—" : reviewsQuery.data?.length ?? 0} detail="Submissions awaiting attention" accent="amber" />
-            <StatCard icon={Users} label="Collector leads" value={isLoading ? "—" : contactsQuery.data?.length ?? 0} detail="Contact and commission enquiries" accent="emerald" />
-            <StatCard icon={LineChart} label="Seven-day sessions" value={growthSummaryQuery.isLoading ? "—" : growthSummaryQuery.data?.uniqueSessions ?? 0} detail={`${growthSummaryQuery.data?.pageViews ?? 0} recorded page views`} accent="blue" />
-            <StatCard icon={BellRing} label="Action signals" value={unreadAlerts} detail={`${conversionRate}% recorded click-to-session rate`} accent="rose" />
-          </div>
-          <div className="mt-4 grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
-            <TrafficPulseChart dailyTraffic={dailyTraffic} />
-            <Card className="rounded-xl border border-white/8 bg-[#15171c] p-4 sm:p-5">
-              <div className="flex items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Catalogue signal</p><h2 className="mt-2 text-lg font-black text-white">Availability snapshot</h2></div><Sparkles className="h-5 w-5 text-amber-300" /></div>
-              <div className="mt-6 space-y-5">
-                <div><div className="mb-2 flex justify-between gap-3 text-xs"><span className="text-slate-400">Available pieces</span><strong className="text-emerald-300">{inventory.available}</strong></div><div className="h-2 overflow-hidden rounded-full bg-white/8"><div className="h-full rounded-full bg-emerald-400" style={{ width: `${(inventory.available + inventory.sold) ? (inventory.available / (inventory.available + inventory.sold)) * 100 : 0}%` }} /></div></div>
-                <div><div className="mb-2 flex justify-between gap-3 text-xs"><span className="text-slate-400">Sold pieces</span><strong className="text-rose-300">{inventory.sold}</strong></div><div className="h-2 overflow-hidden rounded-full bg-white/8"><div className="h-full rounded-full bg-rose-400" style={{ width: `${(inventory.available + inventory.sold) ? (inventory.sold / (inventory.available + inventory.sold)) * 100 : 0}%` }} /></div></div>
-              </div>
-              <p className="mt-6 border-t border-white/8 pt-4 text-xs leading-5 text-slate-500">These bars reflect the live catalogue status stored in the protected artwork manager.</p>
-            </Card>
-          </div>
-        </section>
+  const summary = dashboardQuery.data;
+  const analytics = summary?.analytics;
+  const newsletters = summary?.newsletter;
+  const sales = summary?.sales;
+  const spotlightImage = spotlightQuery.data?.spotlightImageUrl;
+  const dailyTraffic = analytics?.dailyTraffic ?? [];
+  const monthlySignups = newsletters?.monthly ?? [];
+  const totalViews = analytics?.pageViews ?? 0;
+  const artworkViews = analytics?.artworkDetailViews ?? 0;
+  const intentClicks = analytics?.highIntentClicks ?? 0;
+  const completedSales = sales?.completedOrders ?? 0;
+  const pageAttention = (analytics?.topPages ?? []).map((page: any) => ({ label: page.pagePath, value: Number(page.views) || 0 }));
+  const eventAttention = (analytics?.engagementSignals ?? []).map((event: any) => ({ label: event.eventType.replace("click_", "").replaceAll("_", " "), value: Number(event.events) || 0 }));
+  const operationalNotifications = useMemo<OperationalNotification[]>(() => (notificationsQuery.data ?? []).map((event: any) => ({ id: event.id, title: event.title, body: event.body, type: event.type, timestamp: event.createdAt, isRead: event.isRead })), [notificationsQuery.data]);
 
-        <section id="operations" className="mt-8 scroll-mt-24">
-          <div className="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-300">Operations</p><h2 className="mt-1 text-xl font-black text-white">Management workspace</h2></div><Link href="/admin" className="inline-flex w-fit items-center text-xs font-bold text-violet-300 hover:text-violet-200">Open management studio <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></div>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <CommandCard title="Artwork studio" description="Upload work, update stories, prices, availability and featured placement." href="/admin" icon={Palette} tone="bg-violet-500/15 text-violet-300" />
-            <CommandCard title="Collection control" description="Move work between collections and keep public folders organised." href="/admin" icon={FolderKanban} tone="bg-cyan-500/15 text-cyan-300" />
-            <CommandCard title="Collector inbox" description="Review contact, commission, reservation and artwork enquiries." href="/admin" icon={ClipboardList} tone="bg-emerald-500/15 text-emerald-300" />
-            <CommandCard title="Review moderation" description="Moderate submissions and maintain public-facing trust." href="/admin" icon={MessageSquare} tone="bg-amber-500/15 text-amber-300" />
-          </div>
-        </section>
-
-        <section id="growth-control" className="mt-8 scroll-mt-24"><AdminGrowthPanel /></section>
-
-        <div className="mt-8 grid grid-cols-1 gap-4 xl:grid-cols-[1.1fr_0.9fr]">
-          <section id="activity" className="scroll-mt-24"><Card className="h-full rounded-xl border border-white/8 bg-[#15171c] p-4 sm:p-5"><div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-300">Collection activity</p><h2 className="mt-1 text-xl font-black text-white">Latest catalogue entries</h2></div><Sparkles className="h-5 w-5 text-violet-300" /></div><div className="mt-5 divide-y divide-white/8">{(artworksQuery.data ?? []).slice(0, 5).map((artwork: any) => <div key={artwork.id} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-100">{artwork.title}</p><p className="mt-1 truncate text-xs text-slate-500">{collectionNames.get(artwork.collectionId) ?? "Gallery collection"}</p></div>{artwork.slug && <Button asChild variant="ghost" size="sm" className="shrink-0 text-slate-300 hover:bg-white/[0.06] hover:text-white"><Link href={`/artwork/${artwork.slug}`}>View <ArrowUpRight className="ml-1 h-3.5 w-3.5" /></Link></Button>}</div>)}{!artworksQuery.isLoading && (artworksQuery.data ?? []).length === 0 && <p className="py-8 text-center text-sm text-slate-400">No catalogue activity recorded yet.</p>}{artworksQuery.isLoading && <p className="py-8 text-center text-sm text-slate-400">Loading collection activity…</p>}</div></Card></section>
-          <section id="notifications" className="scroll-mt-24"><Card className="h-full rounded-xl border border-violet-400/20 bg-[linear-gradient(135deg,#171821_0%,#15171c_65%,rgba(124,58,237,0.14)_100%)] p-4 sm:p-5"><div className="mb-5 flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-300">Security & system</p><h2 className="mt-1 text-xl font-black text-white">Operational notices</h2></div><ShieldCheck className="h-5 w-5 text-violet-300" /></div><NotificationsPanel notifications={operationalNotifications} onMarkRead={(id) => markEventRead.mutate({ id })} onMarkAllRead={() => markAllEventsRead.mutate()} /></Card></section>
-        </div>
-      </main>
-    </div>
-  );
+  return <div className="min-h-screen bg-[#042d31] pb-14 text-teal-50 selection:bg-cyan-300/30"><section className="border-b border-cyan-100/10 bg-[radial-gradient(ellipse_at_top_left,rgba(19,173,166,0.38),transparent_42%),radial-gradient(ellipse_at_top_right,rgba(0,87,94,0.8),transparent_48%),#042a2e]"><div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8"><div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between"><div className="min-w-0"><div className="mb-3 flex items-center gap-2 text-[10px] font-bold tracking-[0.16em] text-emerald-200"><span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_0_4px_rgba(110,231,183,0.14)]" /> SECURE ADMINISTRATOR SESSION</div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-100/55">Jennefer Ann Art Gallery</p><h1 className="mt-1 text-3xl font-black tracking-tight text-white sm:text-4xl">Gallery Command Centre</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-teal-50/70"><strong className="font-semibold text-white">Welcome back, Jennefer.</strong> Your private gallery performance board for collector growth, artwork attention, sales actions, and search readiness.</p></div><div className="flex flex-col gap-2 sm:flex-row"><Button asChild variant="outline" className="border-cyan-100/20 bg-cyan-50/5 text-teal-50 hover:bg-cyan-50/10 hover:text-white"><Link href="/"><Eye className="mr-2 h-4 w-4" />View gallery</Link></Button><Button asChild className="bg-cyan-300 text-[#063437] shadow-lg shadow-cyan-950/40 hover:bg-cyan-200"><Link href="/admin"><Palette className="mr-2 h-4 w-4" />Manage artwork</Link></Button></div></div><nav aria-label="Command Centre sections" className="mt-6 flex gap-2 overflow-x-auto border-t border-cyan-100/10 pt-4 text-xs font-semibold text-teal-50/65 [scrollbar-width:thin]"><a href="#executive-board" className="shrink-0 rounded-md bg-cyan-50/10 px-3 py-2 text-white">Executive board</a><a href="#operations" className="shrink-0 rounded-md px-3 py-2 hover:bg-cyan-50/10 hover:text-white">Operations</a><a href="#deep-analytics" className="shrink-0 rounded-md px-3 py-2 hover:bg-cyan-50/10 hover:text-white">Deep analytics</a><a href="#notifications" className="shrink-0 rounded-md px-3 py-2 hover:bg-cyan-50/10 hover:text-white">System notices</a></nav></div></section><main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8"><section id="executive-board" className="scroll-mt-24"><div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-cyan-200">Executive performance board</p><h2 className="mt-1 text-xl font-black text-white">The studio at a glance</h2></div><p className="rounded-full border border-cyan-100/15 bg-cyan-100/10 px-3 py-1.5 text-[10px] font-bold tracking-[0.12em] text-cyan-100">LIVE FIRST-PARTY DATA · LAST 30 DAYS</p></div><div className="grid gap-4 xl:grid-cols-[0.85fr_1.3fr_0.85fr]"><ExecutivePanel eyebrow="Monthly sales & views" title="Collector performance" icon={CircleDollarSign}><div className="grid grid-cols-2 gap-3"><div><p className="text-xs text-teal-50/60">Completed sales</p><p className="mt-1 text-3xl font-black text-white">{completedSales}</p><p className="mt-1 text-[11px] text-teal-50/55">{sales?.completedSalesZar ? `R${sales.completedSalesZar.toLocaleString()} recorded ZAR` : "No completed ZAR sales recorded"}</p></div><div><p className="text-xs text-teal-50/60">Page views</p><p className="mt-1 text-3xl font-black text-white">{totalViews.toLocaleString()}</p><p className="mt-1 text-[11px] text-teal-50/55">Real public views in this period</p></div></div><div className="mt-5 border-t border-cyan-100/10 pt-4"><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-50/50">View activity</p><MiniBars values={dailyTraffic.map((entry: any) => entry.pageViews)} tint="bg-cyan-200" /></div></ExecutivePanel><Card className={`${PANEL} relative min-h-[280px] overflow-hidden rounded-2xl p-0`}><div className="absolute inset-0 bg-cover bg-center transition duration-500" style={spotlightImage ? { backgroundImage: `url(${spotlightImage})` } : { background: "linear-gradient(135deg,#0d7774,#08494e 58%,#042b32)" }} /><div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(2,35,39,0.96),rgba(2,35,39,0.53)_62%,rgba(2,35,39,0.28))]" /><div className="relative flex min-h-[280px] flex-col justify-between p-5 sm:p-6"><div className="flex items-start justify-between gap-4"><div className="flex min-w-0 items-center gap-3"><div className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/30 bg-white/15 backdrop-blur"><UserRoundCheck className="h-5 w-5 text-cyan-100" /></div><div className="min-w-0"><p className="truncate text-sm font-black text-white">Jennefer Ann</p><p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.13em] text-cyan-100/75">Verified gallery administrator</p></div></div><span className="rounded-full border border-emerald-100/25 bg-emerald-300/15 px-2.5 py-1 text-[10px] font-bold text-emerald-100">ACTIVE</span></div><div><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-cyan-100/80">Jennefer’s studio spotlight</p><h2 className="mt-2 max-w-md text-2xl font-black tracking-tight text-white">Your artwork. Your command space.</h2><p className="mt-2 max-w-md text-xs leading-5 text-cyan-50/75">Choose any gallery artwork or upload a private image. It appears only here, behind the Administrator profile card.</p></div><div className="flex flex-col gap-2 sm:flex-row"><select aria-label="Choose artwork for Administrator spotlight" value={spotlightQuery.data?.spotlightArtworkId ? String(spotlightQuery.data.spotlightArtworkId) : ""} onChange={(event) => { if (event.target.value) selectSpotlightMutation.mutate({ artworkId: Number(event.target.value) }); }} className="h-9 min-w-0 flex-1 rounded-md border border-white/20 bg-[#063b3f]/80 px-3 text-xs text-white backdrop-blur"><option value="">Choose an artwork background</option>{(artworksQuery.data ?? []).map((artwork: any) => <option key={artwork.id} value={artwork.id}>{artwork.title}</option>)}</select><Button type="button" size="sm" className="bg-white/15 text-white hover:bg-white/25" onClick={() => fileInputRef.current?.click()} disabled={uploadSpotlightMutation.isPending}><ImagePlus className="mr-2 h-3.5 w-3.5" />{uploadSpotlightMutation.isPending ? "Uploading…" : "Upload image"}</Button><input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleSpotlightUpload} /></div></div></Card><ExecutivePanel eyebrow="Newsletter signups" title="Collector list growth" icon={MailCheck}><div className="flex items-end justify-between gap-3"><div><p className="text-4xl font-black tracking-tight text-white">{newsletters?.totalSubscribers ?? 0}</p><p className="mt-1 text-xs text-teal-50/65">consented collector subscribers</p></div><div className="rounded-lg border border-cyan-100/10 bg-black/10 px-3 py-2 text-right"><p className="text-[10px] uppercase tracking-wide text-teal-50/55">New 30 days</p><strong className="text-lg text-cyan-100">+{newsletters?.newSubscribers ?? 0}</strong></div></div><div className="mt-5 border-t border-cyan-100/10 pt-4"><div className="flex h-24 items-end gap-2">{monthlySignups.map((entry: any) => <div key={entry.key} className="flex h-full min-w-0 flex-1 flex-col justify-end"><div className="rounded-t-sm bg-emerald-300/85" style={{ height: `${Math.max(5, Math.round((entry.count / Math.max(...monthlySignups.map((item: any) => item.count), 1)) * 100))}%` }} /><span className="mt-1 text-center text-[9px] font-bold uppercase text-cyan-50/50">{entry.label}</span></div>)}</div></div></ExecutivePanel></div><div className="mt-4 grid gap-4 xl:grid-cols-[1.15fr_0.85fr_0.8fr]"><ExecutivePanel eyebrow="Attention funnel" title="Where interest becomes action" icon={MousePointerClick}><p className="mb-4 text-xs leading-5 text-teal-50/65">Real progression through the gallery. Percentages use public page views as the starting point.</p><div className="space-y-3"><FunnelStep label="Public page views" value={totalViews} percent={100} accent="bg-cyan-300/65" /><FunnelStep label="Artwork detail views" value={artworkViews} percent={totalViews ? (artworkViews / totalViews) * 100 : 0} accent="bg-teal-300/65" /><FunnelStep label="High-intent actions" value={intentClicks} percent={totalViews ? (intentClicks / totalViews) * 100 : 0} accent="bg-emerald-300/65" /><FunnelStep label="Completed purchases" value={completedSales} percent={totalViews ? (completedSales / totalViews) * 100 : 0} accent="bg-amber-300/70" /></div></ExecutivePanel><ExecutivePanel eyebrow="Most attention" title="What collectors like" icon={Sparkles}><p className="mb-4 text-xs leading-5 text-teal-50/65">Popular public pages plus direct engagement signals from recorded sessions.</p><AttentionRows items={pageAttention.length ? pageAttention : eventAttention} /></ExecutivePanel><ExecutivePanel eyebrow="SEO & metrics" title="Search readiness" icon={SearchCheck}><div className="space-y-3">{[{ label: "Google Analytics tag", ready: seoReady.tag }, { label: "robots.txt", ready: seoReady.robots }, { label: "sitemap.xml", ready: seoReady.sitemap }].map((item) => <div key={item.label} className="flex items-center justify-between gap-3 rounded-xl border border-cyan-100/10 bg-black/10 px-3 py-3"><span className="text-xs text-teal-50/80">{item.label}</span><span className={`flex shrink-0 items-center gap-1 text-[10px] font-bold ${item.ready ? "text-emerald-200" : "text-amber-200"}`}><CheckCircle2 className="h-3.5 w-3.5" />{item.ready ? "READY" : "CHECKING"}</span></div>)}</div><Link href="/admin-dashboard?panel=seo#seo-dashboard" className="mt-5 inline-flex items-center text-xs font-bold text-cyan-100 hover:text-white">Open full SEO health <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link><p className="mt-3 text-[10px] leading-4 text-teal-50/45">Ad-spend reporting stays blank until a verified ad-platform integration is connected. This board does not invent marketing spend.</p></ExecutivePanel></div></section><section id="operations" className="mt-8 scroll-mt-24"><div className="mb-4 flex flex-wrap items-end justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-200">Operations</p><h2 className="mt-1 text-xl font-black text-white">Management workspace</h2></div><Link href="/admin" className="inline-flex items-center text-xs font-bold text-cyan-100 hover:text-white">Open management studio <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link></div><div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">{[{ title: "Artwork studio", description: "Upload paintings and photography, update details, prices and availability.", icon: Palette }, { title: "Collector inbox", description: "Review enquiries, commissions, reservations and collector leads.", icon: Users }, { title: "Newsletter list", description: `${newsletters?.totalSubscribers ?? 0} consented collector subscriptions ready to manage.`, icon: MailCheck }, { title: "Catalogue control", description: "Organise collections, mark work sold, and curate featured pieces.", icon: Layers3 }].map((item) => <Link key={item.title} href="/admin" className="group"><Card className={`${PANEL} h-full rounded-xl p-4 transition hover:-translate-y-0.5 hover:border-cyan-100/35`}><item.icon className="h-5 w-5 text-cyan-200" /><h3 className="mt-4 text-sm font-bold text-white">{item.title}</h3><p className="mt-2 text-xs leading-5 text-teal-50/65">{item.description}</p><span className="mt-4 inline-flex items-center text-xs font-bold text-cyan-100">Open <ArrowUpRight className="ml-1 h-3.5 w-3.5" /></span></Card></Link>)}</div></section><section id="deep-analytics" className="mt-8 scroll-mt-24"><AdminGrowthPanel /></section><div className="mt-8 grid grid-cols-1 gap-4 xl:grid-cols-[1.1fr_0.9fr]"><section><ExecutivePanel eyebrow="Marketing geography" title="Verified geographic reporting" icon={MapPinned}><p className="text-xs leading-5 text-teal-50/70">Country and city points remain available through the Geographic view inside Deep analytics once GA4 Data API access is authorised. The first-party tracker does not infer locations from visitors.</p></ExecutivePanel></section><section id="notifications" className="scroll-mt-24"><Card className={`${PANEL} h-full rounded-xl p-4 sm:p-5`}><div className="mb-5 flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-cyan-200">Security & system</p><h2 className="mt-1 text-xl font-black text-white">Operational notices</h2></div><ShieldCheck className="h-5 w-5 text-cyan-200" /></div><NotificationsPanel notifications={operationalNotifications} onMarkRead={(id) => markEventRead.mutate({ id })} onMarkAllRead={() => markAllEventsRead.mutate()} /></Card></section></div></main></div>;
 }

@@ -382,6 +382,15 @@
 - [ ] Provide a clear geographic analytics panel that uses connected GA4 access without inventing visitor locations
 - [x] Validate every added analytics panel with protected live data, regression tests, and responsive browser review
 
+## Teal Executive Dashboard Experience
+- [x] Make the protected Command Centre open with the requested teal, premium executive dashboard composition
+- [x] Add a real newsletter-signups growth panel using consented collector records
+- [x] Add real monthly sales and views performance cards with transparent zero states where orders are absent
+- [x] Add an SEO health and metrics panel that reports actual search-readiness status rather than ad-spend placeholders
+- [x] Add a real attention funnel for views, clicks, active engagement time, and strongest content-interest signals
+- [x] Add a protected Jennefer profile spotlight card with gallery-artwork selection and custom image upload as its background only
+- [x] Validate the teal executive layout, upload flow, data panels, and protected access in browser and regression tests
+
 ## Administrator Password Protection Clarification
 - [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
 - [x] Confirm whether a separate second portal password factor is required in addition to the secure account sign-in — not required; retain the secure account sign-in only

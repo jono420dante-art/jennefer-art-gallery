@@ -672,5 +672,38 @@ export const appRouter = router({
         };
       }),
   }),
+
+  // ============ EXECUTIVE COMMAND CENTRE ROUTES ============
+  dashboard: router({
+    summary: adminProcedure
+      .input(z.object({ days: z.number().int().min(1).max(90).default(30) }).optional())
+      .query(async ({ input }) => db.getExecutiveDashboardSummary(input?.days ?? 30)),
+    spotlight: adminProcedure.query(async () => db.getAdminDashboardSettings()),
+    selectSpotlightArtwork: adminProcedure
+      .input(z.object({ artworkId: z.number().int().positive() }))
+      .mutation(async ({ input }) => {
+        const artwork = await db.getArtworkById(input.artworkId);
+        if (!artwork) throw new TRPCError({ code: "NOT_FOUND", message: "Artwork not found" });
+        await db.updateAdminDashboardSettings({
+          spotlightArtworkId: artwork.id,
+          spotlightImageUrl: artwork.imageUrl,
+          spotlightImageKey: artwork.imageKey,
+        });
+        return { success: true };
+      }),
+    uploadSpotlightImage: adminProcedure
+      .input(z.object({ imageBase64: z.string().min(32).max(8_000_000) }))
+      .mutation(async ({ input }) => {
+        const [header, payload] = input.imageBase64.split(",", 2);
+        const contentType = /^data:image\/(png|webp|jpeg|jpg);base64$/i.test(header) ? header.match(/^data:(image\/[a-z+.-]+);base64$/i)?.[1] ?? "image/jpeg" : "image/jpeg";
+        const imageBuffer = Buffer.from(payload || input.imageBase64, "base64");
+        if (!imageBuffer.length) throw new TRPCError({ code: "BAD_REQUEST", message: "A valid image is required" });
+        const extension = contentType === "image/png" ? "png" : contentType === "image/webp" ? "webp" : "jpg";
+        const fileKey = `admin-spotlight/${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`;
+        const { url } = await storagePut(fileKey, imageBuffer, contentType);
+        await db.updateAdminDashboardSettings({ spotlightArtworkId: null, spotlightImageUrl: url, spotlightImageKey: fileKey });
+        return { success: true, url };
+      }),
+  }),
 });
 export type AppRouter = typeof appRouter;
