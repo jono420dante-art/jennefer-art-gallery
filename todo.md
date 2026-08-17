@@ -399,6 +399,17 @@
 - [ ] Connect a real sending provider only after the owner supplies authorised credentials, then test delivery and unsubscribe handling
 - [x] Validate all Newsletter Studio and optional analytics settings permissions, data integrity, and responsive browser workflows
 
+## Gmail OAuth Newsletter Delivery
+- [ ] Connect the confirmed sender address `jennefer.ann.gg@gmail.com` using authorised Google OAuth
+- [ ] Enable Administrator-approved campaign and direct-reply sending only after verified OAuth connection
+- [ ] Add unsubscribe handling and delivery-state protection before enabling collector campaigns
+- [ ] Verify sender identity, consent filtering, and real delivery with a user-approved test recipient
+
+## Gmail Entry Point and Website Operations Report
+- [x] Add a protected “Connect Gmail” entry point beside Manage Artwork with the verified studio-mailbox connection status
+- [x] Prepare a factual downloadable PDF report covering the complete website, live controls, security, analytics, newsletter studio, sales pathways, SEO, and current dependencies
+- [x] Validate the dashboard entry point and downloadable PDF report
+
 ## Administrator Password Protection Clarification
 - [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
 - [x] Confirm whether a separate second portal password factor is required in addition to the secure account sign-in — not required; retain the secure account sign-in only

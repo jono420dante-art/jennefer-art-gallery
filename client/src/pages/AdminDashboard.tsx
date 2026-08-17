@@ -74,6 +74,19 @@ export default function AdminDashboard() {
     return () => { active = false; };
   }, []);
 
+  useEffect(() => {
+    const manageArtworkLink = Array.from(document.querySelectorAll<HTMLAnchorElement>("a")).find((link) => link.textContent?.trim() === "Manage artwork");
+    if (!manageArtworkLink || manageArtworkLink.parentElement?.querySelector("#gmail-connect-quick-action")) return;
+    const gmailLink = document.createElement("a");
+    gmailLink.id = "gmail-connect-quick-action";
+    gmailLink.href = "/admin/newsletter-studio";
+    gmailLink.className = "inline-flex h-10 items-center justify-center rounded-md border border-cyan-100/25 bg-cyan-50/10 px-4 text-sm font-medium text-cyan-50 transition hover:bg-cyan-50/20 hover:text-white";
+    gmailLink.setAttribute("aria-label", "Connect Jennefer’s Gmail account for Newsletter Studio delivery");
+    gmailLink.textContent = "Connect Gmail";
+    manageArtworkLink.insertAdjacentElement("afterend", gmailLink);
+    return () => gmailLink.remove();
+  }, []);
+
   const handleSpotlightUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;

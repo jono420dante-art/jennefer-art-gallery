@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "pdf": "/home/ubuntu/jennefer-art-gallery/website-operations-report/main.pdf",
+  "mode": "standard",
+  "page_count": 5,
+  "selected_pages": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "rendered_pages": [
+    "/home/ubuntu/jennefer-art-gallery/website-operations-report/review/pages/page-0001.png",
+    "/home/ubuntu/jennefer-art-gallery/website-operations-report/review/pages/page-0002.png",
+    "/home/ubuntu/jennefer-art-gallery/website-operations-report/review/pages/page-0003.png",
+    "/home/ubuntu/jennefer-art-gallery/website-operations-report/review/pages/page-0004.png",
+    "/home/ubuntu/jennefer-art-gallery/website-operations-report/review/pages/page-0005.png"
+  ],
+  "contact_sheets": [
+    "/home/ubuntu/jennefer-art-gallery/website-operations-report/review/sheets/sheet-01.jpg"
+  ],
+  "settings": {
+    "dpi": 110,
+    "columns": 3,
+    "max_sheet_pages": 12,
+    "thumbnail_width": 320
+  }
+}

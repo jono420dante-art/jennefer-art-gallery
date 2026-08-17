@@ -39,3 +39,9 @@ The Jennefer profile spotlight selector was tested end to end using the **Silent
 The protected Newsletter Studio was browser-verified on 17 August 2026. It displayed the real consented collector list, newsletter editorial composer, campaign draft archive, contact-enquiry reply draft tools, and manual GA4 identifier form. The interface makes the delivery boundary explicit: no campaign or reply is represented as sent while no authorised email provider is configured.
 
 The optional GA4 panel correctly reports that identifier entry alone does not authorise the Data API, create geographic reports, or manufacture additional data. The Administrator page loaded without browser-console errors.
+
+## Gmail Entry Point and Operations Report
+
+The Command Centre was verified with a visible **Connect Gmail** action placed directly beside **Manage artwork**. The protected action opens Newsletter Studio and loaded cleanly without browser-console errors. It is a truthful entry point for authorising Jennefer’s confirmed mailbox, not a claim that delivery has been enabled.
+
+The Website Operations & Growth Report PDF was compiled successfully, passed deterministic document verification, and passed a five-page visual review covering title, contents, executive summary, operational capabilities, dependency table, and implementation validation.
