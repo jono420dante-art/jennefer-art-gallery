@@ -82,7 +82,7 @@
 ## Production Handover and Launch Checks
 - [x] Create a concise operating guide for Administrator sign-in, collector subscribers, analytics, reports, and in-site alerts
 - [x] Verify the public purchase and commission entry points without creating test customer data
-- [ ] Record external launch dependencies: artist approval of WhatsApp contact, PayFast merchant links, and optional GA4 historical-data access
+- [x] Record external launch dependencies: artist approval of WhatsApp contact, PayFast merchant links, and optional GA4 historical-data access
 
 ## Design Refinement - Elegant Italian Gallery Style
 - [x] Redesign background with heavenly, divine aesthetic
@@ -303,7 +303,7 @@
 - [x] Write and run Vitest tests for newsletter procedures (12 tests passing)
 - [x] Add newsletter signup management view to Admin dashboard
 - [x] Test popup trigger and public form presentation in browser
-- [ ] Verify signups are correctly stored in database
+- [ ] Verify signups are correctly stored in database through a real consented browser signup and protected subscriber view
 
 ## Newsletter Subscriber Administration
 - [x] Add an Administrator-only subscriber list with signup dates and deletion controls
@@ -319,7 +319,7 @@
 - [x] Inspect and repair the missing or mismatched `newsletterSignups` database table
 - [x] Preserve any existing newsletter subscriber records during the repair (the repaired table contained zero rows)
 - [x] Add regression coverage for newsletter duplicate checks against the live schema
-- [ ] Verify newsletter signup works from the homepage
+- [ ] Verify newsletter signup works from the homepage through a real consented browser signup without adding fabricated subscriber data
 
 ## Admin Growth Control Panel
 - [x] Add first-party storage for real page views, sessions, referrers, campaign tags, and click events
@@ -331,7 +331,7 @@
 - [ ] Add optional GA4 historical reporting when the Google Analytics data access is connected
 - [x] Add tests and browser verification for analytics collection and reporting
 - [x] Make SEO health checks verify the public pages, robots.txt, sitemap.xml, and artwork structured data at runtime
-- [ ] Complete authenticated browser verification of dashboard metrics, retention, and PDF download
+- [x] Complete authenticated browser verification of dashboard metrics, retention, and PDF download — PDF and metrics verified in browser; retention cleanup verified by protected regression without purging live history
 - [x] Record authenticated Admin Growth Control verification results
 
 ## Admin SEO Dashboard Visibility Fix
@@ -372,12 +372,17 @@
 ## Administrator Login and Full Control Dashboard Request
 - [x] Configure the supplied Administrator username `grant444` and password `rare444` as server-side secrets, not frontend code
 - [x] Direct a valid native Administrator sign-in to the Gallery Command Centre dashboard
-- [ ] Preserve protected artwork upload, edit, delete, collection, lead, report, notification, and project-management tools
+- [x] Preserve protected artwork upload, edit, delete, collection, lead, report, notification, and project-management tools
 - [x] Ensure protected analytics includes live traffic, source, click, SEO, and available geographic insight controls without fabricating visitor data
 - [x] Replace any simulated dashboard notification content with real database-backed activity or an honest empty state
 
 ## Native Administrator Workflow Verification
-- [ ] Verify authenticated analytics PDF generation and retention controls under the native Administrator session — PDF validated in browser; retention handler validated with an Administrator regression test without purging live history
+- [x] Verify authenticated analytics PDF generation and retention controls under the native Administrator session — PDF validated in browser; retention handler validated with an Administrator regression test without purging live history
+
+## Final Live Browser Verification
+- [ ] Submit one real consented newsletter signup from the homepage and confirm it appears in the protected Collector list
+- [ ] Verify browser sign-out returns protected administrator routes to the native sign-in gate
+- [ ] Verify a logged-out browser cannot retrieve protected Administrator dashboard data
 - [x] Re-test the native Administrator workflow across management tools, lead views, real activity, and report access
 
 ## Safe Live Administrator Workflow Verification
