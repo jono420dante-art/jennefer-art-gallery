@@ -410,6 +410,18 @@
 - [x] Prepare a factual downloadable PDF report covering the complete website, live controls, security, analytics, newsletter studio, sales pathways, SEO, and current dependencies
 - [x] Validate the dashboard entry point and downloadable PDF report
 
+## Real-Time Geographic Analytics View
+- [ ] Build a protected geographic map panel that can highlight countries from verified GA4 visitor reporting
+- [ ] Show honest map connection, refresh, and no-data states without inferred or fabricated visitor locations
+- [ ] Connect authorised GA4 OAuth/Data API access for country and city activity when the owner supplies it
+- [ ] Validate country highlighting, privacy boundaries, and protected map access with real reported activity
+
+## GA4 Tracking Replacement and Smoothness Polish
+- [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
+- [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID
+- [x] Review public gallery and protected Command Centre flows for focused responsive smoothness and visual polish
+- [x] Validate tracking-tag presence, TypeScript, tests, production build, and live browser flows
+
 ## Administrator Password Protection Clarification
 - [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
 - [x] Confirm whether a separate second portal password factor is required in addition to the secure account sign-in — not required; retain the secure account sign-in only

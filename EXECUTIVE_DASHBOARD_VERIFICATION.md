@@ -45,3 +45,9 @@ The optional GA4 panel correctly reports that identifier entry alone does not au
 The Command Centre was verified with a visible **Connect Gmail** action placed directly beside **Manage artwork**. The protected action opens Newsletter Studio and loaded cleanly without browser-console errors. It is a truthful entry point for authorising Jennefer’s confirmed mailbox, not a claim that delivery has been enabled.
 
 The Website Operations & Growth Report PDF was compiled successfully, passed deterministic document verification, and passed a five-page visual review covering title, contents, executive summary, operational capabilities, dependency table, and implementation validation.
+
+## GA4 Tracking Replacement
+
+The public homepage was checked after the owner-supplied GA4 tracking replacement. Its document contains exactly one Google tag script, using the verified measurement ID **G-J23S2RL6HP**. The prior measurement ID is not loaded, avoiding duplicate GA4 page-view tracking.
+
+The public gallery homepage and protected Command Centre were reviewed after the tracking update. Primary navigation, artwork/commission controls, collector form, dashboard action row, profile spotlight, newsletter metric, executive panels, and analytics controls remained contained and readable. The protected dashboard showed live first-party page views increasing from real browser activity and produced no browser-console errors.
