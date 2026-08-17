@@ -42,12 +42,12 @@ export function NotificationsPanel({ notifications, onMarkRead, onMarkAllRead }:
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-xl font-bold text-foreground">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="flex min-w-0 flex-wrap items-center gap-2 text-xl font-bold text-foreground">
           <Bell className="h-5 w-5" /> Live operational activity
           {unreadCount > 0 && <Badge variant="destructive">{unreadCount}</Badge>}
         </h2>
-        {unreadCount > 0 && <Button variant="outline" size="sm" onClick={markAllAsRead}><Check className="mr-2 h-4 w-4" />Mark read</Button>}
+        {unreadCount > 0 && <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={markAllAsRead}><Check className="mr-2 h-4 w-4" />Mark read</Button>}
       </div>
 
       <div className="space-y-2">
@@ -62,17 +62,17 @@ export function NotificationsPanel({ notifications, onMarkRead, onMarkAllRead }:
           const timestamp = notification.timestamp ? new Date(notification.timestamp) : null;
           return (
             <Card key={notification.id} className={`p-4 transition-colors ${isRead ? "bg-background" : "border-primary/40 bg-primary/5"}`}>
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-3 sm:gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-semibold text-foreground">{notification.title}</h3>
+                    <h3 className="break-words font-semibold text-foreground">{notification.title}</h3>
                     <Badge className={typeStyles[notification.type]}>{notification.type}</Badge>
                     {!isRead && <span className="h-2 w-2 rounded-full bg-primary" aria-label="Unread" />}
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">{notification.body}</p>
+                  <p className="mt-2 break-words text-sm leading-6 text-muted-foreground">{notification.body}</p>
                   {timestamp && !Number.isNaN(timestamp.getTime()) && <p className="mt-2 text-xs text-muted-foreground">{timestamp.toLocaleString()}</p>}
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex shrink-0 items-center gap-1">
                   {!isRead && eventId !== null && <Button variant="ghost" size="icon" aria-label="Mark activity read" onClick={() => { setReadIds((current) => new Set(current).add(String(eventId))); onMarkRead?.(eventId); }}><Check className="h-4 w-4" /></Button>}
                   <Button variant="ghost" size="icon" aria-label="Hide activity for this session" onClick={() => hideForSession(notification.id)}><X className="h-4 w-4" /></Button>
                 </div>

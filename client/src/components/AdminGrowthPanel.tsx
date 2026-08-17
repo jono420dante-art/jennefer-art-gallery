@@ -27,12 +27,12 @@ function MetricCard({ icon: Icon, label, value, detail, tone }: {
   tone: string;
 }) {
   return (
-    <Card className="p-5 bg-card border-border">
+    <Card className="h-full min-w-0 border-border bg-card p-4 sm:p-5">
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="mt-1 text-3xl font-bold text-foreground">{value.toLocaleString()}</p>
-          <p className="mt-2 text-xs text-muted-foreground">{detail}</p>
+        <div className="min-w-0">
+          <p className="break-words text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
+          <p className="mt-2 break-words text-3xl font-bold text-foreground">{value.toLocaleString()}</p>
+          <p className="mt-2 break-words text-xs leading-5 text-muted-foreground">{detail}</p>
         </div>
         <div className={`rounded-xl p-3 ${tone}`}>
           <Icon className="h-5 w-5 text-white" />
@@ -176,62 +176,62 @@ export function AdminGrowthPanel() {
           onLoad={inspectArtworkFrame}
         />
       )}
-      <div className="flex flex-col gap-4 border-b border-border bg-muted/20 p-6 lg:flex-row lg:items-center lg:justify-between">
-        <div>
+      <div className="flex flex-col gap-5 border-b border-border bg-muted/20 p-4 sm:p-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
           <div className="mb-2 flex items-center gap-2 text-primary">
             <BarChart3 className="h-5 w-5" />
             <span className="text-sm font-bold uppercase tracking-[0.18em]">Growth Control</span>
           </div>
           <h2 className="text-2xl font-bold text-foreground">Real traffic, clicks and search readiness</h2>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+          <p className="mt-1 max-w-2xl break-words text-sm leading-6 text-muted-foreground">
             First-party analytics updates from real public visits. Numbers begin building from the moment visitors use the site.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <select
             aria-label="Analytics reporting period"
             value={days}
             onChange={(event) => setDays(Number(event.target.value))}
-            className="h-9 rounded-md border border-border bg-background px-3 text-sm text-foreground"
+            className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground sm:w-auto"
           >
             <option value={1}>Today</option>
             <option value={7}>Last 7 days</option>
             <option value={30}>Last 30 days</option>
           </select>
-          <Button variant="outline" size="sm" onClick={() => summaryQuery.refetch()} disabled={summaryQuery.isFetching}>
+          <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => summaryQuery.refetch()} disabled={summaryQuery.isFetching}>
             <RefreshCw className={`mr-2 h-4 w-4 ${summaryQuery.isFetching ? "animate-spin" : ""}`} />
             Refresh
           </Button>
-          <Button size="sm" onClick={downloadReport}>
+          <Button size="sm" className="w-full sm:w-auto" onClick={downloadReport}>
             <Download className="mr-2 h-4 w-4" />
             PDF report
           </Button>
-          <Button variant="outline" size="sm" onClick={openSeoDashboard}>
+          <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={openSeoDashboard}>
             <SearchCheck className="mr-2 h-4 w-4" />
             SEO dashboard
           </Button>
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         <button
           id="seo-dashboard"
           type="button"
           onClick={openSeoDashboard}
-          className="mb-5 flex w-full items-center justify-between gap-4 rounded-xl border border-primary/30 bg-primary/10 p-4 text-left transition hover:border-primary/60 hover:bg-primary/15 focus:outline-none focus:ring-2 focus:ring-primary"
+          className="mb-5 flex w-full flex-col items-start justify-between gap-3 rounded-xl border border-primary/30 bg-primary/10 p-4 text-left transition hover:border-primary/60 hover:bg-primary/15 focus:outline-none focus:ring-2 focus:ring-primary sm:flex-row sm:items-center"
         >
           <span>
             <span className="flex items-center gap-2 font-bold text-foreground"><SearchCheck className="h-5 w-5 text-primary" /> SEO DASHBOARD</span>
-            <span className="mt-1 block text-sm text-muted-foreground">Check titles, descriptions, Google Analytics tagging, robots, sitemap, and artwork structured data.</span>
+            <span className="mt-1 block break-words text-sm leading-6 text-muted-foreground">Check titles, descriptions, Google Analytics tagging, robots, sitemap, and artwork structured data.</span>
           </span>
-          <span className="rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground">Open SEO health</span>
+          <span className="shrink-0 rounded-full bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground">Open SEO health</span>
         </button>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6 h-auto w-full justify-start overflow-x-auto bg-muted/40 p-1">
-            <TabsTrigger value="overview">Live overview</TabsTrigger>
-            <TabsTrigger value="traffic">Traffic & clicks</TabsTrigger>
-            <TabsTrigger value="seo">SEO health</TabsTrigger>
+          <TabsList className="mb-6 flex h-auto w-full justify-start overflow-x-auto bg-muted/40 p-1 [scrollbar-width:thin]">
+            <TabsTrigger className="shrink-0" value="overview">Live overview</TabsTrigger>
+            <TabsTrigger className="shrink-0" value="traffic">Traffic & clicks</TabsTrigger>
+            <TabsTrigger className="shrink-0" value="seo">SEO health</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-0">
@@ -261,7 +261,7 @@ export function AdminGrowthPanel() {
                   <div className="mt-4 space-y-3">
                     {summary.trafficSources.map((item) => (
                       <div key={item.source} className="flex items-center justify-between text-sm">
-                        <span className="capitalize text-muted-foreground">{item.source}</span>
+                    <span className="min-w-0 break-words capitalize text-muted-foreground">{item.source}</span>
                         <span className="font-bold text-foreground">{item.sessions}</span>
                       </div>
                     ))}
@@ -274,7 +274,7 @@ export function AdminGrowthPanel() {
                   <div className="mt-4 space-y-3">
                     {summary.referrers.map((item) => (
                       <div key={item.referrerDomain} className="flex items-center justify-between gap-3 text-sm">
-                        <span className="truncate text-muted-foreground">{item.referrerDomain}</span>
+                        <span className="min-w-0 truncate text-muted-foreground">{item.referrerDomain}</span>
                         <span className="font-bold text-foreground">{item.sessions}</span>
                       </div>
                     ))}
@@ -287,7 +287,7 @@ export function AdminGrowthPanel() {
                   <div className="mt-4 space-y-3">
                     {summary.topPages.map((item) => (
                       <div key={item.pagePath} className="flex items-center justify-between gap-3 text-sm">
-                        <span className="truncate text-muted-foreground">{item.pagePath}</span>
+                        <span className="min-w-0 truncate text-muted-foreground">{item.pagePath}</span>
                         <span className="font-bold text-foreground">{item.views}</span>
                       </div>
                     ))}
@@ -300,7 +300,7 @@ export function AdminGrowthPanel() {
                   <div className="mt-4 space-y-3">
                     {summary.topClicks.map((item, index) => (
                       <div key={`${item.eventType}-${item.target}-${index}`} className="flex items-center justify-between gap-3 text-sm">
-                        <span className="truncate text-muted-foreground">{item.eventType.replace("click_", "").replaceAll("_", " ")} {item.target ? `· ${item.target}` : ""}</span>
+                        <span className="min-w-0 truncate text-muted-foreground">{item.eventType.replace("click_", "").replaceAll("_", " ")} {item.target ? `· ${item.target}` : ""}</span>
                         <span className="font-bold text-foreground">{item.clicks}</span>
                       </div>
                     ))}
@@ -320,11 +320,11 @@ export function AdminGrowthPanel() {
               {seoChecks.map((check) => (
                 <Card key={check.label} className="border-border bg-background p-5">
                   <div className="flex items-start justify-between gap-4">
-                    <div>
+                    <div className="min-w-0">
                       <h3 className="flex items-center gap-2 font-semibold text-foreground"><SearchCheck className="h-4 w-4 text-primary" /> {check.label}</h3>
-                      <p className="mt-2 text-sm text-muted-foreground">{check.detail}</p>
+                      <p className="mt-2 break-words text-sm leading-6 text-muted-foreground">{check.detail}</p>
                     </div>
-                    <span className={`rounded-full px-2 py-1 text-xs font-bold ${check.ok ? "bg-emerald-500/15 text-emerald-500" : "bg-red-500/15 text-red-500"}`}>
+                    <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-bold ${check.ok ? "bg-emerald-500/15 text-emerald-500" : "bg-red-500/15 text-red-500"}`}>
                       {check.ok ? "Ready" : "Needs attention"}
                     </span>
                   </div>

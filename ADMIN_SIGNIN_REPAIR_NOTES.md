@@ -42,6 +42,8 @@ The first-party collector mailing-list section was verified on the public homepa
 
 Public conversion verification: the available `Survival` artwork page renders its 30% WhatsApp reservation link, WhatsApp artwork enquiry link, certificate/shipping information, and social sharing controls. The Contact page renders the complete commission request form and the general enquiry form. No test lead, order, or customer data was submitted during verification.
 
+Administrator dashboard refinement verification: the protected command centre now shows six clear operational metrics—catalogue inventory with available/sold split, collection count, reviews, collector leads, 7-day sessions, and unread action signals. The metric grid was adjusted from six constrained columns to a stable three-column desktop grid with responsive wrapping, and action controls, tabs, badges, cards, text, and notice rows were updated with containment and wrap-safe spacing.
+
 ## Remaining manual confirmation
 
 An Administrator must complete the external OAuth sign-in once in the preview or deployed site to confirm the provider's real callback and role assignment. This manual step cannot be simulated without an authenticated administrator account in the browser.

@@ -358,6 +358,11 @@
 - [x] Improve the dashboard’s management, growth, and SEO tool navigation for faster administrator workflows
 - [x] Validate the upgraded dashboard design without exposing any protected data or actions to public visitors
 
+## Administrator Metrics and Layout Refinement
+- [x] Add clearer visual metric cards, performance summaries, and feature navigation to the Administrator command centre
+- [x] Improve desktop and mobile dashboard spacing, text wrapping, card alignment, bubbles, and border containment
+- [x] Verify no dashboard text, controls, or decorative elements overlap at supported viewports
+
 ## Administrator Password Protection Clarification
 - [x] Preserve the real password-authenticated sign-in and server-side Administrator role check; never restore the legacy browser-storage bypass
 - [x] Confirm whether a separate second portal password factor is required in addition to the secure account sign-in — not required; retain the secure account sign-in only
