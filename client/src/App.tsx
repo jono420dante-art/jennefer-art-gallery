@@ -16,6 +16,7 @@ import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import AdminDashboard from "./pages/AdminDashboard";
 import NewsletterStudio from "./pages/NewsletterStudio";
+import AdminAbout from "./pages/AdminAbout";
 import AdminLogin from "./pages/AdminLogin";
 import Checkout from "./pages/Checkout";
 import Showcase from "./pages/Showcase";
@@ -31,6 +32,7 @@ import { trpc } from "./lib/trpc";
 const ProtectedAdmin = () => <AdminPortalGuard><Admin /></AdminPortalGuard>;
 const ProtectedAdminDashboard = () => <AdminPortalGuard><AdminDashboard /></AdminPortalGuard>;
 const ProtectedNewsletterStudio = () => <AdminPortalGuard><NewsletterStudio /></AdminPortalGuard>;
+const ProtectedAdminAbout = () => <AdminPortalGuard><AdminAbout /></AdminPortalGuard>;
 
 function AdminPortalReturnRedirect() {
   const [location, setLocation] = useLocation();
@@ -101,6 +103,7 @@ function Router() {
           <Route path="/admin" component={ProtectedAdmin} />
           <Route path="/admin-dashboard" component={ProtectedAdminDashboard} />
           <Route path="/admin/newsletter-studio" component={ProtectedNewsletterStudio} />
+          <Route path="/admin/about" component={ProtectedAdminAbout} />
           <Route path="/checkout/:slug" component={Checkout} />
           <Route path="/404" component={NotFound} />
           <Route component={NotFound} />

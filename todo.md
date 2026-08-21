@@ -491,6 +491,11 @@
 - [x] Create immediate durable in-dashboard signup notices and expose truthful Gmail delivery-ready status
 - [x] Add consent/privacy/access regression coverage and verify Studio Book workflows, tests, TypeScript, and production build
 
+## About-Page Public Edit Removal
+- [x] Remove any public About-page edit control or visitor-visible editing affordance
+- [x] Preserve About-page management only within authenticated Administrator tools and server-enforced procedures
+- [x] Add regression coverage and verify public/protected routes, TypeScript, tests, and production build
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID
