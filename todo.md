@@ -480,6 +480,11 @@
 - [x] Audit remaining non-OAuth gallery workflows and document or repair verified issues
 - [x] Validate chart interaction, protected access, responsive containment, TypeScript, tests, and production build
 
+## Clear Operational Notice Resolution
+- [x] Show a concise Administrator confirmation describing what was completed and what the resolution means
+- [x] Remove resolved notices from the protected active Action queue while retaining durable backend audit history
+- [x] Add regression coverage and verify secure resolve, queue removal, tests, TypeScript, and production build
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID

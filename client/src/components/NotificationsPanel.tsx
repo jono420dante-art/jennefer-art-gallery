@@ -3,7 +3,7 @@ import { Bell, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { noticeNextStep, noticeTypeLabel, type OperationalNoticeType } from "@/lib/operationalNotices";
+import { noticeNextStep, noticeResolutionMeaning, noticeTypeLabel, type OperationalNoticeType } from "@/lib/operationalNotices";
 
 export type OperationalNotification = {
   id: string | number;
@@ -25,15 +25,26 @@ const typeStyles: Record<OperationalNotification["type"], string> = {
 export function NotificationsPanel({ notifications, onMarkRead, onMarkAllRead }: { notifications: OperationalNotification[]; onMarkRead?: (id: number) => void; onMarkAllRead?: () => void }) {
   const [readIds, setReadIds] = useState<Set<string>>(() => new Set());
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(() => new Set());
+  const [resolvedIds, setResolvedIds] = useState<Set<string>>(() => new Set());
+  const [resolutionMessage, setResolutionMessage] = useState<string | null>(null);
   const visibleNotifications = useMemo(
-    () => notifications.filter((notification) => !hiddenIds.has(String(notification.id))),
-    [hiddenIds, notifications],
+    () => notifications.filter((notification) => !notification.isRead && !hiddenIds.has(String(notification.id)) && !resolvedIds.has(String(notification.id))),
+    [hiddenIds, notifications, resolvedIds],
   );
   const unreadCount = visibleNotifications.filter((notification) => !notification.isRead && !readIds.has(String(notification.id))).length;
 
   const markAllAsRead = () => {
     setReadIds(new Set(visibleNotifications.map((notification) => String(notification.id))));
+    setResolvedIds(new Set(visibleNotifications.map((notification) => String(notification.id))));
+    setResolutionMessage(`${visibleNotifications.length} active notices were resolved. They are removed from this queue, while their Administrator audit history is retained.`);
     onMarkAllRead?.();
+  };
+  const resolveNotice = (notification: OperationalNotification) => {
+    const id = String(notification.id);
+    setReadIds((current) => new Set(current).add(id));
+    setResolvedIds((current) => new Set(current).add(id));
+    setResolutionMessage(`Resolved: ${notification.title}. ${noticeResolutionMeaning(notification.type)}`);
+    if (typeof notification.id === "number") onMarkRead?.(notification.id);
   };
   const hideForSession = (id: string | number) => setHiddenIds((current) => {
     const next = new Set(current);
@@ -53,6 +64,7 @@ export function NotificationsPanel({ notifications, onMarkRead, onMarkAllRead }:
         </div>
         {unreadCount > 0 && <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={markAllAsRead}><Check className="mr-2 h-4 w-4" />Resolve all</Button>}
       </div>
+      {resolutionMessage && <div role="status" className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-xs leading-5 text-emerald-800"><strong>Resolution complete.</strong> {resolutionMessage}</div>}
 
       <div className="max-h-[420px] space-y-2 overflow-y-auto pr-1 [scrollbar-width:thin]">
         {visibleNotifications.length === 0 ? (
@@ -78,7 +90,7 @@ export function NotificationsPanel({ notifications, onMarkRead, onMarkAllRead }:
                   {timestamp && !Number.isNaN(timestamp.getTime()) && <p className="mt-2 text-[11px] text-muted-foreground">{timestamp.toLocaleString()}</p>}
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1">
-                  {!isRead && eventId !== null && <Button variant="outline" size="sm" aria-label="Resolve operational notice" onClick={() => { setReadIds((current) => new Set(current).add(String(eventId))); onMarkRead?.(eventId); }}><Check className="mr-1 h-3.5 w-3.5" />Resolve</Button>}
+                  {!isRead && eventId !== null && <Button variant="outline" size="sm" aria-label="Resolve operational notice" onClick={() => resolveNotice(notification)}><Check className="mr-1 h-3.5 w-3.5" />Resolve</Button>}
                   <Button variant="ghost" size="icon" aria-label="Hide notice for this visit" onClick={() => hideForSession(notification.id)}><X className="h-4 w-4" /></Button>
                 </div>
               </div>
