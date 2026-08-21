@@ -462,8 +462,8 @@
 - [x] Use the fixed rate for automatic Administrator USD calculations while retaining ZAR as the primary saved price
 
 ## Owner-Authorised Integration Completion
-- [ ] Inspect and verify current Gmail OAuth, GA4 Data API, and newsletter integration readiness
-- [ ] Store the supplied GA4 property ID `525053104` against active measurement ID `G-J23S2RL6HP` in protected settings
+- [x] Inspect and verify current Gmail OAuth, GA4 Data API, and newsletter integration readiness
+- [x] Store the supplied GA4 property ID `525053104` against active measurement ID `G-J23S2RL6HP` in protected settings
 - [ ] Complete consent-safe Gmail delivery activation for the confirmed studio sender
 - [ ] Complete GA4 Data API geographic reporting for the active measurement property without fabricated locations
 - [ ] Verify a real consented newsletter signup through storage, protected subscriber view, and safe delivery readiness
@@ -473,6 +473,12 @@
 - [x] Redesign protected operational notices into a readable, bounded scroll queue with concise status and priority labels
 - [x] Add plain-language review and resolve actions that preserve durable notice history and Administrator-only permissions
 - [x] Verify notice controls, scroll containment, security, tests, and responsive dashboard rendering
+
+## Collector Performance and Non-OAuth Operational Audit
+- [x] Simplify Collector Performance to real page views and visitors only
+- [x] Add hover-and-drag daily traffic interaction that exposes a dated real value only while the chart is engaged
+- [x] Audit remaining non-OAuth gallery workflows and document or repair verified issues
+- [x] Validate chart interaction, protected access, responsive containment, TypeScript, tests, and production build
 
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
