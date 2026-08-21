@@ -1259,14 +1259,15 @@ export default function Admin() {
                         </div>
                         
                         {/* Action Buttons */}
-                        <div className="flex gap-1 flex-shrink-0">
+                        <div className="flex flex-shrink-0 flex-wrap justify-end gap-1">
                           <Popover
                             open={quickPriceArtworkId === artwork.id}
                             onOpenChange={(isOpen) => openQuickPriceEditor(artwork, isOpen)}
                           >
                             <PopoverTrigger asChild>
-                              <Button size="sm" variant="outline" title="Quick price change" aria-label={`Quick price change for ${artwork.title}`}>
+                              <Button size="sm" variant="outline" title="Price Change" aria-label={`Price Change for ${artwork.title}`} className="border-primary/50 bg-primary/10 text-primary hover:bg-primary/20">
                                 <BadgeDollarSign size={14} />
+                                <span className="sr-only">Price Change</span>
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent align="end" className="w-80 space-y-3">

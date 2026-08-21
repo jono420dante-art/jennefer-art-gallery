@@ -469,6 +469,8 @@
 - [ ] Verify a real consented newsletter signup through storage, protected subscriber view, and safe delivery readiness
 - [ ] Validate authorised integration access, data truthfulness, protected permissions, tests, and production build
 
+> Deferred by owner instruction on 21 August 2026: Google OAuth/Gmail sending and GA4 Data API geography will be completed later through the Administrator’s manual Google setup. They must remain visibly unconnected and must not generate fabricated delivery or location data.
+
 ## Compact Security and System Operational Notices
 - [x] Redesign protected operational notices into a readable, bounded scroll queue with concise status and priority labels
 - [x] Add plain-language review and resolve actions that preserve durable notice history and Administrator-only permissions
@@ -495,6 +497,11 @@
 - [x] Remove any public About-page edit control or visitor-visible editing affordance
 - [x] Preserve About-page management only within authenticated Administrator tools and server-enforced procedures
 - [x] Add regression coverage and verify public/protected routes, TypeScript, tests, and production build
+
+## Restore Per-Artwork Price Change Icon
+- [x] Restore the compact Price Change icon to each protected Manage Artwork card
+- [x] Preserve ZAR-first quick-price editing with secondary USD display and no unintended price changes
+- [x] Verify the restored control in the protected Administrator browser, tests, TypeScript, and production build
 
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
