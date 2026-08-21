@@ -40,6 +40,17 @@ function decodeArtworkImage(imageBase64: string) {
   };
 }
 
+const FIXED_ZAR_USD_STUDIO_RATE = 0.062;
+const FIXED_ZAR_USD_RATE_SET_AT = "2026-08-21T00:00:00.000Z";
+
+function getZarUsdRate() {
+  return {
+    rate: FIXED_ZAR_USD_STUDIO_RATE,
+    fetchedAt: FIXED_ZAR_USD_RATE_SET_AT,
+    source: "fixed" as const,
+  };
+}
+
 export const appRouter = router({
   system: systemRouter,
   
@@ -78,6 +89,10 @@ export const appRouter = router({
       ctx.res.clearCookie(NATIVE_ADMIN_COOKIE, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+  }),
+
+  pricing: router({
+    zarUsdRate: adminProcedure.query(() => getZarUsdRate()),
   }),
 
   // ============ COLLECTION ROUTES ============

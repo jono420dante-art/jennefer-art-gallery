@@ -26,6 +26,7 @@ import { AdminPortalGuard } from "./components/AdminPortalGuard";
 import { consumeAdminPortalReturn } from "./lib/adminPortalReturn";
 import { useAuth } from "./_core/hooks/useAuth";
 import { applyCanonicalMetadata } from "./lib/canonicalUrl";
+import { trpc } from "./lib/trpc";
 
 const ProtectedAdmin = () => <AdminPortalGuard><Admin /></AdminPortalGuard>;
 const ProtectedAdminDashboard = () => <AdminPortalGuard><AdminDashboard /></AdminPortalGuard>;
@@ -56,6 +57,28 @@ function RouteCanonicalMetadata() {
   return null;
 }
 
+function PublicArtworkRefreshSync() {
+  const utils = trpc.useUtils();
+
+  useEffect(() => {
+    if (typeof BroadcastChannel === "undefined") return;
+
+    const updates = new BroadcastChannel("jennefer-gallery-artwork-updates");
+    updates.onmessage = (event) => {
+      if (event.data?.type !== "artwork-updated") return;
+      utils.artworks.list.invalidate();
+      utils.artworks.featured.invalidate();
+      utils.artworks.listByCollection.invalidate();
+      utils.artworks.getBySlug.invalidate();
+      utils.artworks.getById.invalidate();
+    };
+
+    return () => updates.close();
+  }, [utils]);
+
+  return null;
+}
+
 function Router() {
   return (
     <>
@@ -63,6 +86,7 @@ function Router() {
       <AnalyticsTracker />
       <AdminPortalReturnRedirect />
       <RouteCanonicalMetadata />
+      <PublicArtworkRefreshSync />
       <Navigation />
       <div className="pt-20 min-h-screen">
         <Switch>

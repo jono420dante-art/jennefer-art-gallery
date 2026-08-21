@@ -135,11 +135,10 @@ export default function Checkout() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Price:</span>
-                  <span className="text-lg text-accent font-bold">
-                    {artwork.priceZar && `R ${artwork.priceZar}`}
-                    {artwork.priceUsd && artwork.priceZar && " / "}
-                    {artwork.priceUsd && `$${artwork.priceUsd}`}
-                  </span>
+                  <div className="text-right">
+                    {artwork.priceZar && <span className="block text-lg text-accent font-bold">R {artwork.priceZar}</span>}
+                    {artwork.priceUsd && <span className="block text-sm text-muted-foreground">${artwork.priceUsd} USD</span>}
+                  </div>
                 </div>
               </div>
             </Card>

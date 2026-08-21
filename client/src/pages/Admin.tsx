@@ -13,7 +13,9 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Plus, Trash2, Check, X, Pencil, Star, ArrowRightLeft, Eye, EyeOff, Search, Save, Upload, CheckSquare, Square, Image as ImageIcon, Mail } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { zarToUsdInput, zarUsdRateLabel } from "@/lib/zarUsdConversion";
+import { Loader2, Plus, Trash2, Check, X, Pencil, Star, ArrowRightLeft, Eye, EyeOff, Search, Save, Upload, CheckSquare, Square, Image as ImageIcon, Mail, BadgeDollarSign } from "lucide-react";
 import { useState, useMemo, useRef, useCallback } from "react";
 import { toast } from "sonner";
 
@@ -64,6 +66,8 @@ export default function Admin() {
     updateUsd: false,
     priceUsd: "",
   });
+  const [quickPriceArtworkId, setQuickPriceArtworkId] = useState<number | null>(null);
+  const [quickPriceForm, setQuickPriceForm] = useState({ priceZar: "", priceUsd: "" });
 
   // Queries
   const { data: collections } = trpc.collections.list.useQuery();
@@ -80,13 +84,42 @@ export default function Admin() {
   const { data: newsletterSubscribers, isLoading: newsletterLoading } = trpc.newsletter.list.useQuery(undefined, {
     enabled: true,
   });
+  const { data: zarUsdRateData, isFetching: isFetchingZarUsdRate } = trpc.pricing.zarUsdRate.useQuery(undefined, {
+    staleTime: 6 * 60 * 60 * 1000,
+    retry: 1,
+  });
+  const zarUsdRate = zarUsdRateData?.rate;
+  const conversionLabel = zarUsdRateLabel(zarUsdRate);
+  const conversionHelpText = conversionLabel
+    ? `${zarUsdRateData?.source === "fixed" ? "Fixed studio rate" : "Live ZAR-to-USD rate"} · ${conversionLabel}`
+    : isFetchingZarUsdRate
+      ? "Loading ZAR-to-USD rate…"
+      : "USD remains editable while the conversion rate is unavailable.";
+
+  const convertZarPrice = (priceZar: string, existingUsd = "") => {
+    const convertedUsd = zarToUsdInput(priceZar, zarUsdRate);
+    return convertedUsd || (priceZar === "" ? "" : existingUsd);
+  };
+
+  const refreshPublishedArtworkViews = () => {
+    utils.artworks.list.invalidate();
+    utils.artworks.featured.invalidate();
+    utils.artworks.listByCollection.invalidate();
+    utils.artworks.getBySlug.invalidate();
+    utils.artworks.getById.invalidate();
+
+    if (typeof BroadcastChannel !== "undefined") {
+      const updates = new BroadcastChannel("jennefer-gallery-artwork-updates");
+      updates.postMessage({ type: "artwork-updated", updatedAt: Date.now() });
+      updates.close();
+    }
+  };
 
   // Mutations
   const createArtwork = trpc.artworks.create.useMutation({
     onSuccess: () => {
       toast.success("Artwork created successfully!");
-      utils.artworks.list.invalidate();
-      utils.artworks.featured.invalidate();
+      refreshPublishedArtworkViews();
       resetArtworkForm();
     },
     onError: (error) => {
@@ -97,8 +130,7 @@ export default function Admin() {
   const updateArtwork = trpc.artworks.update.useMutation({
     onSuccess: () => {
       toast.success("Artwork updated successfully!");
-      utils.artworks.list.invalidate();
-      utils.artworks.featured.invalidate();
+      refreshPublishedArtworkViews();
       setEditingArtworkId(null);
       setEditForm({});
     },
@@ -107,11 +139,20 @@ export default function Admin() {
     },
   });
 
+  const quickUpdateArtworkPrice = trpc.artworks.update.useMutation({
+    onSuccess: () => {
+      toast.success("Artwork price updated.");
+      refreshPublishedArtworkViews();
+      setQuickPriceArtworkId(null);
+      setQuickPriceForm({ priceZar: "", priceUsd: "" });
+    },
+    onError: (error) => toast.error(error.message || "Could not update this artwork price."),
+  });
+
   const updateArtworkPrices = trpc.artworks.bulkPriceUpdate.useMutation({
     onSuccess: ({ updated }) => {
       toast.success(`Price changed for ${updated} artwork${updated === 1 ? "" : "s"}.`);
-      utils.artworks.list.invalidate();
-      utils.artworks.featured.invalidate();
+      refreshPublishedArtworkViews();
       setIsBulkPriceDialogOpen(false);
       deselectAll();
     },
@@ -123,7 +164,7 @@ export default function Admin() {
   const deleteArtwork = trpc.artworks.delete.useMutation({
     onSuccess: () => {
       toast.success("Artwork deleted successfully!");
-      utils.artworks.list.invalidate();
+      refreshPublishedArtworkViews();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to delete artwork");
@@ -418,6 +459,29 @@ export default function Admin() {
     });
   };
 
+  const openQuickPriceEditor = (artwork: any, isOpen: boolean) => {
+    if (isOpen) {
+      setQuickPriceArtworkId(artwork.id);
+      setQuickPriceForm({
+        priceZar: artwork.priceZar?.toString() || "",
+        priceUsd: artwork.priceUsd?.toString() || "",
+      });
+      return;
+    }
+    setQuickPriceArtworkId(null);
+  };
+
+  const saveQuickPrice = (artworkId: number) => {
+    const priceZar = quickPriceForm.priceZar === "" ? null : Number(quickPriceForm.priceZar);
+    const priceUsd = quickPriceForm.priceUsd === "" ? null : Number(quickPriceForm.priceUsd);
+    if ((priceZar !== null && (!Number.isFinite(priceZar) || priceZar < 0)) ||
+      (priceUsd !== null && (!Number.isFinite(priceUsd) || priceUsd < 0))) {
+      toast.error("Please enter a valid non-negative price, or leave a price blank to remove it.");
+      return;
+    }
+    quickUpdateArtworkPrice.mutate({ id: artworkId, priceZar, priceUsd });
+  };
+
   // Quick toggle availability
   const toggleAvailability = (artwork: any) => {
     const newStatus = artwork.isAvailable === 1 ? 0 : 1;
@@ -674,21 +738,37 @@ export default function Admin() {
                   <div>
                     <Label className="text-xs text-muted-foreground uppercase tracking-wider">Price (ZAR)</Label>
                     <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
                       value={artworkForm.priceZar}
-                      onChange={(e) => setArtworkForm({ ...artworkForm, priceZar: e.target.value })}
+                      onChange={(e) => {
+                        const priceZar = e.target.value;
+                        setArtworkForm({
+                          ...artworkForm,
+                          priceZar,
+                          priceUsd: convertZarPrice(priceZar, artworkForm.priceUsd),
+                        });
+                      }}
                       className="bg-background mt-1"
                       placeholder="e.g., 5000"
                     />
                   </div>
 
                   <div>
-                    <Label className="text-xs text-muted-foreground uppercase tracking-wider">Price (USD)</Label>
+                    <Label className="text-xs text-muted-foreground uppercase tracking-wider">Price (USD) — automatic</Label>
                     <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
                       value={artworkForm.priceUsd}
                       onChange={(e) => setArtworkForm({ ...artworkForm, priceUsd: e.target.value })}
                       className="bg-background mt-1"
                       placeholder="e.g., 300"
                     />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {conversionLabel || (isFetchingZarUsdRate ? "Loading live ZAR-to-USD rate…" : "USD remains editable while the live conversion rate is unavailable.")}
+                    </p>
                   </div>
                 </div>
 
@@ -794,7 +874,16 @@ export default function Admin() {
                       step="0.01"
                       disabled={!bulkPriceForm.updateZar}
                       value={bulkPriceForm.priceZar}
-                      onChange={(event) => setBulkPriceForm({ ...bulkPriceForm, priceZar: event.target.value })}
+                      onChange={(event) => {
+                        const priceZar = event.target.value;
+                        const priceUsd = convertZarPrice(priceZar, bulkPriceForm.priceUsd);
+                        setBulkPriceForm({
+                          ...bulkPriceForm,
+                          priceZar,
+                          priceUsd,
+                          updateUsd: priceUsd !== "" ? true : bulkPriceForm.updateUsd,
+                        });
+                      }}
                       placeholder="e.g., 8500.00 — leave blank to remove"
                     />
                   </div>
@@ -816,6 +905,9 @@ export default function Admin() {
                       onChange={(event) => setBulkPriceForm({ ...bulkPriceForm, priceUsd: event.target.value })}
                       placeholder="e.g., 500.00 — leave blank to remove"
                     />
+                    <p className="text-xs text-muted-foreground">
+                      {conversionLabel || (isFetchingZarUsdRate ? "Loading live ZAR-to-USD rate…" : "USD stays editable while live conversion is unavailable.")}
+                    </p>
                   </div>
                   <DialogFooter>
                     <Button type="button" variant="outline" onClick={() => setIsBulkPriceDialogOpen(false)}>
@@ -1007,13 +1099,20 @@ export default function Admin() {
                               min="0"
                               step="0.01"
                               value={editForm.priceZar}
-                              onChange={(e) => setEditForm({ ...editForm, priceZar: e.target.value })}
+                              onChange={(e) => {
+                                const priceZar = e.target.value;
+                                setEditForm({
+                                  ...editForm,
+                                  priceZar,
+                                  priceUsd: convertZarPrice(priceZar, editForm.priceUsd),
+                                });
+                              }}
                               className="bg-card"
                               placeholder="e.g., 5000"
                             />
                           </div>
                           <div>
-                            <Label className="text-xs">Price (USD)</Label>
+                            <Label className="text-xs">Price (USD) — automatic</Label>
                             <Input
                               type="number"
                               min="0"
@@ -1023,6 +1122,9 @@ export default function Admin() {
                               className="bg-card"
                               placeholder="e.g., 300"
                             />
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              {conversionLabel || (isFetchingZarUsdRate ? "Loading live rate…" : "USD remains editable when live conversion is unavailable.")}
+                            </p>
                           </div>
                           <div>
                             <Label className="text-xs">Dimensions</Label>
@@ -1158,6 +1260,62 @@ export default function Admin() {
                         
                         {/* Action Buttons */}
                         <div className="flex gap-1 flex-shrink-0">
+                          <Popover
+                            open={quickPriceArtworkId === artwork.id}
+                            onOpenChange={(isOpen) => openQuickPriceEditor(artwork, isOpen)}
+                          >
+                            <PopoverTrigger asChild>
+                              <Button size="sm" variant="outline" title="Quick price change" aria-label={`Quick price change for ${artwork.title}`}>
+                                <BadgeDollarSign size={14} />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent align="end" className="w-80 space-y-3">
+                              <div>
+                                <p className="font-semibold text-foreground">Quick price change</p>
+                                <p className="text-xs text-muted-foreground">{artwork.title}</p>
+                              </div>
+                              <div className="space-y-1.5">
+                                <Label className="text-xs">Price (ZAR)</Label>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={quickPriceForm.priceZar}
+                                  onChange={(event) => {
+                                    const priceZar = event.target.value;
+                                    setQuickPriceForm({
+                                      priceZar,
+                                      priceUsd: convertZarPrice(priceZar, quickPriceForm.priceUsd),
+                                    });
+                                  }}
+                                  placeholder="e.g., 8500.00"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <Label className="text-xs">Price (USD) — automatic</Label>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={quickPriceForm.priceUsd}
+                                  onChange={(event) => setQuickPriceForm({ ...quickPriceForm, priceUsd: event.target.value })}
+                                  placeholder="e.g., 500.00"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                  {conversionLabel || (isFetchingZarUsdRate ? "Loading live ZAR-to-USD rate…" : "USD remains editable while live conversion is unavailable.")}
+                                </p>
+                              </div>
+                              <div className="flex justify-end gap-2 pt-1">
+                                <Button type="button" size="sm" variant="ghost" onClick={() => setQuickPriceArtworkId(null)}>
+                                  Cancel
+                                </Button>
+                                <Button type="button" size="sm" onClick={() => saveQuickPrice(artwork.id)} disabled={quickUpdateArtworkPrice.isPending}>
+                                  {quickUpdateArtworkPrice.isPending ? <Loader2 className="mr-1 animate-spin" size={14} /> : <Save className="mr-1" size={14} />}
+                                  Save price
+                                </Button>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
                           <Button size="sm" variant="outline" onClick={() => startEditing(artwork)} title="Edit artwork">
                             <Pencil size={14} />
                           </Button>

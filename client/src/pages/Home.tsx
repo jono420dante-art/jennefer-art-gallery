@@ -119,10 +119,19 @@ export default function Home() {
                       {artwork.description}
                     </p>
                     <div className="flex justify-between items-center">
-                      {artwork.priceZar && (
-                        <span className="text-primary font-semibold">
-                          R {artwork.priceZar}
-                        </span>
+                      {(artwork.priceZar || artwork.priceUsd) && (
+                        <div className="space-y-0.5">
+                          {artwork.priceZar && (
+                            <span className="block text-primary font-semibold">
+                              R {artwork.priceZar}
+                            </span>
+                          )}
+                          {artwork.priceUsd && (
+                            <span className="block text-xs text-muted-foreground">
+                              ${artwork.priceUsd} USD
+                            </span>
+                          )}
+                        </div>
                       )}
                       <Button variant="ghost" size="sm" className="group">
                         View Details

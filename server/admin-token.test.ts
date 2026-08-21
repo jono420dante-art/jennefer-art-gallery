@@ -69,6 +69,7 @@ describe("server-enforced Admin Portal access", () => {
       () => caller.notifications.markRead({ id: 1 }),
       () => caller.orders.list(),
       () => caller.artworks.bulkPriceUpdate({ ids: [1], priceZar: 8500 }),
+      () => caller.pricing.zarUsdRate(),
     ];
 
     for (const restrictedCall of restrictedCalls) {
@@ -108,6 +109,7 @@ describe("server-enforced Admin Portal access", () => {
       () => caller.notifications.markAllRead(),
       () => caller.orders.list(),
       () => caller.artworks.bulkPriceUpdate({ ids: [1], priceZar: 8500 }),
+      () => caller.pricing.zarUsdRate(),
     ];
 
     for (const restrictedCall of restrictedCalls) {
@@ -118,5 +120,25 @@ describe("server-enforced Admin Portal access", () => {
   it("keeps public artwork browsing available without an administrator session", async () => {
     const caller = appRouter.createCaller(createContext(null));
     await expect(caller.artworks.list()).resolves.toBeDefined();
+  });
+
+  it("returns the fixed ZAR-to-USD studio rate only to an authenticated Administrator", async () => {
+    const caller = appRouter.createCaller(createContext({
+      id: 1,
+      openId: "native-gallery-admin",
+      name: "Gallery Administrator",
+      email: null,
+      loginMethod: "native_admin",
+      role: "admin",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date(),
+    }));
+
+    await expect(caller.pricing.zarUsdRate()).resolves.toMatchObject({
+      rate: 0.062,
+      source: "fixed",
+      fetchedAt: "2026-08-21T00:00:00.000Z",
+    });
   });
 });

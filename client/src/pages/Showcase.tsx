@@ -324,11 +324,14 @@ export default function Showcase() {
                         {/* Price */}
                         <div className="mt-4 pt-4 border-t border-border">
                           {artwork.priceUsd || artwork.priceZar ? (
-                            <p className="font-semibold text-accent">
-                              {artwork.priceUsd
-                                ? `$${artwork.priceUsd}`
-                                : `R${artwork.priceZar}`}
-                            </p>
+                            <div className="space-y-0.5">
+                              {artwork.priceZar && (
+                                <p className="font-semibold text-accent">R {artwork.priceZar}</p>
+                              )}
+                              {artwork.priceUsd && (
+                                <p className="text-xs text-muted-foreground">${artwork.priceUsd} USD</p>
+                              )}
+                            </div>
                           ) : (
                             <p className="text-muted-foreground text-sm">
                               Price on request

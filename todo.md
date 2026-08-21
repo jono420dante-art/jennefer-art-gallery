@@ -445,6 +445,22 @@
 - [x] Add regression coverage for bulk-price validation and administrator-only access
 - [x] Verify the bulk Price Change controls in the protected browser without changing live catalogue prices
 
+## Administrator Currency Conversion and Quick Price Bubble
+- [x] Add transparent automatic ZAR-to-USD conversion to the protected artwork pricing workflows
+- [x] Retain Administrator override controls and persist the final selected ZAR/USD prices securely
+- [x] Add a compact per-artwork price bubble with price fields and a dedicated save action
+- [x] Add regression coverage and verify the protected conversion and quick-price editing workflow without changing live catalogue prices
+
+## ZAR-First Public Price Display and Save Synchronization
+- [x] Keep ZAR as the primary visible currency and render USD directly beneath it on public artwork surfaces
+- [x] Ensure successful Administrator artwork saves invalidate and refresh all relevant public gallery data views
+- [x] Add regression coverage for persisted ZAR/USD pricing and ZAR-first public price rendering
+- [x] Verify the protected-to-public update flow without changing live catalogue prices
+
+## Fixed Studio Exchange Rate
+- [x] Replace the unavailable live exchange dependency with a transparent fixed current ZAR-to-USD studio rate
+- [x] Use the fixed rate for automatic Administrator USD calculations while retaining ZAR as the primary saved price
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID
