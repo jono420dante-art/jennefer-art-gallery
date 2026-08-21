@@ -485,6 +485,12 @@
 - [x] Remove resolved notices from the protected active Action queue while retaining durable backend audit history
 - [x] Add regression coverage and verify secure resolve, queue removal, tests, TypeScript, and production build
 
+## Private Collector Studio Book
+- [x] Add an Administrator-only Studio Book showing consented collector signups and connected notes, enquiries, and replies
+- [x] Add protected search and concise record status controls for private collector correspondence
+- [x] Create immediate durable in-dashboard signup notices and expose truthful Gmail delivery-ready status
+- [x] Add consent/privacy/access regression coverage and verify Studio Book workflows, tests, TypeScript, and production build
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID
