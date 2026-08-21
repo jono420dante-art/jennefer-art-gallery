@@ -203,6 +203,20 @@ export async function updateArtwork(id: number, data: any) {
   await db.update(artworks).set(data).where(eq(artworks.id, id));
 }
 
+export async function bulkUpdateArtworkPrices(
+  artworkIds: number[],
+  prices: { priceZar?: string | null; priceUsd?: string | null },
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.transaction(async (tx) => {
+    for (const artworkId of artworkIds) {
+      await tx.update(artworks).set(prices).where(eq(artworks.id, artworkId));
+    }
+  });
+}
+
 export async function deleteArtwork(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

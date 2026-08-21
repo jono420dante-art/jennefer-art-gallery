@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Loader2, Plus, Trash2, Check, X, Pencil, Star, ArrowRightLeft, Eye, EyeOff, Search, Save, Upload, CheckSquare, Square, Image as ImageIcon, Mail } from "lucide-react";
 import { useState, useMemo, useRef, useCallback } from "react";
 import { toast } from "sonner";
@@ -56,6 +57,13 @@ export default function Admin() {
   // Batch selection state
   const [selectedArtworks, setSelectedArtworks] = useState<Set<number>>(new Set());
   const [showBulkActions, setShowBulkActions] = useState(false);
+  const [isBulkPriceDialogOpen, setIsBulkPriceDialogOpen] = useState(false);
+  const [bulkPriceForm, setBulkPriceForm] = useState({
+    updateZar: true,
+    priceZar: "",
+    updateUsd: false,
+    priceUsd: "",
+  });
 
   // Queries
   const { data: collections } = trpc.collections.list.useQuery();
@@ -96,6 +104,19 @@ export default function Admin() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to update artwork");
+    },
+  });
+
+  const updateArtworkPrices = trpc.artworks.bulkPriceUpdate.useMutation({
+    onSuccess: ({ updated }) => {
+      toast.success(`Price changed for ${updated} artwork${updated === 1 ? "" : "s"}.`);
+      utils.artworks.list.invalidate();
+      utils.artworks.featured.invalidate();
+      setIsBulkPriceDialogOpen(false);
+      deselectAll();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Could not change the selected artwork prices.");
     },
   });
 
@@ -479,6 +500,41 @@ export default function Admin() {
     deselectAll();
   };
 
+  const openBulkPriceChange = () => {
+    if (selectedArtworks.size === 0) {
+      toast.error("Select at least one artwork before changing prices.");
+      return;
+    }
+    setBulkPriceForm({ updateZar: true, priceZar: "", updateUsd: false, priceUsd: "" });
+    setIsBulkPriceDialogOpen(true);
+  };
+
+  const submitBulkPriceChange = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (selectedArtworks.size === 0) {
+      toast.error("Select at least one artwork before changing prices.");
+      return;
+    }
+    if (!bulkPriceForm.updateZar && !bulkPriceForm.updateUsd) {
+      toast.error("Choose at least one currency to update.");
+      return;
+    }
+
+    const priceZar = bulkPriceForm.priceZar === "" ? null : Number(bulkPriceForm.priceZar);
+    const priceUsd = bulkPriceForm.priceUsd === "" ? null : Number(bulkPriceForm.priceUsd);
+    if ((bulkPriceForm.updateZar && priceZar !== null && (!Number.isFinite(priceZar) || priceZar < 0)) ||
+      (bulkPriceForm.updateUsd && priceUsd !== null && (!Number.isFinite(priceUsd) || priceUsd < 0))) {
+      toast.error("Enter a valid non-negative price, or leave an enabled price blank to remove it.");
+      return;
+    }
+
+    updateArtworkPrices.mutate({
+      ids: Array.from(selectedArtworks),
+      ...(bulkPriceForm.updateZar ? { priceZar } : {}),
+      ...(bulkPriceForm.updateUsd ? { priceUsd } : {}),
+    });
+  };
+
   const bulkDelete = () => {
     selectedArtworks.forEach((id) => {
       deleteArtwork.mutate({ id });
@@ -711,6 +767,68 @@ export default function Admin() {
             </Card>
 
             {/* Bulk Actions Toolbar */}
+            <Dialog open={isBulkPriceDialogOpen} onOpenChange={setIsBulkPriceDialogOpen}>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle>Price Change</DialogTitle>
+                  <DialogDescription>
+                    Set one or both prices for the {selectedArtworks.size} selected artwork{selectedArtworks.size === 1 ? "" : "s"}. An enabled blank field removes that currency price; a disabled currency stays unchanged.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={submitBulkPriceChange} className="space-y-5">
+                  <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm text-muted-foreground">
+                    This protected action changes prices only. It does not alter availability, collection, artwork images, or descriptions.
+                  </div>
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                      <input
+                        type="checkbox"
+                        checked={bulkPriceForm.updateZar}
+                        onChange={(event) => setBulkPriceForm({ ...bulkPriceForm, updateZar: event.target.checked })}
+                      />
+                      Change ZAR price
+                    </label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      disabled={!bulkPriceForm.updateZar}
+                      value={bulkPriceForm.priceZar}
+                      onChange={(event) => setBulkPriceForm({ ...bulkPriceForm, priceZar: event.target.value })}
+                      placeholder="e.g., 8500.00 — leave blank to remove"
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2 text-sm font-medium text-foreground">
+                      <input
+                        type="checkbox"
+                        checked={bulkPriceForm.updateUsd}
+                        onChange={(event) => setBulkPriceForm({ ...bulkPriceForm, updateUsd: event.target.checked })}
+                      />
+                      Change USD price
+                    </label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      disabled={!bulkPriceForm.updateUsd}
+                      value={bulkPriceForm.priceUsd}
+                      onChange={(event) => setBulkPriceForm({ ...bulkPriceForm, priceUsd: event.target.value })}
+                      placeholder="e.g., 500.00 — leave blank to remove"
+                    />
+                  </div>
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsBulkPriceDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={updateArtworkPrices.isPending || selectedArtworks.size === 0}>
+                      {updateArtworkPrices.isPending ? <Loader2 className="mr-2 animate-spin" size={16} /> : <Save className="mr-2" size={16} />}
+                      Apply price change
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
             <Card className={`p-4 bg-primary/10 border-primary/30 transition-all ${showBulkActions ? 'opacity-100' : 'opacity-50'}`}>
               <div className="flex flex-wrap gap-3 items-center">
                 <div className="flex items-center gap-2">
@@ -762,6 +880,15 @@ export default function Admin() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={openBulkPriceChange}
+                    disabled={selectedArtworks.size === 0}
+                    className="text-xs border-primary/40 text-primary hover:bg-primary/10"
+                  >
+                    <Save size={14} className="mr-1" /> Price Change
+                  </Button>
                   <Button
                     size="sm"
                     variant="destructive"

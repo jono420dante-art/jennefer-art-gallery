@@ -3,6 +3,7 @@ import type { TrpcContext } from "./_core/context";
 
 vi.mock("./db", () => ({
   updateArtwork: vi.fn(),
+  bulkUpdateArtworkPrices: vi.fn(),
   recordNotificationEvent: vi.fn(),
 }));
 
@@ -67,5 +68,29 @@ describe("artwork update persistence", () => {
       imageUrl: "https://storage.example/artworks/replacement.jpg",
       imageKey: expect.stringMatching(/^artworks\/.*\.png$/),
     }));
+  });
+
+  it("applies a selected currency price to every selected artwork through the protected bulk price tool", async () => {
+    const caller = appRouter.createCaller(adminContext);
+
+    await caller.artworks.bulkPriceUpdate({
+      ids: [44, 45],
+      priceZar: "8500.00",
+      priceUsd: null,
+    });
+
+    expect(db.bulkUpdateArtworkPrices).toHaveBeenCalledWith([44, 45], {
+      priceZar: "8500",
+      priceUsd: null,
+    });
+  });
+
+  it("rejects a bulk price request that does not select a currency to change", async () => {
+    const caller = appRouter.createCaller(adminContext);
+
+    await expect(caller.artworks.bulkPriceUpdate({ ids: [44] })).rejects.toMatchObject({
+      code: "BAD_REQUEST",
+    });
+    expect(db.bulkUpdateArtworkPrices).not.toHaveBeenCalled();
   });
 });

@@ -257,6 +257,30 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    bulkPriceUpdate: adminProcedure
+      .input(z.object({
+        ids: z.array(z.number().int().positive()).min(1).max(100),
+        priceZar: artworkPrice,
+        priceUsd: artworkPrice,
+      }).refine((input) => input.priceZar !== undefined || input.priceUsd !== undefined, {
+        message: "Choose at least one currency to update.",
+      }))
+      .mutation(async ({ input }) => {
+        const priceZar = input.priceZar !== undefined
+          ? input.priceZar === null ? null : String(input.priceZar)
+          : undefined;
+        const priceUsd = input.priceUsd !== undefined
+          ? input.priceUsd === null ? null : String(input.priceUsd)
+          : undefined;
+
+        await db.bulkUpdateArtworkPrices(input.ids, {
+          ...(priceZar !== undefined && { priceZar }),
+          ...(priceUsd !== undefined && { priceUsd }),
+        });
+
+        return { success: true, updated: input.ids.length };
+      }),
+
     delete: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {

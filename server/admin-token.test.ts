@@ -68,6 +68,7 @@ describe("server-enforced Admin Portal access", () => {
       () => caller.notifications.list(),
       () => caller.notifications.markRead({ id: 1 }),
       () => caller.orders.list(),
+      () => caller.artworks.bulkPriceUpdate({ ids: [1], priceZar: 8500 }),
     ];
 
     for (const restrictedCall of restrictedCalls) {
@@ -106,6 +107,7 @@ describe("server-enforced Admin Portal access", () => {
       () => caller.notifications.list(),
       () => caller.notifications.markAllRead(),
       () => caller.orders.list(),
+      () => caller.artworks.bulkPriceUpdate({ ids: [1], priceZar: 8500 }),
     ];
 
     for (const restrictedCall of restrictedCalls) {

@@ -439,6 +439,12 @@
 - [x] Add regression coverage for price persistence and artwork edit payloads
 - [x] Verify existing artwork edits in the browser without altering live catalogue content
 
+## Administrator Bulk Price Change Tool
+- [x] Add a visible Price Change control beside the protected Artwork Studio batch actions
+- [x] Validate and persist selected ZAR and/or USD prices only through server-enforced Administrator updates
+- [x] Add regression coverage for bulk-price validation and administrator-only access
+- [x] Verify the bulk Price Change controls in the protected browser without changing live catalogue prices
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID
