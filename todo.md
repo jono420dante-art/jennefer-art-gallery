@@ -433,6 +433,12 @@
 - [x] Add regression coverage for expected JSON login responses and user-safe failure messages
 - [x] Verify valid login, invalid credential denial, sign-out, and protected-route recovery in the browser
 
+## Artwork Price and Image Editing Repair
+- [x] Diagnose and repair the Administrator price-save path for existing artworks
+- [x] Allow protected editing of existing artwork images together with title, description, price, availability, and searchable catalogue details
+- [x] Add regression coverage for price persistence and artwork edit payloads
+- [x] Verify existing artwork edits in the browser without altering live catalogue content
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID

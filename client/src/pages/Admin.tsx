@@ -36,6 +36,7 @@ export default function Admin() {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   // State for collection form
   const [collectionForm, setCollectionForm] = useState<any>({
@@ -175,9 +176,17 @@ export default function Admin() {
   const filteredArtworks = useMemo(() => {
     if (!artworks) return [];
     return artworks.filter((artwork) => {
-      const matchesSearch = searchQuery === "" || 
-        artwork.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (artwork.description || "").toLowerCase().includes(searchQuery.toLowerCase());
+      const normalizedSearch = searchQuery.trim().toLowerCase();
+      const collectionName = collections?.find((collection) => collection.id === artwork.collectionId)?.name || "";
+      const matchesSearch = normalizedSearch === "" || 
+        [
+          artwork.title,
+          artwork.description,
+          artwork.dimensions,
+          artwork.medium,
+          artwork.slug,
+          collectionName,
+        ].some((value) => (value || "").toLowerCase().includes(normalizedSearch));
       const matchesCollection = filterCollection === "all" || 
         artwork.collectionId.toString() === filterCollection;
       const matchesAvailability = filterAvailability === "all" ||
@@ -185,7 +194,7 @@ export default function Admin() {
         (filterAvailability === "sold" && artwork.isAvailable === 0);
       return matchesSearch && matchesCollection && matchesAvailability;
     });
-  }, [artworks, searchQuery, filterCollection, filterAvailability]);
+  }, [artworks, collections, searchQuery, filterCollection, filterAvailability]);
 
   const resetArtworkForm = () => {
     setArtworkForm({
@@ -238,17 +247,42 @@ export default function Admin() {
     }
   }, []);
 
-  const processImageFile = (file: File) => {
+  const readArtworkImageFile = (file: File, onReady: (base64: string) => void) => {
+    const acceptedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!acceptedTypes.includes(file.type)) {
+      toast.error("Please choose a JPG, PNG, or WebP artwork image.");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Please choose an artwork image smaller than 10MB.");
+      return;
+    }
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;
-      setImageFile(result);
-      setImagePreview(result);
+      onReady(result);
     };
     reader.onerror = () => {
       toast.error("Failed to read image file");
     };
     reader.readAsDataURL(file);
+  };
+
+  const processImageFile = (file: File) => {
+    readArtworkImageFile(file, (base64) => {
+      setImageFile(base64);
+      setImagePreview(base64);
+    });
+  };
+
+  const processEditImageFile = (file: File) => {
+    readArtworkImageFile(file, (base64) => {
+      setEditForm((current: any) => ({
+        ...current,
+        imageBase64: base64,
+        imagePreview: base64,
+      }));
+    });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -288,8 +322,13 @@ export default function Admin() {
     }
     slug = `${slug}-${Date.now()}`;
 
-    const priceZar = artworkForm.priceZar ? parseFloat(artworkForm.priceZar) : null;
-    const priceUsd = artworkForm.priceUsd ? parseFloat(artworkForm.priceUsd) : null;
+    const priceZar = artworkForm.priceZar === "" ? null : Number(artworkForm.priceZar);
+    const priceUsd = artworkForm.priceUsd === "" ? null : Number(artworkForm.priceUsd);
+    if ((priceZar !== null && (!Number.isFinite(priceZar) || priceZar < 0)) ||
+      (priceUsd !== null && (!Number.isFinite(priceUsd) || priceUsd < 0))) {
+      toast.error("Please enter a valid non-negative price, or leave the price blank.");
+      return;
+    }
 
     createArtwork.mutate({
       ...artworkForm,
@@ -312,30 +351,49 @@ export default function Admin() {
     setEditingArtworkId(artwork.id);
     setEditForm({
       title: artwork.title,
+      slug: artwork.slug || "",
       description: artwork.description || "",
-      priceZAR: artwork.priceZar || "",
-      priceUSD: artwork.priceUsd || "",
+      priceZar: artwork.priceZar?.toString() || "",
+      priceUsd: artwork.priceUsd?.toString() || "",
       dimensions: artwork.dimensions || "",
       medium: artwork.medium || "",
       collectionId: artwork.collectionId,
       isAvailable: artwork.isAvailable,
       isFeatured: artwork.isFeatured,
+      displayOrder: artwork.displayOrder || 0,
+      imageBase64: "",
+      imagePreview: artwork.imageUrl,
     });
   };
 
   // Save inline edit
   const saveEdit = (artworkId: number) => {
+    const title = editForm.title?.trim();
+    if (!title) {
+      toast.error("Please enter an artwork title.");
+      return;
+    }
+    const priceZar = editForm.priceZar === "" ? null : Number(editForm.priceZar);
+    const priceUsd = editForm.priceUsd === "" ? null : Number(editForm.priceUsd);
+    if ((priceZar !== null && (!Number.isFinite(priceZar) || priceZar < 0)) ||
+      (priceUsd !== null && (!Number.isFinite(priceUsd) || priceUsd < 0))) {
+      toast.error("Please enter a valid non-negative price, or leave the price blank.");
+      return;
+    }
     updateArtwork.mutate({
       id: artworkId,
-      title: editForm.title,
+      title,
+      slug: editForm.slug?.trim() || undefined,
       description: editForm.description,
-      priceZAR: editForm.priceZAR || null,
-      priceUSD: editForm.priceUSD || null,
+      priceZar,
+      priceUsd,
       dimensions: editForm.dimensions,
       medium: editForm.medium,
       collectionId: editForm.collectionId,
       isAvailable: editForm.isAvailable,
       isFeatured: editForm.isFeatured,
+      displayOrder: Number(editForm.displayOrder) || 0,
+      ...(editForm.imageBase64 ? { imageBase64: editForm.imageBase64 } : {}),
     });
   };
 
@@ -614,7 +672,7 @@ export default function Admin() {
                     <Input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search artworks..."
+                      placeholder="Search title, description, medium, size, collection, or URL…"
                       className="pl-10 bg-background"
                     />
                   </div>
@@ -736,6 +794,49 @@ export default function Admin() {
                             <h3 className="font-semibold text-lg text-foreground mb-1">Editing: {artwork.title}</h3>
                           </div>
                         </div>
+                        <input
+                          ref={editFileInputRef}
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (file) processEditImageFile(file);
+                            event.currentTarget.value = "";
+                          }}
+                          className="hidden"
+                        />
+                        <div className="flex flex-col gap-4 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4 sm:flex-row sm:items-center">
+                          <img
+                            src={editForm.imagePreview || artwork.imageUrl}
+                            alt={`Preview of ${editForm.title || artwork.title}`}
+                            className="h-28 w-28 rounded-md object-cover shadow-sm"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-foreground">Artwork image</p>
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              {editForm.imageBase64 ? "New image ready to save." : "Keep the current image or replace it with a new JPG, PNG, or WebP file."}
+                            </p>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              <Button type="button" size="sm" variant="outline" onClick={() => editFileInputRef.current?.click()}>
+                                <ImageIcon className="mr-1" size={14} /> Replace image
+                              </Button>
+                              {editForm.imageBase64 && (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => setEditForm((current: any) => ({
+                                    ...current,
+                                    imageBase64: "",
+                                    imagePreview: artwork.imageUrl,
+                                  }))}
+                                >
+                                  Keep current image
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <Label className="text-xs">Title</Label>
@@ -764,10 +865,22 @@ export default function Admin() {
                             </Select>
                           </div>
                           <div>
+                            <Label className="text-xs">Artwork URL / search slug</Label>
+                            <Input
+                              value={editForm.slug}
+                              onChange={(e) => setEditForm({ ...editForm, slug: e.target.value })}
+                              className="bg-card"
+                              placeholder="e.g., southern-lights"
+                            />
+                          </div>
+                          <div>
                             <Label className="text-xs">Price (ZAR)</Label>
                             <Input
-                              value={editForm.priceZAR}
-                              onChange={(e) => setEditForm({ ...editForm, priceZAR: e.target.value })}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={editForm.priceZar}
+                              onChange={(e) => setEditForm({ ...editForm, priceZar: e.target.value })}
                               className="bg-card"
                               placeholder="e.g., 5000"
                             />
@@ -775,8 +888,11 @@ export default function Admin() {
                           <div>
                             <Label className="text-xs">Price (USD)</Label>
                             <Input
-                              value={editForm.priceUSD}
-                              onChange={(e) => setEditForm({ ...editForm, priceUSD: e.target.value })}
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={editForm.priceUsd}
+                              onChange={(e) => setEditForm({ ...editForm, priceUsd: e.target.value })}
                               className="bg-card"
                               placeholder="e.g., 300"
                             />
@@ -826,6 +942,18 @@ export default function Admin() {
                                 <SelectItem value="1">Yes</SelectItem>
                               </SelectContent>
                             </Select>
+                          </div>
+                          <div>
+                            <Label className="text-xs">Display order</Label>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="1"
+                              value={editForm.displayOrder}
+                              onChange={(e) => setEditForm({ ...editForm, displayOrder: e.target.value })}
+                              className="bg-card"
+                              placeholder="0"
+                            />
                           </div>
                         </div>
                         <div>

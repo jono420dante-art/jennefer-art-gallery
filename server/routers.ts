@@ -9,6 +9,37 @@ import { storagePut } from "./storage";
 import { createAnalyticsPdf } from "./analyticsReport";
 import { areNativeAdminCredentialsValid, createNativeAdminSession, NATIVE_ADMIN_COOKIE } from "./_core/nativeAdminAuth";
 
+const artworkPrice = z.preprocess((value) => {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed === "" ? null : Number(trimmed);
+  }
+  return value;
+}, z.number().finite().nonnegative().nullable()).optional();
+
+function decodeArtworkImage(imageBase64: string) {
+  const dataUrlMatch = imageBase64.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=\s]+)$/);
+  if (dataUrlMatch) {
+    const contentType = dataUrlMatch[1];
+    const extension = contentType === "image/png" ? "png" : contentType === "image/webp" ? "webp" : "jpg";
+    return {
+      buffer: Buffer.from(dataUrlMatch[2].replace(/\s/g, ""), "base64"),
+      contentType,
+      extension,
+    };
+  }
+
+  if (imageBase64.startsWith("data:")) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Artwork images must be JPG, PNG, or WebP files." });
+  }
+
+  return {
+    buffer: Buffer.from(imageBase64, "base64"),
+    contentType: "image/jpeg",
+    extension: "jpg",
+  };
+}
+
 export const appRouter = router({
   system: systemRouter,
   
@@ -144,27 +175,27 @@ export const appRouter = router({
         imageBase64: z.string(),
         dimensions: z.string().optional(),
         medium: z.string().optional(),
-        priceZAR: z.union([z.string(), z.number()]).nullable().optional(),
-        priceUSD: z.union([z.string(), z.number()]).nullable().optional(),
+        priceZar: artworkPrice,
+        priceUsd: artworkPrice,
         isFeatured: z.number().default(0),
         isAvailable: z.number().default(1),
         displayOrder: z.number().default(0),
       }))
       .mutation(async ({ input }) => {
         // Upload image to S3
-        const { imageBase64, priceZAR, priceUSD, ...artworkData } = input;
-        const imageBuffer = Buffer.from(imageBase64.split(',')[1] || imageBase64, 'base64');
-        const fileKey = `artworks/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
-        const { url: imageUrl } = await storagePut(fileKey, imageBuffer, 'image/jpeg');
+        const { imageBase64, priceZar, priceUsd, ...artworkData } = input;
+        const image = decodeArtworkImage(imageBase64);
+        const fileKey = `artworks/${Date.now()}-${Math.random().toString(36).substring(7)}.${image.extension}`;
+        const { url: imageUrl } = await storagePut(fileKey, image.buffer, image.contentType);
 
         // Convert prices to strings if they are numbers
-        const convertedPriceZAR = priceZAR !== null && priceZAR !== undefined ? String(priceZAR) : null;
-        const convertedPriceUSD = priceUSD !== null && priceUSD !== undefined ? String(priceUSD) : null;
+        const convertedPriceZar = priceZar !== null && priceZar !== undefined ? String(priceZar) : null;
+        const convertedPriceUsd = priceUsd !== null && priceUsd !== undefined ? String(priceUsd) : null;
 
         await db.createArtwork({
           ...artworkData,
-          priceZAR: convertedPriceZAR,
-          priceUSD: convertedPriceUSD,
+          priceZar: convertedPriceZar,
+          priceUsd: convertedPriceUsd,
           imageUrl,
           imageKey: fileKey,
         });
@@ -181,37 +212,37 @@ export const appRouter = router({
         imageBase64: z.string().optional(),
         dimensions: z.string().optional(),
         medium: z.string().optional(),
-        priceZAR: z.union([z.string(), z.number()]).nullable().optional(),
-        priceUSD: z.union([z.string(), z.number()]).nullable().optional(),
+        priceZar: artworkPrice,
+        priceUsd: artworkPrice,
         isFeatured: z.number().optional(),
         isAvailable: z.number().optional(),
         displayOrder: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
-        const { id, imageBase64, priceZAR, priceUSD, ...data } = input;
+        const { id, imageBase64, priceZar, priceUsd, ...data } = input;
         
         // Convert prices to strings if they are numbers
-        const convertedPriceZAR = priceZAR !== null && priceZAR !== undefined ? String(priceZAR) : undefined;
-        const convertedPriceUSD = priceUSD !== null && priceUSD !== undefined ? String(priceUSD) : undefined;
+        const convertedPriceZar = priceZar !== null && priceZar !== undefined ? String(priceZar) : undefined;
+        const convertedPriceUsd = priceUsd !== null && priceUsd !== undefined ? String(priceUsd) : undefined;
         
         // If new image provided, upload to S3
         if (imageBase64) {
-          const imageBuffer = Buffer.from(imageBase64.split(',')[1] || imageBase64, 'base64');
-          const fileKey = `artworks/${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
-          const { url: imageUrl } = await storagePut(fileKey, imageBuffer, 'image/jpeg');
+          const image = decodeArtworkImage(imageBase64);
+          const fileKey = `artworks/${Date.now()}-${Math.random().toString(36).substring(7)}.${image.extension}`;
+          const { url: imageUrl } = await storagePut(fileKey, image.buffer, image.contentType);
           
           await db.updateArtwork(id, {
             ...data,
-            ...(convertedPriceZAR !== undefined && { priceZAR: convertedPriceZAR }),
-            ...(convertedPriceUSD !== undefined && { priceUSD: convertedPriceUSD }),
+            ...(convertedPriceZar !== undefined && { priceZar: convertedPriceZar }),
+            ...(convertedPriceUsd !== undefined && { priceUsd: convertedPriceUsd }),
             imageUrl,
             imageKey: fileKey,
           });
         } else {
           await db.updateArtwork(id, {
             ...data,
-            ...(convertedPriceZAR !== undefined && { priceZAR: convertedPriceZAR }),
-            ...(convertedPriceUSD !== undefined && { priceUSD: convertedPriceUSD }),
+            ...(convertedPriceZar !== undefined && { priceZar: convertedPriceZar }),
+            ...(convertedPriceUsd !== undefined && { priceUsd: convertedPriceUsd }),
           });
         }
         if (input.isAvailable === 0) {
