@@ -101,12 +101,14 @@ export default function Admin() {
     return convertedUsd || (priceZar === "" ? "" : existingUsd);
   };
 
-  const refreshPublishedArtworkViews = () => {
-    utils.artworks.list.invalidate();
-    utils.artworks.featured.invalidate();
-    utils.artworks.listByCollection.invalidate();
-    utils.artworks.getBySlug.invalidate();
-    utils.artworks.getById.invalidate();
+  const refreshPublishedArtworkViews = async () => {
+    await Promise.all([
+      utils.artworks.list.invalidate(),
+      utils.artworks.featured.invalidate(),
+      utils.artworks.listByCollection.invalidate(),
+      utils.artworks.getBySlug.invalidate(),
+      utils.artworks.getById.invalidate(),
+    ]);
 
     if (typeof BroadcastChannel !== "undefined") {
       const updates = new BroadcastChannel("jennefer-gallery-artwork-updates");
@@ -128,9 +130,9 @@ export default function Admin() {
   });
 
   const updateArtwork = trpc.artworks.update.useMutation({
-    onSuccess: () => {
-      toast.success("Artwork updated successfully!");
-      refreshPublishedArtworkViews();
+    onSuccess: async () => {
+      await refreshPublishedArtworkViews();
+      toast.success("Artwork updated successfully! The new image and prices are now shown below.");
       setEditingArtworkId(null);
       setEditForm({});
     },
@@ -140,9 +142,9 @@ export default function Admin() {
   });
 
   const quickUpdateArtworkPrice = trpc.artworks.update.useMutation({
-    onSuccess: () => {
-      toast.success("Artwork price updated.");
-      refreshPublishedArtworkViews();
+    onSuccess: async () => {
+      await refreshPublishedArtworkViews();
+      toast.success("Artwork price updated and refreshed below.");
       setQuickPriceArtworkId(null);
       setQuickPriceForm({ priceZar: "", priceUsd: "" });
     },
@@ -1250,11 +1252,14 @@ export default function Admin() {
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                            <span className="bg-muted px-2 py-0.5 rounded text-xs">{getCollectionName(artwork.collectionId)}</span>
-                            {artwork.priceZar && <span>R {artwork.priceZar}</span>}
-                            {artwork.priceUsd && <span>${artwork.priceUsd}</span>}
-                            {artwork.dimensions && <span>{artwork.dimensions}</span>}
+                          <div className="mt-2 flex flex-wrap items-start gap-2 text-sm text-muted-foreground">
+                            <span className="rounded bg-muted px-2 py-0.5 text-xs">{getCollectionName(artwork.collectionId)}</span>
+                            <div className="min-w-[8.5rem] rounded-md border border-primary/20 bg-primary/5 px-2.5 py-1.5 leading-tight">
+                              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Current price</p>
+                              {artwork.priceZar ? <p className="mt-0.5 text-sm font-bold text-foreground">R {Number(artwork.priceZar).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p> : <p className="mt-0.5 text-xs text-muted-foreground">No ZAR price set</p>}
+                              {artwork.priceUsd ? <p className="mt-0.5 text-xs font-medium text-muted-foreground">$ {Number(artwork.priceUsd).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p> : null}
+                            </div>
+                            {artwork.dimensions && <span className="pt-1.5">{artwork.dimensions}</span>}
                           </div>
                         </div>
                         

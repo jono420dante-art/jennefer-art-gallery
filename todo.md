@@ -503,6 +503,11 @@
 - [x] Preserve ZAR-first quick-price editing with secondary USD display and no unintended price changes
 - [x] Verify the restored control in the protected Administrator browser, tests, TypeScript, and production build
 
+## Manage Artwork Current Price and Image Refresh
+- [x] Display each artwork’s current saved ZAR price prominently with USD shown beneath it in protected Manage Artwork cards
+- [x] Ensure successful protected price and image saves immediately refresh the matching artwork card without a manual reload
+- [x] Add regression coverage and verify card updates, tests, TypeScript, and production build
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID
