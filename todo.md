@@ -508,6 +508,11 @@
 - [x] Ensure successful protected price and image saves immediately refresh the matching artwork card without a manual reload
 - [x] Add regression coverage and verify card updates, tests, TypeScript, and production build
 
+## Deployed Website and URL Alignment
+- [x] Verify deployed public domains, canonical metadata, and latest-version alignment
+- [x] Verify public content and protected Administrator management reflect current saved gallery data
+- [x] Document active website URLs and deferred external integration status
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID
