@@ -513,6 +513,11 @@
 - [x] Verify public content and protected Administrator management reflect current saved gallery data
 - [x] Document active website URLs and deferred external integration status
 
+## Shared Administrator Tool Access
+- [x] Verify all protected gallery tools are rendered by Administrator role, not by one browser, user name, or account identity
+- [x] Remove any account-specific Administrator tool gating while retaining server-enforced Administrator-only permissions
+- [x] Add regression coverage and verify every authenticated Administrator reaches the same current protected workspace
+
 ## GA4 Tracking Replacement and Smoothness Polish
 - [x] Replace the existing public GA4 measurement ID with the owner-supplied `G-J23S2RL6HP` tag without duplicate page-view tracking
 - [x] Align Administrator tracking guidance and GA4 connection references with the new active measurement ID

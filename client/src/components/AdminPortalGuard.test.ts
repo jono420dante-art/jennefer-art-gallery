@@ -52,4 +52,17 @@ describe("AdminPortalGuard", () => {
 
     expect(renderGuard()).toContain("Protected dashboard content");
   });
+
+  it.each([
+    { id: 1, name: "Jennefer", email: "jennefer@example.com" },
+    { id: 42, name: "Studio assistant", email: "assistant@example.com" },
+  ])("shares the same protected workspace with Administrator identity %#", (administrator) => {
+    useAuthMock.mockReturnValue({
+      user: { ...administrator, role: "admin" },
+      loading: false,
+      logout: vi.fn(),
+    });
+
+    expect(renderGuard()).toContain("Protected dashboard content");
+  });
 });
