@@ -122,13 +122,12 @@ describe("server-enforced Admin Portal access", () => {
     await expect(caller.artworks.list()).resolves.toBeDefined();
   });
 
-  it("returns the fixed ZAR-to-USD studio rate only to an authenticated Administrator", async () => {
+  it.each([
+    { id: 0, openId: "gallery-native-admin", name: "Gallery Administrator", email: null, loginMethod: "native_admin" },
+    { id: 1, openId: "existing-approved-admin", name: "Existing approved Administrator", email: "approved-admin@example.com", loginMethod: "email" },
+  ])("returns the same Administrator-only studio rate to approved access profile %#", async (administrator) => {
     const caller = appRouter.createCaller(createContext({
-      id: 1,
-      openId: "native-gallery-admin",
-      name: "Gallery Administrator",
-      email: null,
-      loginMethod: "native_admin",
+      ...administrator,
       role: "admin",
       createdAt: new Date(),
       updatedAt: new Date(),
